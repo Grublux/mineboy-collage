@@ -16,7 +16,6 @@ export default function HomePage() {
   const [manualNFTs, setManualNFTs] = useState<any[]>([]);
   const [loadingManual, setLoadingManual] = useState(false);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
-  const [touchDraggedNftId, setTouchDraggedNftId] = useState<string | null>(null);
   const [touchStartIndex, setTouchStartIndex] = useState<number | null>(null);
   const [touchCurrentPos, setTouchCurrentPos] = useState<{ x: number; y: number } | null>(null);
   const [isDraggingTouch, setIsDraggingTouch] = useState(false);
@@ -262,27 +261,17 @@ export default function HomePage() {
     }
   };
 
-  // Touch handlers for mobile - true drag implementation
-  const handleTouchStartFromGallery = (e: React.TouchEvent, nftId: string) => {
-    e.preventDefault();
-    const touch = e.touches[0];
-    setTouchDraggedNftId(nftId);
-    setTouchStartIndex(null);
-    setTouchCurrentPos({ x: touch.clientX, y: touch.clientY });
-    setIsDraggingTouch(false); // Will become true on move
-  };
-
+  // Touch handlers for mobile - grid drag only
   const handleTouchStartFromGrid = (e: React.TouchEvent, index: number) => {
     e.preventDefault();
     const touch = e.touches[0];
     setTouchStartIndex(index);
-    setTouchDraggedNftId(null);
     setTouchCurrentPos({ x: touch.clientX, y: touch.clientY });
     setIsDraggingTouch(false);
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    if (!touchDraggedNftId && touchStartIndex === null) return;
+    if (touchStartIndex === null) return;
     
     e.preventDefault();
     const touch = e.touches[0];
@@ -293,7 +282,6 @@ export default function HomePage() {
   const handleTouchEnd = (e: React.TouchEvent) => {
     if (!isDraggingTouch) {
       // Just a tap, not a drag - clear states
-      setTouchDraggedNftId(null);
       setTouchStartIndex(null);
       setTouchCurrentPos(null);
       setIsDraggingTouch(false);
@@ -315,70 +303,30 @@ export default function HomePage() {
       }
     }
 
-    if (targetIndex !== -1) {
-      if (touchDraggedNftId) {
-        // Touch drag from gallery into grid
-        setSelectedNFTs((prev) => {
-          const newSelectedNFTs = [...prev];
-          
-          // Ensure array is large enough
-          while (newSelectedNFTs.length <= targetIndex) {
-            newSelectedNFTs.push(undefined as any);
-          }
-          
-          // Check if this NFT is already in the grid
-          const existingIndex = newSelectedNFTs.findIndex(id => id === touchDraggedNftId);
-          if (existingIndex !== -1) {
-            // Remove from old position
-            newSelectedNFTs[existingIndex] = undefined as any;
-          }
-          
-          // Place in new position (swap if occupied)
-          if (newSelectedNFTs[targetIndex]) {
-            // Slot is occupied, find next empty slot for the displaced NFT
-            const displacedNFT = newSelectedNFTs[targetIndex];
-            newSelectedNFTs[targetIndex] = touchDraggedNftId;
-            
-            // Try to place displaced NFT in the first empty slot
-            for (let i = 0; i < totalSlots; i++) {
-              if (!newSelectedNFTs[i]) {
-                newSelectedNFTs[i] = displacedNFT;
-                break;
-              }
-            }
-          } else {
-            newSelectedNFTs[targetIndex] = touchDraggedNftId;
-          }
-          
-          return newSelectedNFTs;
-        });
-      } else if (touchStartIndex !== null && touchStartIndex !== targetIndex) {
-        // Touch drag within grid (swap)
-        const newSelectedNFTs = [...selectedNFTs];
-        
-        // Ensure array is large enough
-        while (newSelectedNFTs.length < totalSlots) {
-          newSelectedNFTs.push(undefined as any);
-        }
-        
-        // Swap the NFTs
-        const temp = newSelectedNFTs[touchStartIndex];
-        newSelectedNFTs[touchStartIndex] = newSelectedNFTs[targetIndex];
-        newSelectedNFTs[targetIndex] = temp;
-        
-        setSelectedNFTs(newSelectedNFTs);
+    if (targetIndex !== -1 && touchStartIndex !== null && touchStartIndex !== targetIndex) {
+      // Touch drag within grid (swap)
+      const newSelectedNFTs = [...selectedNFTs];
+      
+      // Ensure array is large enough
+      while (newSelectedNFTs.length < totalSlots) {
+        newSelectedNFTs.push(undefined as any);
       }
+      
+      // Swap the NFTs
+      const temp = newSelectedNFTs[touchStartIndex];
+      newSelectedNFTs[touchStartIndex] = newSelectedNFTs[targetIndex];
+      newSelectedNFTs[targetIndex] = temp;
+      
+      setSelectedNFTs(newSelectedNFTs);
     }
 
     // Reset all touch states
-    setTouchDraggedNftId(null);
     setTouchStartIndex(null);
     setTouchCurrentPos(null);
     setIsDraggingTouch(false);
   };
 
   const handleTouchCancel = () => {
-    setTouchDraggedNftId(null);
     setTouchStartIndex(null);
     setTouchCurrentPos(null);
     setIsDraggingTouch(false);
@@ -495,11 +443,9 @@ export default function HomePage() {
     }
   };
 
-  // Get the currently dragged NFT for ghost image
+  // Get the currently dragged NFT for ghost image (only from grid)
   const getDraggedNFT = () => {
-    if (touchDraggedNftId) {
-      return displayedNFTs.find((n: any) => n.id === touchDraggedNftId);
-    } else if (touchStartIndex !== null) {
+    if (touchStartIndex !== null) {
       const nftId = selectedNFTs[touchStartIndex];
       return nftId ? displayedNFTs.find((n: any) => n.id === nftId) : null;
     }
@@ -670,14 +616,6 @@ export default function HomePage() {
                   }}>
                     Click/tap MineBoy to add to collage
                   </div>
-                  <div style={{ 
-                    fontSize: '12px', 
-                    color: '#888888',
-                    fontFamily: 'monospace',
-                    marginTop: '5px'
-                  }}>
-                    Mobile: Press & drag to move
-                  </div>
                 </div>
                 <div style={{
                   display: 'flex',
@@ -687,7 +625,6 @@ export default function HomePage() {
                 }}>
                       {displayedNFTs.map((nft) => {
                         const isSelected = selectedNFTs.includes(nft.id);
-                        const isTouchDragging = touchDraggedNftId === nft.id;
                         return (
                           <div
                             key={nft.id}
@@ -699,8 +636,7 @@ export default function HomePage() {
                               display: 'flex',
                               flexDirection: 'column',
                               alignItems: 'center',
-                              backgroundColor: isSelected ? '#003300' : 'transparent',
-                              opacity: isTouchDragging ? 0.5 : 1
+                              backgroundColor: isSelected ? '#003300' : 'transparent'
                             }}
                           >
                             <div style={{
@@ -714,27 +650,16 @@ export default function HomePage() {
                                 <img
                                   src={nft.image}
                                   alt={nft.name}
-                                  draggable
                                   width="100"
                                   height="100"
-                                  onDragStart={(e) => handleDragStartFromGallery(e, nft.id)}
-                                  onTouchStart={(e) => handleTouchStartFromGallery(e, nft.id)}
-                                  onTouchMove={handleTouchMove}
-                                  onTouchEnd={handleTouchEnd}
-                                  onTouchCancel={handleTouchCancel}
-                                  onClick={(e) => {
-                                    if (!isDraggingTouch) {
-                                      toggleNFTSelection(nft.id);
-                                    }
-                                  }}
+                                  onClick={() => toggleNFTSelection(nft.id)}
                                   style={{
                                     width: '100px',
                                     height: '100px',
                                     objectFit: 'contain',
                                     imageRendering: 'pixelated',
                                     cursor: 'pointer',
-                                    display: 'block',
-                                    touchAction: 'none'
+                                    display: 'block'
                                   } as React.CSSProperties}
                                 />
                               )}
@@ -813,8 +738,19 @@ export default function HomePage() {
                   </div>
                 </div>
 
+                {/* Drag Instructions */}
+                <div style={{ 
+                  textAlign: 'center', 
+                  marginTop: '20px',
+                  fontSize: '14px',
+                  color: '#888888',
+                  fontFamily: 'monospace'
+                }}>
+                  Drag MineBoy to position
+                </div>
+
                 {/* Collage Area */}
-                <div style={{ marginTop: '40px' }}>
+                <div style={{ marginTop: '20px' }}>
                   <div style={{ textAlign: 'center', marginBottom: '20px' }}>
                     Collage ({selectedNFTs.filter(id => id).length} selected - {gridSize}x{gridSize} grid)
                   </div>
@@ -835,7 +771,7 @@ export default function HomePage() {
                           const nftId = selectedNFTs[index];
                           const nft = nftId ? displayedNFTs.find((n: any) => n.id === nftId) : null;
                           const isDragging = draggedIndex === index;
-                          const isTouchActive = (touchStartIndex === index) || (touchDraggedNftId && !nft);
+                          const isTouchActive = (touchStartIndex === index);
                           
                           return (
                             <div
