@@ -474,6 +474,19 @@ export default function HomePage() {
     }
   };
 
+  // Get the currently dragged NFT for ghost image
+  const getDraggedNFT = () => {
+    if (touchDraggedNftId) {
+      return displayedNFTs.find((n: any) => n.id === touchDraggedNftId);
+    } else if (touchStartIndex !== null) {
+      const nftId = selectedNFTs[touchStartIndex];
+      return nftId ? displayedNFTs.find((n: any) => n.id === nftId) : null;
+    }
+    return null;
+  };
+
+  const draggedNFT = getDraggedNFT();
+
   return (
     <>
       <style jsx global>{`
@@ -878,6 +891,39 @@ export default function HomePage() {
         </div>
         {/* )} */}
       </div>
+
+      {/* Ghost image for touch drag */}
+      {isDraggingTouch && draggedNFT && touchCurrentPos && (
+        <div
+          style={{
+            position: 'fixed',
+            left: touchCurrentPos.x - 75,
+            top: touchCurrentPos.y - 75,
+            width: '150px',
+            height: '150px',
+            pointerEvents: 'none',
+            zIndex: 10000,
+            opacity: 0.7,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: 'rgba(0, 0, 0, 0.3)',
+            border: '3px solid #00ff00',
+            borderRadius: '8px'
+          }}
+        >
+          <img
+            src={draggedNFT.image}
+            alt={draggedNFT.name}
+            style={{
+              width: '120px',
+              height: '120px',
+              objectFit: 'contain',
+              imageRendering: 'pixelated'
+            } as React.CSSProperties}
+          />
+        </div>
+      )}
     </>
   );
 }
