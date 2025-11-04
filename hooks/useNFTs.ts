@@ -163,8 +163,8 @@ export function useNFTs() {
         });
 
         const fetchedNFTs = (await Promise.all(nftPromises)).filter(
-          (nft): nft is NFT => nft !== null
-        );
+          (nft) => nft !== null
+        ) as NFT[];
 
         setNfts(fetchedNFTs);
       } catch (err) {
