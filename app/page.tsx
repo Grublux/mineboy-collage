@@ -3,7 +3,7 @@
 // import { ConnectButton } from "@rainbow-me/rainbowkit";
 // import { useAccount, useChainId } from "wagmi";
 // import { useNFTs } from "@/hooks/useNFTs";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function HomePage() {
   // const { address, isConnected } = useAccount();
@@ -22,6 +22,27 @@ export default function HomePage() {
   const [isDraggingTouch, setIsDraggingTouch] = useState(false);
 
   const totalSlots = gridSize * gridSize;
+
+  const [cellSize, setCellSize] = useState(200);
+
+  // Update cell size on mount and resize
+  useEffect(() => {
+    const getGridCellSize = () => {
+      if (typeof window === 'undefined') return 200;
+      const viewportWidth = window.innerWidth;
+      const maxGridWidth = Math.min(viewportWidth - 40, 1200); // 20px padding on each side, max 1200px
+      const calculatedSize = Math.floor(maxGridWidth / gridSize);
+      return Math.max(Math.min(calculatedSize, 200), 80); // Min 80px, max 200px per cell
+    };
+
+    const updateSize = () => {
+      setCellSize(getGridCellSize());
+    };
+    
+    updateSize();
+    window.addEventListener('resize', updateSize);
+    return () => window.removeEventListener('resize', updateSize);
+  }, [gridSize]);
 
   const fetchManualNFTs = async () => {
     if (!manualInput.trim()) return;
@@ -805,8 +826,8 @@ export default function HomePage() {
                     }}>
                       <div style={{
                         display: 'grid',
-                        gridTemplateColumns: `repeat(${gridSize}, 200px)`,
-                        gridTemplateRows: `repeat(${gridSize}, 200px)`,
+                        gridTemplateColumns: `repeat(${gridSize}, ${cellSize}px)`,
+                        gridTemplateRows: `repeat(${gridSize}, ${cellSize}px)`,
                         gap: '0',
                         border: '2px solid #ffffff'
                       }}>
@@ -829,8 +850,8 @@ export default function HomePage() {
                               onTouchEnd={handleTouchEnd}
                               onTouchCancel={handleTouchCancel}
                               style={{
-                                width: '200px',
-                                height: '200px',
+                                width: `${cellSize}px`,
+                                height: `${cellSize}px`,
                                 backgroundColor: '#536AB3',
                                 display: 'flex',
                                 alignItems: 'center',
