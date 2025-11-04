@@ -11,8 +11,76 @@ export default function HomePage() {
   const { nfts, loading, error } = useNFTs();
   const [selectedNFTs, setSelectedNFTs] = useState<string[]>([]);
   const [gridSize, setGridSize] = useState<number>(2);
+  const [manualMode, setManualMode] = useState(false);
+  const [manualInput, setManualInput] = useState('');
+  const [manualNFTs, setManualNFTs] = useState<any[]>([]);
+  const [loadingManual, setLoadingManual] = useState(false);
 
   const totalSlots = gridSize * gridSize;
+
+  const fetchManualNFTs = async () => {
+    if (!manualInput.trim()) return;
+    
+    setLoadingManual(true);
+    try {
+      const tokenIds = manualInput.split(',').map(id => id.trim()).filter(id => id);
+      const nftPromises = tokenIds.map(async (tokenId) => {
+        try {
+          const response = await fetch(`https://apechain.calderachain.xyz/http`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              jsonrpc: '2.0',
+              method: 'eth_call',
+              params: [{
+                to: '0xa8a16c3259ad84162a0868e7927523b81ef8bf2d',
+                data: `0xc87b56dd${BigInt(tokenId).toString(16).padStart(64, '0')}`
+              }, 'latest'],
+              id: 1
+            })
+          });
+          
+          const result = await response.json();
+          if (result.error) throw new Error(result.error.message);
+          
+          const hexString = result.result.slice(2);
+          const bytes = hexString.match(/.{1,2}/g)?.map((byte: string) => parseInt(byte, 16)) || [];
+          let uri = '';
+          for (let i = 0; i < bytes.length; i++) {
+            if (bytes[i] > 0) uri += String.fromCharCode(bytes[i]);
+          }
+          
+          let metadata;
+          try {
+            const metadataResponse = await fetch(uri);
+            metadata = await metadataResponse.json();
+          } catch {
+            metadata = { name: `MineBoy #${tokenId}`, image: '' };
+          }
+          
+          return {
+            id: `manual-${tokenId}`,
+            name: metadata.name || `MineBoy #${tokenId}`,
+            image: metadata.image || '',
+            tokenId: tokenId,
+            contract: '0xa8a16c3259ad84162a0868e7927523b81ef8bf2d'
+          };
+        } catch (err) {
+          console.error(`Error fetching token ${tokenId}:`, err);
+          return null;
+        }
+      });
+      
+      const fetched = (await Promise.all(nftPromises)).filter(nft => nft !== null);
+      setManualNFTs(fetched);
+    } catch (err) {
+      console.error('Error fetching manual NFTs:', err);
+    } finally {
+      setLoadingManual(false);
+    }
+  };
+
+  const displayedNFTs = manualMode ? manualNFTs : nfts;
 
   const toggleNFTSelection = (nftId: string) => {
     setSelectedNFTs((prev) => {
@@ -62,7 +130,7 @@ export default function HomePage() {
       for (let i = 0; i < totalSlots; i++) {
         const nftId = selectedNFTs[i];
         if (nftId) {
-          const nft = nfts.find((n) => n.id === nftId);
+          const nft = displayedNFTs.find((n: any) => n.id === nftId);
           if (nft?.image) {
             const img = await loadImage(nft.image);
             const row = Math.floor(i / gridSize);
@@ -198,34 +266,93 @@ export default function HomePage() {
         
         <div style={{
           display: 'flex',
-          justifyContent: 'center',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '20px',
           padding: '20px'
         }}>
           <ConnectButton />
+          
+          <div style={{ textAlign: 'center' }}>
+            <button
+              onClick={() => setManualMode(!manualMode)}
+              style={{
+                padding: '10px 20px',
+                backgroundColor: manualMode ? '#00ff00' : '#ffffff',
+                color: '#000000',
+                border: '2px solid #ffffff',
+                cursor: 'pointer',
+                fontFamily: 'monospace',
+                textTransform: 'uppercase',
+                fontSize: '14px',
+                marginBottom: '15px'
+              }}
+            >
+              {manualMode ? '✓ Manual Mode' : 'Enter MineBoy Number'}
+            </button>
+            
+            {manualMode && (
+              <div style={{ marginTop: '15px' }}>
+                <input
+                  type="text"
+                  value={manualInput}
+                  onChange={(e) => setManualInput(e.target.value)}
+                  placeholder="Enter token IDs (e.g., 1, 42, 100)"
+                  style={{
+                    padding: '10px',
+                    width: '300px',
+                    backgroundColor: '#000000',
+                    color: '#ffffff',
+                    border: '2px solid #ffffff',
+                    fontFamily: 'monospace',
+                    fontSize: '14px'
+                  }}
+                />
+                <button
+                  onClick={fetchManualNFTs}
+                  disabled={loadingManual}
+                  style={{
+                    padding: '10px 20px',
+                    marginLeft: '10px',
+                    backgroundColor: '#ffffff',
+                    color: '#000000',
+                    border: '2px solid #ffffff',
+                    cursor: loadingManual ? 'not-allowed' : 'pointer',
+                    fontFamily: 'monospace',
+                    textTransform: 'uppercase',
+                    fontSize: '14px',
+                    opacity: loadingManual ? 0.5 : 1
+                  }}
+                >
+                  {loadingManual ? 'Loading...' : 'Fetch'}
+                </button>
+              </div>
+            )}
+          </div>
         </div>
 
-        {isConnected && (
+        {(isConnected || manualMode) && (
           <div style={{
             padding: '20px',
             maxWidth: '1200px',
             margin: '0 auto'
           }}>
-            {loading ? (
+            {(loading || loadingManual) ? (
               <div style={{ textAlign: 'center', padding: '40px' }}>
                 Loading NFTs...
               </div>
-            ) : error ? (
+            ) : error && !manualMode ? (
               <div style={{ textAlign: 'center', padding: '40px', color: '#ff6b6b' }}>
                 Error: {error}
               </div>
-            ) : nfts.length === 0 ? (
+            ) : displayedNFTs.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '40px' }}>
-                No NFTs found in this wallet
+                {manualMode ? 'Enter MineBoy numbers above to display NFTs' : 'No NFTs found in this wallet'}
               </div>
             ) : (
               <div>
                 <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-                  Found {nfts.length} NFT{nfts.length !== 1 ? 's' : ''}
+                  Found {displayedNFTs.length} NFT{displayedNFTs.length !== 1 ? 's' : ''}
                 </div>
                 <div style={{
                   display: 'flex',
@@ -233,7 +360,7 @@ export default function HomePage() {
                   gap: '20px',
                   justifyContent: 'center'
                 }}>
-                  {nfts.map((nft) => {
+                  {displayedNFTs.map((nft) => {
                     const isSelected = selectedNFTs.includes(nft.id);
                     return (
                       <div
@@ -358,7 +485,7 @@ export default function HomePage() {
                       }}>
                         {Array.from({ length: totalSlots }).map((_, index) => {
                           const nftId = selectedNFTs[index];
-                          const nft = nftId ? nfts.find((n) => n.id === nftId) : null;
+                          const nft = nftId ? displayedNFTs.find((n: any) => n.id === nftId) : null;
                           
                           return (
                             <div
