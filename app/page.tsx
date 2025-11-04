@@ -16,6 +16,8 @@ export default function HomePage() {
   const [manualNFTs, setManualNFTs] = useState<any[]>([]);
   const [loadingManual, setLoadingManual] = useState(false);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [touchDraggedNftId, setTouchDraggedNftId] = useState<string | null>(null);
+  const [touchStartIndex, setTouchStartIndex] = useState<number | null>(null);
 
   const totalSlots = gridSize * gridSize;
 
@@ -237,6 +239,72 @@ export default function HomePage() {
     }
   };
 
+  // Touch handlers for mobile
+  const handleTouchStartFromGallery = (nftId: string) => {
+    setTouchDraggedNftId(nftId);
+  };
+
+  const handleTouchStartFromGrid = (index: number) => {
+    setTouchStartIndex(index);
+  };
+
+  const handleTouchEndIntoGrid = (targetIndex: number) => {
+    if (touchDraggedNftId) {
+      // Touch drag from gallery into grid
+      setSelectedNFTs((prev) => {
+        const newSelectedNFTs = [...prev];
+        
+        // Ensure array is large enough
+        while (newSelectedNFTs.length <= targetIndex) {
+          newSelectedNFTs.push(undefined as any);
+        }
+        
+        // Check if this NFT is already in the grid
+        const existingIndex = newSelectedNFTs.findIndex(id => id === touchDraggedNftId);
+        if (existingIndex !== -1) {
+          // Remove from old position
+          newSelectedNFTs[existingIndex] = undefined as any;
+        }
+        
+        // Place in new position (swap if occupied)
+        if (newSelectedNFTs[targetIndex]) {
+          // Slot is occupied, find next empty slot for the displaced NFT
+          const displacedNFT = newSelectedNFTs[targetIndex];
+          newSelectedNFTs[targetIndex] = touchDraggedNftId;
+          
+          // Try to place displaced NFT in the first empty slot
+          for (let i = 0; i < totalSlots; i++) {
+            if (!newSelectedNFTs[i]) {
+              newSelectedNFTs[i] = displacedNFT;
+              break;
+            }
+          }
+        } else {
+          newSelectedNFTs[targetIndex] = touchDraggedNftId;
+        }
+        
+        return newSelectedNFTs;
+      });
+      setTouchDraggedNftId(null);
+    } else if (touchStartIndex !== null && touchStartIndex !== targetIndex) {
+      // Touch drag within grid (swap)
+      const newSelectedNFTs = [...selectedNFTs];
+      
+      // Ensure array is large enough
+      while (newSelectedNFTs.length < totalSlots) {
+        newSelectedNFTs.push(undefined as any);
+      }
+      
+      // Swap the NFTs
+      const temp = newSelectedNFTs[touchStartIndex];
+      newSelectedNFTs[touchStartIndex] = newSelectedNFTs[targetIndex];
+      newSelectedNFTs[targetIndex] = temp;
+      
+      setSelectedNFTs(newSelectedNFTs);
+      setTouchStartIndex(null);
+    }
+  };
+
   const downloadCollage = async () => {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
@@ -353,6 +421,10 @@ export default function HomePage() {
       <style jsx global>{`
         body {
           overflow-x: hidden !important;
+          scroll-behavior: auto !important;
+        }
+        * {
+          scroll-behavior: auto !important;
         }
         [data-rk] {
           z-index: 9999 !important;
@@ -439,6 +511,12 @@ export default function HomePage() {
                 type="text"
                 value={manualInput}
                 onChange={(e) => setManualInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    fetchManualNFTs();
+                  }
+                }}
                 placeholder="Enter MineBoy numbers (e.g., 1, 42, 100)"
                 style={{
                   padding: '10px',
@@ -451,7 +529,11 @@ export default function HomePage() {
                 }}
               />
               <button
-                onClick={fetchManualNFTs}
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  fetchManualNFTs();
+                }}
                 disabled={loadingManual}
                 style={{
                   padding: '10px 20px',
@@ -478,19 +560,16 @@ export default function HomePage() {
           maxWidth: '1200px',
           margin: '0 auto'
         }}>
-          {loadingManual ? (
+          {displayedNFTs.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '40px' }}>
-              Loading NFTs...
-            </div>
-          ) : displayedNFTs.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '40px' }}>
-              Enter MineBoy numbers above to display NFTs
+              {loadingManual ? 'Loading NFTs...' : 'Enter MineBoy numbers above to display NFTs'}
             </div>
           ) : (
               <div>
                 <div style={{ textAlign: 'center', marginBottom: '20px' }}>
                   <div style={{ marginBottom: '10px' }}>
                     Found {displayedNFTs.length} NFT{displayedNFTs.length !== 1 ? 's' : ''}
+                    {loadingManual && <span style={{ marginLeft: '10px', color: '#ffff00' }}>Loading more...</span>}
                   </div>
                   <div style={{ 
                     fontSize: '14px', 
@@ -506,56 +585,68 @@ export default function HomePage() {
                   gap: '20px',
                   justifyContent: 'center'
                 }}>
-                  {displayedNFTs.map((nft) => {
-                    const isSelected = selectedNFTs.includes(nft.id);
-                    return (
-                      <div
-                        key={nft.id}
-                        style={{
-                          border: isSelected ? '4px solid #00ff00' : '2px solid #ffffff',
-                          padding: '10px',
-                          position: 'relative',
-                          width: '220px',
-                          display: 'flex',
-                          flexDirection: 'column',
-                          alignItems: 'center',
-                          backgroundColor: isSelected ? '#003300' : 'transparent'
-                        }}
-                      >
-                        {nft.image && (
-                          <img
-                            src={nft.image}
-                            alt={nft.name}
-                            draggable
-                            onDragStart={(e) => handleDragStartFromGallery(e, nft.id)}
-                            onClick={() => toggleNFTSelection(nft.id)}
+                      {displayedNFTs.map((nft) => {
+                        const isSelected = selectedNFTs.includes(nft.id);
+                        return (
+                          <div
+                            key={nft.id}
                             style={{
-                              width: '200px',
-                              height: '200px',
-                              objectFit: 'contain',
-                              imageRendering: 'pixelated',
-                              cursor: 'pointer'
-                            } as React.CSSProperties}
-                          />
-                        )}
-                      <div style={{ marginTop: '10px', fontSize: '14px' }}>
+                              border: isSelected ? '4px solid #00ff00' : '2px solid #ffffff',
+                              padding: '10px',
+                              position: 'relative',
+                              width: '120px',
+                              display: 'flex',
+                              flexDirection: 'column',
+                              alignItems: 'center',
+                              backgroundColor: isSelected ? '#003300' : 'transparent'
+                            }}
+                          >
+                            <div style={{
+                              width: '100px',
+                              height: '100px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center'
+                            }}>
+                              {nft.image && (
+                                <img
+                                  src={nft.image}
+                                  alt={nft.name}
+                                  draggable
+                                  width="100"
+                                  height="100"
+                                  onDragStart={(e) => handleDragStartFromGallery(e, nft.id)}
+                                  onTouchStart={() => handleTouchStartFromGallery(nft.id)}
+                                  onClick={() => toggleNFTSelection(nft.id)}
+                                  style={{
+                                    width: '100px',
+                                    height: '100px',
+                                    objectFit: 'contain',
+                                    imageRendering: 'pixelated',
+                                    cursor: 'pointer',
+                                    display: 'block'
+                                  } as React.CSSProperties}
+                                />
+                              )}
+                            </div>
+                      <div style={{ marginTop: '8px', fontSize: '12px' }}>
                         {nft.name}
                       </div>
-                      <div style={{ fontSize: '12px', opacity: 0.7 }}>
+                      <div style={{ fontSize: '10px', opacity: 0.7 }}>
                         #{nft.tokenId}
                       </div>
                       <button
                         onClick={() => downloadScaledImage(nft.image, nft.name)}
                         style={{
-                          marginTop: '10px',
-                          padding: '8px 16px',
+                          marginTop: '8px',
+                          padding: '6px 8px',
                           backgroundColor: '#ffffff',
                           color: '#000000',
                           border: '2px solid #ffffff',
                           cursor: 'pointer',
                           fontFamily: 'monospace',
                           textTransform: 'uppercase',
-                          fontSize: '12px',
+                          fontSize: '9px',
                           width: '100%'
                         }}
                         onMouseOver={(e) => {
@@ -567,7 +658,7 @@ export default function HomePage() {
                           e.currentTarget.style.color = '#000000';
                         }}
                       >
-                        Download 480x480
+                        DL 480x480
                       </button>
                     </div>
                   );
@@ -642,6 +733,8 @@ export default function HomePage() {
                               onDragStart={() => handleDragStart(index)}
                               onDragOver={(e) => handleDragOver(e, index)}
                               onDrop={(e) => handleDropIntoGrid(e, index)}
+                              onTouchStart={() => nft && handleTouchStartFromGrid(index)}
+                              onTouchEnd={() => handleTouchEndIntoGrid(index)}
                               style={{
                                 width: '200px',
                                 height: '200px',
