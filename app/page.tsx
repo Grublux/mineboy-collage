@@ -1,14 +1,14 @@
 "use client";
 
-import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { useAccount, useChainId } from "wagmi";
-import { useNFTs } from "@/hooks/useNFTs";
+// import { ConnectButton } from "@rainbow-me/rainbowkit";
+// import { useAccount, useChainId } from "wagmi";
+// import { useNFTs } from "@/hooks/useNFTs";
 import { useState } from "react";
 
 export default function HomePage() {
-  const { address, isConnected } = useAccount();
-  const chainId = useChainId();
-  const { nfts, loading, error } = useNFTs();
+  // const { address, isConnected } = useAccount();
+  // const chainId = useChainId();
+  // const { nfts, loading, error } = useNFTs();
   const [selectedNFTs, setSelectedNFTs] = useState<string[]>([]);
   const [gridSize, setGridSize] = useState<number>(2);
   const [manualMode, setManualMode] = useState(false);
@@ -120,7 +120,8 @@ export default function HomePage() {
     }
   };
 
-  const displayedNFTs = manualMode ? manualNFTs : nfts;
+  // const displayedNFTs = manualMode ? manualNFTs : nfts;
+  const displayedNFTs = manualNFTs;
 
   const toggleNFTSelection = (nftId: string) => {
     setSelectedNFTs((prev) => {
@@ -311,10 +312,10 @@ export default function HomePage() {
           gap: '20px',
           padding: '20px'
         }}>
-          <ConnectButton />
+          {/* <ConnectButton /> */}
           
           <div style={{ textAlign: 'center' }}>
-            <button
+            {/* <button
               onClick={() => setManualMode(!manualMode)}
               style={{
                 padding: '10px 20px',
@@ -329,67 +330,61 @@ export default function HomePage() {
               }}
             >
               {manualMode ? '✓ Manual Mode' : 'Enter MineBoy Number'}
-            </button>
+            </button> */}
             
-            {manualMode && (
-              <div style={{ marginTop: '15px' }}>
-                <input
-                  type="text"
-                  value={manualInput}
-                  onChange={(e) => setManualInput(e.target.value)}
-                  placeholder="Enter token IDs (e.g., 1, 42, 100)"
-                  style={{
-                    padding: '10px',
-                    width: '300px',
-                    backgroundColor: '#000000',
-                    color: '#ffffff',
-                    border: '2px solid #ffffff',
-                    fontFamily: 'monospace',
-                    fontSize: '14px'
-                  }}
-                />
-                <button
-                  onClick={fetchManualNFTs}
-                  disabled={loadingManual}
-                  style={{
-                    padding: '10px 20px',
-                    marginLeft: '10px',
-                    backgroundColor: '#ffffff',
-                    color: '#000000',
-                    border: '2px solid #ffffff',
-                    cursor: loadingManual ? 'not-allowed' : 'pointer',
-                    fontFamily: 'monospace',
-                    textTransform: 'uppercase',
-                    fontSize: '14px',
-                    opacity: loadingManual ? 0.5 : 1
-                  }}
-                >
-                  {loadingManual ? 'Loading...' : 'Fetch'}
-                </button>
-              </div>
-            )}
+            <div style={{ marginTop: '15px' }}>
+              <input
+                type="text"
+                value={manualInput}
+                onChange={(e) => setManualInput(e.target.value)}
+                placeholder="Enter MineBoy numbers (e.g., 1, 42, 100)"
+                style={{
+                  padding: '10px',
+                  width: '300px',
+                  backgroundColor: '#000000',
+                  color: '#ffffff',
+                  border: '2px solid #ffffff',
+                  fontFamily: 'monospace',
+                  fontSize: '14px'
+                }}
+              />
+              <button
+                onClick={fetchManualNFTs}
+                disabled={loadingManual}
+                style={{
+                  padding: '10px 20px',
+                  marginLeft: '10px',
+                  backgroundColor: '#ffffff',
+                  color: '#000000',
+                  border: '2px solid #ffffff',
+                  cursor: loadingManual ? 'not-allowed' : 'pointer',
+                  fontFamily: 'monospace',
+                  textTransform: 'uppercase',
+                  fontSize: '14px',
+                  opacity: loadingManual ? 0.5 : 1
+                }}
+              >
+                {loadingManual ? 'Loading...' : 'Fetch'}
+              </button>
+            </div>
           </div>
         </div>
 
-        {(isConnected || manualMode) && (
-          <div style={{
-            padding: '20px',
-            maxWidth: '1200px',
-            margin: '0 auto'
-          }}>
-            {(loading || loadingManual) ? (
-              <div style={{ textAlign: 'center', padding: '40px' }}>
-                Loading NFTs...
-              </div>
-            ) : error && !manualMode ? (
-              <div style={{ textAlign: 'center', padding: '40px', color: '#ff6b6b' }}>
-                Error: {error}
-              </div>
-            ) : displayedNFTs.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '40px' }}>
-                {manualMode ? 'Enter MineBoy numbers above to display NFTs' : 'No NFTs found in this wallet'}
-              </div>
-            ) : (
+        {/* {(isConnected || manualMode) && ( */}
+        <div style={{
+          padding: '20px',
+          maxWidth: '1200px',
+          margin: '0 auto'
+        }}>
+          {loadingManual ? (
+            <div style={{ textAlign: 'center', padding: '40px' }}>
+              Loading NFTs...
+            </div>
+          ) : displayedNFTs.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '40px' }}>
+              Enter MineBoy numbers above to display NFTs
+            </div>
+          ) : (
               <div>
                 <div style={{ textAlign: 'center', marginBottom: '20px' }}>
                   Found {displayedNFTs.length} NFT{displayedNFTs.length !== 1 ? 's' : ''}
@@ -585,8 +580,8 @@ export default function HomePage() {
                 )}
               </div>
             )}
-          </div>
-        )}
+        </div>
+        {/* )} */}
       </div>
     </>
   );
