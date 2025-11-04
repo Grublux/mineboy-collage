@@ -239,16 +239,23 @@ export default function HomePage() {
     }
   };
 
-  // Touch handlers for mobile
-  const handleTouchStartFromGallery = (nftId: string) => {
+  // Touch handlers for mobile - improved implementation
+  const handleTouchStartFromGallery = (e: React.TouchEvent, nftId: string) => {
+    e.stopPropagation();
     setTouchDraggedNftId(nftId);
+    setTouchStartIndex(null);
   };
 
-  const handleTouchStartFromGrid = (index: number) => {
+  const handleTouchStartFromGrid = (e: React.TouchEvent, index: number) => {
+    e.stopPropagation();
     setTouchStartIndex(index);
+    setTouchDraggedNftId(null);
   };
 
-  const handleTouchEndIntoGrid = (targetIndex: number) => {
+  const handleTouchEndIntoGrid = (e: React.TouchEvent, targetIndex: number) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
     if (touchDraggedNftId) {
       // Touch drag from gallery into grid
       setSelectedNFTs((prev) => {
@@ -303,6 +310,11 @@ export default function HomePage() {
       setSelectedNFTs(newSelectedNFTs);
       setTouchStartIndex(null);
     }
+  };
+
+  const handleTouchCancel = () => {
+    setTouchDraggedNftId(null);
+    setTouchStartIndex(null);
   };
 
   const downloadCollage = async () => {
@@ -578,6 +590,14 @@ export default function HomePage() {
                   }}>
                     Click MineBoy image to add to collage
                   </div>
+                  <div style={{ 
+                    fontSize: '12px', 
+                    color: '#888888',
+                    fontFamily: 'monospace',
+                    marginTop: '5px'
+                  }}>
+                    Mobile: Tap image, then tap grid slot to place
+                  </div>
                 </div>
                 <div style={{
                   display: 'flex',
@@ -587,6 +607,7 @@ export default function HomePage() {
                 }}>
                       {displayedNFTs.map((nft) => {
                         const isSelected = selectedNFTs.includes(nft.id);
+                        const isTouchDragging = touchDraggedNftId === nft.id;
                         return (
                           <div
                             key={nft.id}
@@ -598,7 +619,8 @@ export default function HomePage() {
                               display: 'flex',
                               flexDirection: 'column',
                               alignItems: 'center',
-                              backgroundColor: isSelected ? '#003300' : 'transparent'
+                              backgroundColor: isSelected ? '#003300' : 'transparent',
+                              opacity: isTouchDragging ? 0.5 : 1
                             }}
                           >
                             <div style={{
@@ -616,7 +638,8 @@ export default function HomePage() {
                                   width="100"
                                   height="100"
                                   onDragStart={(e) => handleDragStartFromGallery(e, nft.id)}
-                                  onTouchStart={() => handleTouchStartFromGallery(nft.id)}
+                                  onTouchStart={(e) => handleTouchStartFromGallery(e, nft.id)}
+                                  onTouchCancel={handleTouchCancel}
                                   onClick={() => toggleNFTSelection(nft.id)}
                                   style={{
                                     width: '100px',
@@ -624,7 +647,8 @@ export default function HomePage() {
                                     objectFit: 'contain',
                                     imageRendering: 'pixelated',
                                     cursor: 'pointer',
-                                    display: 'block'
+                                    display: 'block',
+                                    touchAction: 'none'
                                   } as React.CSSProperties}
                                 />
                               )}
@@ -725,6 +749,7 @@ export default function HomePage() {
                           const nftId = selectedNFTs[index];
                           const nft = nftId ? displayedNFTs.find((n: any) => n.id === nftId) : null;
                           const isDragging = draggedIndex === index;
+                          const isTouchActive = (touchStartIndex === index) || (touchDraggedNftId && !nft);
                           
                           return (
                             <div
@@ -733,8 +758,9 @@ export default function HomePage() {
                               onDragStart={() => handleDragStart(index)}
                               onDragOver={(e) => handleDragOver(e, index)}
                               onDrop={(e) => handleDropIntoGrid(e, index)}
-                              onTouchStart={() => nft && handleTouchStartFromGrid(index)}
-                              onTouchEnd={() => handleTouchEndIntoGrid(index)}
+                              onTouchStart={(e) => nft && handleTouchStartFromGrid(e, index)}
+                              onTouchEnd={(e) => handleTouchEndIntoGrid(e, index)}
+                              onTouchCancel={handleTouchCancel}
                               style={{
                                 width: '200px',
                                 height: '200px',
@@ -743,9 +769,10 @@ export default function HomePage() {
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 cursor: nft ? 'move' : 'default',
-                                opacity: isDragging ? 0.5 : 1,
-                                border: isDragging ? '3px dashed #00ff00' : 'none',
-                                transition: 'opacity 0.2s'
+                                opacity: isDragging || (touchStartIndex === index) ? 0.5 : 1,
+                                border: (isDragging || isTouchActive) ? '3px dashed #00ff00' : 'none',
+                                transition: 'opacity 0.2s, border 0.2s',
+                                touchAction: 'none'
                               }}
                             >
                               {nft?.image && (
