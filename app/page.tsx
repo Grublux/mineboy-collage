@@ -204,7 +204,15 @@ export default function HomePage() {
           }
         }
         
-        // All slots filled
+        // All slots filled - increase grid size if possible
+        if (gridSize < 6) {
+          setGridSize(gridSize + 1);
+          // Add to first slot of new grid
+          newSelectedNFTs.push(nftId);
+          return newSelectedNFTs;
+        }
+        
+        // Max grid size reached
         return prev;
       }
     });
