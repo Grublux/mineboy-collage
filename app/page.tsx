@@ -387,7 +387,16 @@ export default function HomePage() {
           ) : (
               <div>
                 <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-                  Found {displayedNFTs.length} NFT{displayedNFTs.length !== 1 ? 's' : ''}
+                  <div style={{ marginBottom: '10px' }}>
+                    Found {displayedNFTs.length} NFT{displayedNFTs.length !== 1 ? 's' : ''}
+                  </div>
+                  <div style={{ 
+                    fontSize: '14px', 
+                    color: '#00ff00',
+                    fontFamily: 'monospace'
+                  }}>
+                    Click MineBoy image to add to collage
+                  </div>
                 </div>
                 <div style={{
                   display: 'flex',
