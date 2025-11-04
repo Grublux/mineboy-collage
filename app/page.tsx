@@ -24,8 +24,20 @@ export default function HomePage() {
     setLoadingManual(true);
     try {
       const tokenIds = manualInput.split(',').map(id => id.trim()).filter(id => id);
-      const nftPromises = tokenIds.map(async (tokenId) => {
+      
+      // Filter out already loaded token IDs
+      const existingIds = manualNFTs.map(nft => nft.tokenId);
+      const newTokenIds = tokenIds.filter(id => !existingIds.includes(id));
+      
+      if (newTokenIds.length === 0) {
+        setLoadingManual(false);
+        setManualInput('');
+        return;
+      }
+      
+      const nftPromises = newTokenIds.map(async (tokenId) => {
         try {
+          // Use public RPC to fetch tokenURI
           const response = await fetch(`https://apechain.calderachain.xyz/http`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -41,27 +53,52 @@ export default function HomePage() {
           });
           
           const result = await response.json();
-          if (result.error) throw new Error(result.error.message);
+          console.log(`Token ${tokenId} RPC result:`, result);
           
-          const hexString = result.result.slice(2);
-          const bytes = hexString.match(/.{1,2}/g)?.map((byte: string) => parseInt(byte, 16)) || [];
-          let uri = '';
-          for (let i = 0; i < bytes.length; i++) {
-            if (bytes[i] > 0) uri += String.fromCharCode(bytes[i]);
+          if (result.error) {
+            console.error(`RPC error for token ${tokenId}:`, result.error);
+            throw new Error(result.error.message);
           }
           
+          // Decode the hex response to get the URI
+          const hexData = result.result;
+          let uri = '';
+          
+          // The response is ABI-encoded, skip first 64 chars (0x + offset), then get the string
+          if (hexData && hexData.length > 130) {
+            const dataStart = 130; // Skip 0x + 64 bytes offset
+            const hexString = hexData.slice(dataStart);
+            const bytes = hexString.match(/.{1,2}/g) || [];
+            
+            for (const byte of bytes) {
+              const charCode = parseInt(byte, 16);
+              if (charCode === 0) break; // Stop at null terminator
+              if (charCode >= 32 && charCode <= 126) { // Only printable ASCII
+                uri += String.fromCharCode(charCode);
+              }
+            }
+          }
+          
+          console.log(`Token ${tokenId} URI:`, uri);
+          
           let metadata;
-          try {
-            const metadataResponse = await fetch(uri);
-            metadata = await metadataResponse.json();
-          } catch {
-            metadata = { name: `MineBoy #${tokenId}`, image: '' };
+          let image = '';
+          
+          if (uri) {
+            try {
+              const metadataResponse = await fetch(uri);
+              metadata = await metadataResponse.json();
+              image = metadata.image || '';
+              console.log(`Token ${tokenId} metadata:`, metadata);
+            } catch (err) {
+              console.error(`Failed to fetch metadata for ${tokenId}:`, err);
+            }
           }
           
           return {
             id: `manual-${tokenId}`,
-            name: metadata.name || `MineBoy #${tokenId}`,
-            image: metadata.image || '',
+            name: metadata?.name || `MineBoy #${tokenId}`,
+            image: image,
             tokenId: tokenId,
             contract: '0xa8a16c3259ad84162a0868e7927523b81ef8bf2d'
           };
@@ -72,7 +109,10 @@ export default function HomePage() {
       });
       
       const fetched = (await Promise.all(nftPromises)).filter(nft => nft !== null);
-      setManualNFTs(fetched);
+      
+      // Append to existing NFTs instead of replacing
+      setManualNFTs([...manualNFTs, ...fetched]);
+      setManualInput(''); // Clear input after successful fetch
     } catch (err) {
       console.error('Error fetching manual NFTs:', err);
     } finally {
