@@ -332,7 +332,7 @@ export default function HomePage() {
               {manualMode ? '✓ Manual Mode' : 'Enter MineBoy Number'}
             </button> */}
             
-            <div style={{ marginTop: '15px' }}>
+            <div>
               <input
                 type="text"
                 value={manualInput}
