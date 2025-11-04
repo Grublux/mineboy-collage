@@ -15,6 +15,7 @@ export default function HomePage() {
   const [manualInput, setManualInput] = useState('');
   const [manualNFTs, setManualNFTs] = useState<any[]>([]);
   const [loadingManual, setLoadingManual] = useState(false);
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
 
   const totalSlots = gridSize * gridSize;
 
@@ -123,16 +124,117 @@ export default function HomePage() {
   // const displayedNFTs = manualMode ? manualNFTs : nfts;
   const displayedNFTs = manualNFTs;
 
+  const handleDragStart = (index: number) => {
+    setDraggedIndex(index);
+  };
+
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (e: React.DragEvent, targetIndex: number) => {
+    e.preventDefault();
+    
+    if (draggedIndex === null || draggedIndex === targetIndex) {
+      setDraggedIndex(null);
+      return;
+    }
+
+    // Create a copy with all slots filled (pad with undefined if needed)
+    const newSelectedNFTs = [...selectedNFTs];
+    
+    // Ensure array is large enough
+    while (newSelectedNFTs.length < totalSlots) {
+      newSelectedNFTs.push(undefined as any);
+    }
+    
+    // Swap the NFTs at draggedIndex and targetIndex
+    const temp = newSelectedNFTs[draggedIndex];
+    newSelectedNFTs[draggedIndex] = newSelectedNFTs[targetIndex];
+    newSelectedNFTs[targetIndex] = temp;
+    
+    // Filter out undefined at the end (unless they're in the middle)
+    setSelectedNFTs(newSelectedNFTs);
+    setDraggedIndex(null);
+  };
+
   const toggleNFTSelection = (nftId: string) => {
     setSelectedNFTs((prev) => {
       if (prev.includes(nftId)) {
+        // Remove this NFT from the collage
         return prev.filter((id) => id !== nftId);
       } else {
-        // Max selection based on current grid size
-        if (prev.length >= totalSlots) return prev;
-        return [...prev, nftId];
+        // Find the first available slot
+        const newSelectedNFTs = [...prev];
+        
+        // Ensure array is large enough
+        while (newSelectedNFTs.length < totalSlots) {
+          newSelectedNFTs.push(undefined as any);
+        }
+        
+        // Find first empty slot
+        for (let i = 0; i < totalSlots; i++) {
+          if (!newSelectedNFTs[i]) {
+            newSelectedNFTs[i] = nftId;
+            return newSelectedNFTs;
+          }
+        }
+        
+        // All slots filled
+        return prev;
       }
     });
+  };
+
+  const handleDragStartFromGallery = (e: React.DragEvent, nftId: string) => {
+    e.dataTransfer.setData('nftId', nftId);
+  };
+
+  const handleDropIntoGrid = (e: React.DragEvent, targetIndex: number) => {
+    e.preventDefault();
+    
+    const nftId = e.dataTransfer.getData('nftId');
+    
+    if (nftId) {
+      // Dragging from gallery into grid
+      setSelectedNFTs((prev) => {
+        const newSelectedNFTs = [...prev];
+        
+        // Ensure array is large enough
+        while (newSelectedNFTs.length <= targetIndex) {
+          newSelectedNFTs.push(undefined as any);
+        }
+        
+        // Check if this NFT is already in the grid
+        const existingIndex = newSelectedNFTs.findIndex(id => id === nftId);
+        if (existingIndex !== -1) {
+          // Remove from old position
+          newSelectedNFTs[existingIndex] = undefined as any;
+        }
+        
+        // Place in new position (swap if occupied)
+        if (newSelectedNFTs[targetIndex]) {
+          // Slot is occupied, find next empty slot for the displaced NFT
+          const displacedNFT = newSelectedNFTs[targetIndex];
+          newSelectedNFTs[targetIndex] = nftId;
+          
+          // Try to place displaced NFT in the first empty slot
+          for (let i = 0; i < totalSlots; i++) {
+            if (!newSelectedNFTs[i]) {
+              newSelectedNFTs[i] = displacedNFT;
+              break;
+            }
+          }
+        } else {
+          newSelectedNFTs[targetIndex] = nftId;
+        }
+        
+        return newSelectedNFTs;
+      });
+    } else if (draggedIndex !== null) {
+      // Dragging within grid (existing logic)
+      handleDrop(e, targetIndex);
+    }
   };
 
   const downloadCollage = async () => {
@@ -424,6 +526,8 @@ export default function HomePage() {
                           <img
                             src={nft.image}
                             alt={nft.name}
+                            draggable
+                            onDragStart={(e) => handleDragStartFromGallery(e, nft.id)}
                             onClick={() => toggleNFTSelection(nft.id)}
                             style={{
                               width: '200px',
@@ -509,11 +613,10 @@ export default function HomePage() {
                 </div>
 
                 {/* Collage Area */}
-                {selectedNFTs.length > 0 && (
-                  <div style={{ marginTop: '40px' }}>
-                    <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-                      Collage ({selectedNFTs.length} selected - {gridSize}x{gridSize} grid)
-                    </div>
+                <div style={{ marginTop: '40px' }}>
+                  <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+                    Collage ({selectedNFTs.filter(id => id).length} selected - {gridSize}x{gridSize} grid)
+                  </div>
                     <div style={{
                       display: 'flex',
                       flexDirection: 'column',
@@ -530,17 +633,26 @@ export default function HomePage() {
                         {Array.from({ length: totalSlots }).map((_, index) => {
                           const nftId = selectedNFTs[index];
                           const nft = nftId ? displayedNFTs.find((n: any) => n.id === nftId) : null;
+                          const isDragging = draggedIndex === index;
                           
                           return (
                             <div
                               key={index}
+                              draggable={!!nft}
+                              onDragStart={() => handleDragStart(index)}
+                              onDragOver={(e) => handleDragOver(e, index)}
+                              onDrop={(e) => handleDropIntoGrid(e, index)}
                               style={{
                                 width: '200px',
                                 height: '200px',
                                 backgroundColor: '#536AB3',
                                 display: 'flex',
                                 alignItems: 'center',
-                                justifyContent: 'center'
+                                justifyContent: 'center',
+                                cursor: nft ? 'move' : 'default',
+                                opacity: isDragging ? 0.5 : 1,
+                                border: isDragging ? '3px dashed #00ff00' : 'none',
+                                transition: 'opacity 0.2s'
                               }}
                             >
                               {nft?.image && (
@@ -551,7 +663,8 @@ export default function HomePage() {
                                     width: '100%',
                                     height: '100%',
                                     objectFit: 'contain',
-                                    imageRendering: 'pixelated'
+                                    imageRendering: 'pixelated',
+                                    pointerEvents: 'none'
                                   } as React.CSSProperties}
                                 />
                               )}
@@ -585,8 +698,7 @@ export default function HomePage() {
                         Download Collage
                       </button>
                     </div>
-                  </div>
-                )}
+                </div>
               </div>
             )}
         </div>
