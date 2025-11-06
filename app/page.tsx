@@ -1,14 +1,23 @@
 "use client";
 
-// import { ConnectButton } from "@rainbow-me/rainbowkit";
-// import { useAccount, useChainId } from "wagmi";
-// import { useNFTs } from "@/hooks/useNFTs";
+import { useAccount, useReadContract } from "wagmi";
 import { useState, useEffect } from "react";
+import { MintGridButton } from "@/components/collage/MintGridButton";
+import { SnapshotDialog } from "@/components/collage/SnapshotDialog";
+import { WalletHeader } from "@/components/grids/WalletHeader";
+import { Header } from "@/components/grids/Header";
+import { CollectionLinks } from "@/components/grids/CollectionLinks";
+import { ngtTokenAddress, ERC20_ABI } from "@/frontend/lib/contracts/gridStaker";
+import { formatUnits } from "viem";
+
+const collections = [
+  { name: "MineBoy Grids", href: "/mineboy-grids" },
+  { name: "NPC Grids", href: "/npc-grids" },
+  { name: "Goobaloo Grids", href: "/goobaloo-grids" },
+];
 
 export default function HomePage() {
-  // const { address, isConnected } = useAccount();
-  // const chainId = useChainId();
-  // const { nfts, loading, error } = useNFTs();
+  const { isConnected } = useAccount();
   const [selectedNFTs, setSelectedNFTs] = useState<string[]>([]);
   const [gridSize, setGridSize] = useState<number>(2);
   const [manualMode, setManualMode] = useState(false);
@@ -19,6 +28,11 @@ export default function HomePage() {
   const [touchStartIndex, setTouchStartIndex] = useState<number | null>(null);
   const [touchCurrentPos, setTouchCurrentPos] = useState<{ x: number; y: number } | null>(null);
   const [isDraggingTouch, setIsDraggingTouch] = useState(false);
+  
+  // Snapshot dialog state
+  const [showSnapshotDialog, setShowSnapshotDialog] = useState(false);
+  const [mintedCollageId, setMintedCollageId] = useState<bigint | null>(null);
+  const [loadedTileImages, setLoadedTileImages] = useState<HTMLImageElement[]>([]);
 
   const totalSlots = gridSize * gridSize;
 
@@ -42,6 +56,26 @@ export default function HomePage() {
     window.addEventListener('resize', updateSize);
     return () => window.removeEventListener('resize', updateSize);
   }, [gridSize]);
+
+  // Auto-expand grid when more NFTs selected than current capacity
+  useEffect(() => {
+    const count = selectedNFTs.filter(id => id).length;
+    const currentCapacity = gridSize * gridSize;
+    
+    // Only expand if we have more NFTs than current capacity
+    if (count > currentCapacity && gridSize < 6) {
+      // Find the next size that can fit all selected NFTs
+      if (count <= 9 && gridSize < 3) {
+        setGridSize(3);
+      } else if (count <= 16 && gridSize < 4) {
+        setGridSize(4);
+      } else if (count <= 25 && gridSize < 5) {
+        setGridSize(5);
+      } else if (count <= 36 && gridSize < 6) {
+        setGridSize(6);
+      }
+    }
+  }, [selectedNFTs, gridSize]);
 
   const fetchManualNFTs = async () => {
     if (!manualInput.trim()) return;
@@ -70,7 +104,7 @@ export default function HomePage() {
               jsonrpc: '2.0',
               method: 'eth_call',
               params: [{
-                to: '0xa8a16c3259ad84162a0868e7927523b81ef8bf2d',
+                to: '0xa8A16C3259aD84162a0868E7927523B81eF8BF2D',
                 data: `0xc87b56dd${BigInt(tokenId).toString(16).padStart(64, '0')}`
               }, 'latest'],
               id: 1
@@ -125,7 +159,7 @@ export default function HomePage() {
             name: metadata?.name || `MineBoy #${tokenId}`,
             image: image,
             tokenId: tokenId,
-            contract: '0xa8a16c3259ad84162a0868e7927523b81ef8bf2d'
+            contract: '0xa8A16C3259aD84162a0868E7927523B81eF8BF2D'
           };
         } catch (err) {
           console.error(`Error fetching token ${tokenId}:`, err);
@@ -185,7 +219,7 @@ export default function HomePage() {
   const toggleNFTSelection = (nftId: string) => {
     setSelectedNFTs((prev) => {
       if (prev.includes(nftId)) {
-        // Remove this NFT from the collage
+        // Remove this NFT from the grid
         return prev.filter((id) => id !== nftId);
       } else {
         // Find the first available slot
@@ -204,15 +238,8 @@ export default function HomePage() {
           }
         }
         
-        // All slots filled - increase grid size if possible
-        if (gridSize < 6) {
-          setGridSize(gridSize + 1);
-          // Add to first slot of new grid
-          newSelectedNFTs.push(nftId);
-          return newSelectedNFTs;
-        }
-        
-        // Max grid size reached
+        // All slots filled - can't add more
+        // (Auto-expansion disabled to prevent conflicts with manual selection)
         return prev;
       }
     });
@@ -340,7 +367,7 @@ export default function HomePage() {
     setIsDraggingTouch(false);
   };
 
-  const downloadCollage = async () => {
+  const downloadGrid = async () => {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
@@ -392,14 +419,14 @@ export default function HomePage() {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `mineboy_collage_${gridSize}x${gridSize}_${canvas.width}x${canvas.height}.png`;
+        a.download = `mineboy_grid_${gridSize}x${gridSize}_${canvas.width}x${canvas.height}.png`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
       }, 'image/png');
     } catch (err) {
-      console.error('Error creating collage:', err);
+      console.error('Error creating grid:', err);
     }
   };
 
@@ -462,6 +489,63 @@ export default function HomePage() {
 
   const draggedNFT = getDraggedNFT();
 
+  // Handle mint success - load tile images and show snapshot dialog
+  const handleMintSuccess = async (collageId: bigint) => {
+    setMintedCollageId(collageId);
+    
+    // Load tile images for snapshot dialog
+    const loadImage = (src: string): Promise<HTMLImageElement> => {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.src = src;
+      });
+    };
+    
+    try {
+      const tilesToLoad: HTMLImageElement[] = [];
+      for (let i = 0; i < totalSlots; i++) {
+        const nftId = selectedNFTs[i];
+        if (nftId) {
+          const nft = displayedNFTs.find((n: any) => n.id === nftId);
+          if (nft?.image) {
+            const img = await loadImage(nft.image);
+            tilesToLoad.push(img);
+          }
+        }
+      }
+      setLoadedTileImages(tilesToLoad);
+      setShowSnapshotDialog(true);
+    } catch (err) {
+      console.error('Error loading tile images:', err);
+      // Still show dialog even if images fail to load
+      setShowSnapshotDialog(true);
+    }
+  };
+
+  const handleSnapshotDialogClose = () => {
+    setShowSnapshotDialog(false);
+    setMintedCollageId(null);
+    setLoadedTileImages([]);
+  };
+
+  const handleSnapshotSuccess = () => {
+    handleSnapshotDialogClose();
+    // Could navigate to the grid detail page or my-grids
+  };
+
+  // Get selected token IDs as numbers for minting
+  const getSelectedTokenIds = (): number[] => {
+    return selectedNFTs
+      .map(nftId => {
+        const nft = displayedNFTs.find((n: any) => n.id === nftId);
+        return nft ? parseInt(nft.tokenId) : null;
+      })
+      .filter((id): id is number => id !== null);
+  };
+
   return (
     <>
       <style jsx global>{`
@@ -515,23 +599,24 @@ export default function HomePage() {
         margin: 0,
         padding: 0
       }}>
-        <header style={{
-          padding: '20px',
-          fontSize: '24px',
-          textTransform: 'uppercase',
-          letterSpacing: '2px',
-          textAlign: 'center'
-        }}>
-          <h1 style={{ margin: 0 }}>MineBoy Collage</h1>
-        </header>
-        
-        <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: '20px',
-          padding: '20px'
-        }}>
+        <div style={{ maxWidth: "1400px", margin: "0 auto", padding: "20px" }}>
+          {/* Wallet Header */}
+          <WalletHeader />
+          
+          {/* Page Header */}
+          <Header title="Grids" />
+          
+          {/* Collection Links */}
+          <CollectionLinks collections={collections} />
+          
+          {/* Fetch Input Section */}
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '20px',
+            padding: '20px'
+          }}>
           {/* <ConnectButton /> */}
           
           <div style={{ textAlign: 'center' }}>
@@ -622,7 +707,7 @@ export default function HomePage() {
                     color: '#00ff00',
                     fontFamily: 'monospace'
                   }}>
-                    Click/tap MineBoy to add to collage
+                    Click/tap MineBoy to add to grid
                   </div>
                 </div>
                 <div style={{
@@ -708,41 +793,53 @@ export default function HomePage() {
                   })}
                 </div>
 
-                {/* Grid Size Selector */}
+                {/* Grid Size Selector - Button Style */}
                 <div style={{ 
                   textAlign: 'center', 
                   marginTop: '30px',
                   marginBottom: '30px'
                 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
-                    <label style={{ fontSize: '14px' }}>Grid Size:</label>
-                    <select
-                      value={gridSize}
-                      onChange={(e) => {
-                        const newSize = parseInt(e.target.value);
-                        setGridSize(newSize);
-                        // Trim selection if it exceeds new grid size
-                        const maxSlots = newSize * newSize;
-                        if (selectedNFTs.length > maxSlots) {
-                          setSelectedNFTs(selectedNFTs.slice(0, maxSlots));
-                        }
-                      }}
-                      style={{
-                        padding: '8px',
-                        backgroundColor: '#000000',
-                        color: '#ffffff',
-                        border: '2px solid #ffffff',
-                        fontFamily: 'monospace',
-                        fontSize: '14px',
-                        cursor: 'pointer'
-                      }}
-                    >
-                      <option value={2}>2x2</option>
-                      <option value={3}>3x3</option>
-                      <option value={4}>4x4</option>
-                      <option value={5}>5x5</option>
-                      <option value={6}>6x6</option>
-                    </select>
+                  <div style={{ marginBottom: '10px', fontSize: '14px' }}>
+                    Grid Size:
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                    {[2, 3, 4, 5, 6].map((size) => (
+                      <button
+                        key={size}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setGridSize(size);
+                          // Trim selection if it exceeds new grid size
+                          const maxSlots = size * size;
+                          if (selectedNFTs.length > maxSlots) {
+                            setSelectedNFTs(selectedNFTs.slice(0, maxSlots));
+                          }
+                        }}
+                        style={{
+                          padding: '10px 20px',
+                          backgroundColor: gridSize === size ? '#ffffff' : '#000000',
+                          color: gridSize === size ? '#000000' : '#ffffff',
+                          border: '2px solid #ffffff',
+                          cursor: 'pointer',
+                          fontFamily: 'monospace',
+                          fontSize: '14px',
+                          fontWeight: gridSize === size ? 'bold' : 'normal'
+                        }}
+                        onMouseOver={(e) => {
+                          if (gridSize !== size) {
+                            e.currentTarget.style.backgroundColor = '#333333';
+                          }
+                        }}
+                        onMouseOut={(e) => {
+                          if (gridSize !== size) {
+                            e.currentTarget.style.backgroundColor = '#000000';
+                          }
+                        }}
+                      >
+                        {size}×{size}
+                      </button>
+                    ))}
                   </div>
                 </div>
 
@@ -757,10 +854,10 @@ export default function HomePage() {
                   Drag MineBoy to position
                 </div>
 
-                {/* Collage Area */}
+                {/* MineBoy Grid Area */}
                 <div style={{ marginTop: '20px' }}>
                   <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-                    Collage ({selectedNFTs.filter(id => id).length} selected - {gridSize}x{gridSize} grid)
+                    MineBoy Grid ({selectedNFTs.filter(id => id).length} selected - {gridSize}x{gridSize})
                   </div>
                     <div style={{
                       display: 'flex',
@@ -773,7 +870,9 @@ export default function HomePage() {
                         gridTemplateColumns: `repeat(${gridSize}, ${cellSize}px)`,
                         gridTemplateRows: `repeat(${gridSize}, ${cellSize}px)`,
                         gap: '0',
-                        border: '2px solid #ffffff'
+                        backgroundColor: '#536AB3',
+                        width: 'fit-content',
+                        margin: '0 auto'
                       }}>
                         {Array.from({ length: totalSlots }).map((_, index) => {
                           const nftId = selectedNFTs[index];
@@ -825,30 +924,62 @@ export default function HomePage() {
                         })}
                       </div>
                       
-                      <button
-                        onClick={downloadCollage}
-                        style={{
-                          padding: '12px 24px',
-                          backgroundColor: '#ffffff',
-                          color: '#000000',
-                          border: '2px solid #ffffff',
-                          cursor: 'pointer',
-                          fontFamily: 'monospace',
-                          textTransform: 'uppercase',
-                          fontSize: '14px',
-                          fontWeight: 'bold'
-                        }}
-                        onMouseOver={(e) => {
-                          e.currentTarget.style.backgroundColor = '#000000';
-                          e.currentTarget.style.color = '#ffffff';
-                        }}
-                        onMouseOut={(e) => {
-                          e.currentTarget.style.backgroundColor = '#ffffff';
-                          e.currentTarget.style.color = '#000000';
-                        }}
-                      >
-                        Download Collage
-                      </button>
+                      <div style={{
+                        display: 'flex',
+                        gap: '15px',
+                        flexWrap: 'wrap',
+                        justifyContent: 'center',
+                        flexDirection: 'column',
+                        alignItems: 'center'
+                      }}>
+                        {/* Mint Grid Button - creates on-chain NFT */}
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
+                          {selectedNFTs.filter(id => id).length > 0 && selectedNFTs.filter(id => id).length < totalSlots && (
+                            <div style={{ fontSize: '14px', color: '#ff4444', fontFamily: 'monospace', textAlign: 'center' }}>
+                              Grid must be completely full to mint ({selectedNFTs.filter(id => id).length}/{totalSlots} filled)
+                            </div>
+                          )}
+                          <MintGridButton
+                            rows={gridSize}
+                            cols={gridSize}
+                            selectedNFTs={selectedNFTs}
+                            onMinted={handleMintSuccess}
+                            disabled={!isConnected || selectedNFTs.filter(id => id).length !== totalSlots}
+                          />
+                        </div>
+                        
+                        {/* Download Button - local high-res export (separate from on-chain) */}
+                        <button
+                          onClick={downloadGrid}
+                          disabled={selectedNFTs.filter(id => id).length === 0}
+                          style={{
+                            padding: '12px 24px',
+                            backgroundColor: '#ffffff',
+                            color: '#000000',
+                            border: '2px solid #ffffff',
+                            cursor: selectedNFTs.filter(id => id).length === 0 ? 'not-allowed' : 'pointer',
+                            fontFamily: 'monospace',
+                            textTransform: 'uppercase',
+                            fontSize: '14px',
+                            fontWeight: 'bold',
+                            opacity: selectedNFTs.filter(id => id).length === 0 ? 0.5 : 1
+                          }}
+                          onMouseOver={(e) => {
+                            if (selectedNFTs.filter(id => id).length > 0) {
+                              e.currentTarget.style.backgroundColor = '#000000';
+                              e.currentTarget.style.color = '#ffffff';
+                            }
+                          }}
+                          onMouseOut={(e) => {
+                            if (selectedNFTs.filter(id => id).length > 0) {
+                              e.currentTarget.style.backgroundColor = '#ffffff';
+                              e.currentTarget.style.color = '#000000';
+                            }
+                          }}
+                        >
+                          Download Grid (Local)
+                        </button>
+                      </div>
                     </div>
                 </div>
               </div>
@@ -889,6 +1020,19 @@ export default function HomePage() {
           />
         </div>
       )}
+
+      {/* Snapshot Dialog - shown after minting */}
+      {showSnapshotDialog && mintedCollageId !== null && (
+        <SnapshotDialog
+          collageId={mintedCollageId}
+          tiles={loadedTileImages}
+          rows={gridSize}
+          cols={gridSize}
+          onClose={handleSnapshotDialogClose}
+          onSuccess={handleSnapshotSuccess}
+        />
+      )}
+      </div>
     </>
   );
 }
