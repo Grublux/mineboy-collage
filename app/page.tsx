@@ -562,6 +562,13 @@ export default function HomePage() {
         body {
           overflow-x: hidden !important;
           scroll-behavior: auto !important;
+          width: 100% !important;
+          max-width: 100vw !important;
+        }
+        html {
+          overflow-x: hidden !important;
+          width: 100% !important;
+          max-width: 100vw !important;
         }
         * {
           scroll-behavior: auto !important;
@@ -706,10 +713,19 @@ export default function HomePage() {
         <div style={{
           padding: '20px',
           maxWidth: '1200px',
-          margin: '0 auto'
+          margin: '0 auto',
+          width: '100%',
+          boxSizing: 'border-box'
         }}>
           {displayedNFTs.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '40px' }}>
+            <div style={{ 
+              textAlign: 'center', 
+              padding: '40px',
+              width: '100%',
+              boxSizing: 'border-box',
+              wordWrap: 'break-word',
+              overflowWrap: 'break-word'
+            }}>
               {loadingManual ? 'Loading NFTs...' : 'Enter MineBoy numbers above to display NFTs'}
             </div>
           ) : (
