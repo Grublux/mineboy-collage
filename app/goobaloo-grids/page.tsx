@@ -22,6 +22,23 @@ export default function GoobalooGridsPage() {
       >
         <div style={{ maxWidth: "1400px", margin: "0 auto" }}>
           <WalletHeader />
+          <div style={{ marginBottom: "40px" }}>
+            <Link
+              href="/"
+              style={{
+                color: "#ffffff",
+                textDecoration: "none",
+                fontSize: "24px",
+                fontFamily: "monospace",
+                textTransform: "uppercase",
+                letterSpacing: "2px",
+                marginBottom: "20px",
+                display: "inline-block",
+              }}
+            >
+              ← Grids
+            </Link>
+          </div>
           <div
             style={{
               display: "flex",
