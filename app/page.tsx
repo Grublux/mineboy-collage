@@ -727,16 +727,18 @@ export default function HomePage() {
           boxSizing: 'border-box'
         }}>
           {displayedNFTs.length === 0 ? (
-            <div style={{ 
-              textAlign: 'center', 
-              padding: '40px',
-              width: '100%',
-              boxSizing: 'border-box',
-              wordWrap: 'break-word',
-              overflowWrap: 'break-word'
-            }}>
-              {loadingManual ? 'Loading NFTs...' : 'Enter MineBoy numbers above to display NFTs'}
-            </div>
+            loadingManual && (
+              <div style={{ 
+                textAlign: 'center', 
+                padding: '40px',
+                width: '100%',
+                boxSizing: 'border-box',
+                wordWrap: 'break-word',
+                overflowWrap: 'break-word'
+              }}>
+                Loading NFTs...
+              </div>
+            )
           ) : (
               <div>
                 <div style={{ textAlign: 'center', marginBottom: '20px' }}>
