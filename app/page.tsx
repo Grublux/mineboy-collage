@@ -652,7 +652,7 @@ export default function HomePage() {
                 download MineBoy images below
               </div>
             </div>
-            <div>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px', width: '100%', maxWidth: '500px' }}>
               <input
                 type="text"
                 value={manualInput}
@@ -666,7 +666,8 @@ export default function HomePage() {
                 placeholder="Enter MineBoy numbers (e.g., 1, 42, 100)"
                 style={{
                   padding: '10px',
-                  width: '300px',
+                  width: '100%',
+                  maxWidth: '300px',
                   backgroundColor: '#000000',
                   color: '#ffffff',
                   border: '2px solid #ffffff',
@@ -683,7 +684,6 @@ export default function HomePage() {
                 disabled={loadingManual}
                 style={{
                   padding: '10px 20px',
-                  marginLeft: '10px',
                   backgroundColor: '#ffffff',
                   color: '#000000',
                   border: '2px solid #ffffff',
@@ -691,7 +691,9 @@ export default function HomePage() {
                   fontFamily: 'monospace',
                   textTransform: 'uppercase',
                   fontSize: '14px',
-                  opacity: loadingManual ? 0.5 : 1
+                  opacity: loadingManual ? 0.5 : 1,
+                  width: '100%',
+                  maxWidth: '300px'
                 }}
               >
                 {loadingManual ? 'Loading...' : 'Fetch'}
@@ -882,12 +884,14 @@ export default function HomePage() {
                     }}>
                       <div style={{
                         display: 'grid',
-                        gridTemplateColumns: `repeat(${gridSize}, ${cellSize}px)`,
-                        gridTemplateRows: `repeat(${gridSize}, ${cellSize}px)`,
+                        gridTemplateColumns: `repeat(${gridSize}, minmax(0, ${cellSize}px))`,
+                        gridTemplateRows: `repeat(${gridSize}, minmax(0, ${cellSize}px))`,
                         gap: '0',
                         backgroundColor: '#536AB3',
-                        width: 'fit-content',
-                        margin: '0 auto'
+                        width: '100%',
+                        maxWidth: `${cellSize * gridSize}px`,
+                        margin: '0 auto',
+                        aspectRatio: '1 / 1'
                       }}>
                         {Array.from({ length: totalSlots }).map((_, index) => {
                           const nftId = selectedNFTs[index];

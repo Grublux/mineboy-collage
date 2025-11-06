@@ -1172,12 +1172,14 @@ export default function MyCollagesPage() {
               <div
                 style={{
                   display: "grid",
-                  gridTemplateColumns: `repeat(${gridSize}, ${cellSize}px)`,
+                  gridTemplateColumns: `repeat(${gridSize}, minmax(0, ${cellSize}px))`,
                   gap: "0px",
                   marginBottom: "20px",
                   backgroundColor: "#536AB3",
-                  width: "fit-content",
+                  width: "100%",
+                  maxWidth: `${cellSize * gridSize}px`,
                   margin: "0 auto 20px auto",
+                  aspectRatio: "1 / 1"
                 }}
               >
                 {Array.from({ length: totalSlots }).map((_, index) => {
