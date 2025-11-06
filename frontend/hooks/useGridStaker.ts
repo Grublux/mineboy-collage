@@ -72,7 +72,7 @@ export function useNGTPrice() {
 
   return {
     price: price as bigint | undefined,
-    isSet: price !== undefined && price > 0n,
+    isSet: price !== undefined && price !== null && price > 0n,
     isLoading,
   };
 }
