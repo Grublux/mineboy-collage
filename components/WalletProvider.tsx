@@ -1,7 +1,6 @@
 "use client";
 
 import { createConfig, http, WagmiProvider } from "wagmi";
-import { injected, metaMask } from "wagmi/connectors";
 import { RainbowKitProvider, connectorsForWallets } from "@rainbow-me/rainbowkit";
 import {
   metaMaskWallet,
