@@ -36,49 +36,78 @@ export function WalletProvider({ children }: WalletProviderProps) {
   useEffect(() => {
     // Suppress WalletConnect errors when no valid project ID
     const originalError = console.error;
+    const originalWarn = console.warn;
+    
     console.error = (...args: any[]) => {
+      const errorStr = args.map(a => a?.toString() || '').join(' ');
       if (
-        args[0]?.toString().includes('Connection interrupted') ||
-        args[0]?.toString().includes('WebSocket') ||
-        args[0]?.toString().includes('WalletConnect') ||
-        args[0]?.toString().includes('subscribe')
+        errorStr.includes('Connection interrupted') ||
+        errorStr.includes('WebSocket') ||
+        errorStr.includes('WalletConnect') ||
+        errorStr.includes('subscribe') ||
+        errorStr.includes('trying to subscribe')
       ) {
         return; // Suppress WalletConnect errors
       }
       originalError.apply(console, args);
     };
     
-    // Catch unhandled errors from WalletConnect
-    const handleError = (event: ErrorEvent) => {
+    console.warn = (...args: any[]) => {
+      const warnStr = args.map(a => a?.toString() || '').join(' ');
       if (
-        event.message?.includes('Connection interrupted') ||
-        event.message?.includes('subscribe') ||
-        event.message?.includes('WalletConnect')
+        warnStr.includes('Connection interrupted') ||
+        warnStr.includes('WalletConnect') ||
+        warnStr.includes('subscribe')
+      ) {
+        return; // Suppress WalletConnect warnings
+      }
+      originalWarn.apply(console, args);
+    };
+    
+    // Catch unhandled errors from WalletConnect - more aggressive
+    const handleError = (event: ErrorEvent) => {
+      const errorMessage = event.message || event.error?.message || event.error?.toString() || '';
+      if (
+        errorMessage.includes('Connection interrupted') ||
+        errorMessage.includes('subscribe') ||
+        errorMessage.includes('WalletConnect') ||
+        errorMessage.includes('trying to subscribe') ||
+        errorMessage.includes('WebSocket')
       ) {
         event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation();
         return false;
       }
     };
     
     const handleRejection = (event: PromiseRejectionEvent) => {
-      const reason = event.reason?.toString() || '';
+      const reason = event.reason?.message || event.reason?.toString() || '';
       if (
         reason.includes('Connection interrupted') ||
         reason.includes('subscribe') ||
-        reason.includes('WalletConnect')
+        reason.includes('WalletConnect') ||
+        reason.includes('trying to subscribe')
       ) {
         event.preventDefault();
+        event.stopPropagation();
         return false;
       }
     };
     
-    window.addEventListener('error', handleError);
-    window.addEventListener('unhandledrejection', handleRejection);
+    // Add listeners with capture phase to catch early
+    window.addEventListener('error', handleError, true);
+    window.addEventListener('unhandledrejection', handleRejection, true);
+    
+    // Also catch at the document level
+    document.addEventListener('error', handleError, true);
     
     return () => {
       console.error = originalError;
-      window.removeEventListener('error', handleError);
-      window.removeEventListener('unhandledrejection', handleRejection);
+      console.warn = originalWarn;
+      window.removeEventListener('error', handleError, true);
+      window.removeEventListener('unhandledrejection', handleRejection, true);
+      document.removeEventListener('error', handleError, true);
     };
   }, []);
 
