@@ -835,11 +835,17 @@ export default function MyCollagesPage() {
             <Header title="MineBoy Grids" />
             <p
               style={{
-                fontSize: "16px",
+                fontSize: "clamp(12px, 3vw, 16px)",
                 fontFamily: "monospace",
                 textAlign: "center",
                 marginTop: "20px",
                 opacity: 0.7,
+                width: "100%",
+                maxWidth: "100%",
+                padding: "0 20px",
+                boxSizing: "border-box",
+                wordWrap: "break-word",
+                overflowWrap: "break-word",
               }}
             >
               Connect your wallet to view and create MineBoy grids
