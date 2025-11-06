@@ -190,7 +190,8 @@ export default function MyCollagesPage() {
     args: address ? [address] : undefined,
     query: {
       enabled: !!address && isConnected && shouldLoadNFTs,
-      refetchInterval: 10000, // Refetch every 10 seconds
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
     },
   });
 
@@ -620,7 +621,7 @@ export default function MyCollagesPage() {
     },
   });
 
-  // Cell size calculation
+  // Cell size calculation - debounced to prevent excessive updates
   useEffect(() => {
     const getGridCellSize = () => {
       if (typeof window === 'undefined') return 150;
@@ -630,13 +631,20 @@ export default function MyCollagesPage() {
       return Math.max(Math.min(calculatedSize, 180), 80);
     };
 
+    let resizeTimeout: NodeJS.Timeout;
     const updateSize = () => {
-      setCellSize(getGridCellSize());
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        setCellSize(getGridCellSize());
+      }, 150); // Debounce resize events
     };
     
-    updateSize();
+    setCellSize(getGridCellSize());
     window.addEventListener('resize', updateSize);
-    return () => window.removeEventListener('resize', updateSize);
+    return () => {
+      clearTimeout(resizeTimeout);
+      window.removeEventListener('resize', updateSize);
+    };
   }, [gridSize]);
 
   // State to track which NFT is being dragged from inventory
