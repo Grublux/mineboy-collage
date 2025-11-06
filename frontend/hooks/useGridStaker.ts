@@ -70,9 +70,11 @@ export function useNGTPrice() {
     args: [ngtTokenAddress],
   });
 
+  const priceBigInt = price && typeof price === 'bigint' ? price : undefined;
+  
   return {
-    price: price as bigint | undefined,
-    isSet: price !== undefined && price !== null && price > 0n,
+    price: priceBigInt,
+    isSet: priceBigInt !== undefined && priceBigInt > 0n,
     isLoading,
   };
 }
