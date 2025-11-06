@@ -65,15 +65,29 @@ export default function HomePage() {
     
     // Only expand if we have more NFTs than current capacity
     if (count > currentCapacity && gridSize < 6) {
+      let newSize = gridSize;
       // Find the next size that can fit all selected NFTs
-      if (count <= 9 && gridSize < 3) {
-        setGridSize(3);
+      if (count <= 4 && gridSize < 2) {
+        newSize = 2;
+      } else if (count <= 9 && gridSize < 3) {
+        newSize = 3;
       } else if (count <= 16 && gridSize < 4) {
-        setGridSize(4);
+        newSize = 4;
       } else if (count <= 25 && gridSize < 5) {
-        setGridSize(5);
+        newSize = 5;
       } else if (count <= 36 && gridSize < 6) {
-        setGridSize(6);
+        newSize = 6;
+      }
+      
+      // If we're expanding, ensure selectedNFTs array length matches new grid size
+      if (newSize > gridSize) {
+        const newTotalSlots = newSize * newSize;
+        const preserved = [...selectedNFTs];
+        while (preserved.length < newTotalSlots) {
+          preserved.push(undefined as any);
+        }
+        setSelectedNFTs(preserved);
+        setGridSize(newSize);
       }
     }
   }, [selectedNFTs, gridSize]);
