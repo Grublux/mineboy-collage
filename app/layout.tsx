@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { WalletProvider } from "@/components/WalletProvider";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 export const metadata: Metadata = {
   title: "MineBoy Collage",
@@ -81,7 +82,9 @@ export default function RootLayout({
         `}} />
       </head>
       <body style={{ backgroundColor: '#000000', margin: 0, padding: 0 }}>
-        <WalletProvider>{children}</WalletProvider>
+        <ErrorBoundary>
+          <WalletProvider>{children}</WalletProvider>
+        </ErrorBoundary>
       </body>
     </html>
   );
