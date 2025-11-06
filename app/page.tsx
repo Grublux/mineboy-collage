@@ -4,7 +4,6 @@ export const dynamic = 'force-dynamic';
 
 import { useAccount, useReadContract } from "wagmi";
 import { useState, useEffect } from "react";
-import { MintGridButton } from "@/components/collage/MintGridButton";
 import { SnapshotDialog } from "@/components/collage/SnapshotDialog";
 import { WalletHeader } from "@/components/grids/WalletHeader";
 import { Header } from "@/components/grids/Header";
