@@ -10,7 +10,10 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactNode } from "react";
 import { apechain } from "@/lib/constants/chains";
 
-// Create connectors for RainbowKit
+// Get projectId from env or use a placeholder (required by RainbowKit even if not using WalletConnect)
+const projectId = process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID || "0000000000000000000000000000000000000000";
+
+// Create connectors for RainbowKit (only injected wallets, no WalletConnect)
 const connectors = connectorsForWallets(
   [
     {
@@ -20,7 +23,7 @@ const connectors = connectorsForWallets(
   ],
   {
     appName: "MineBoy Collage",
-    projectId: "", // Empty to disable WalletConnect
+    projectId: projectId, // Required by RainbowKit but not used since we only use injected wallets
   }
 );
 
