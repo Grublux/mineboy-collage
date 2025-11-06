@@ -1172,7 +1172,7 @@ export default function MyCollagesPage() {
               <div
                 style={{
                   display: "grid",
-                  gridTemplateColumns: `repeat(${gridSize}, minmax(0, ${cellSize}px))`,
+                  gridTemplateColumns: `repeat(${gridSize}, 1fr)`,
                   gap: "0px",
                   marginBottom: "20px",
                   backgroundColor: "#536AB3",

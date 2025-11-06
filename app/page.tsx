@@ -884,8 +884,8 @@ export default function HomePage() {
                     }}>
                       <div style={{
                         display: 'grid',
-                        gridTemplateColumns: `repeat(${gridSize}, minmax(0, ${cellSize}px))`,
-                        gridTemplateRows: `repeat(${gridSize}, minmax(0, ${cellSize}px))`,
+                        gridTemplateColumns: `repeat(${gridSize}, 1fr)`,
+                        gridTemplateRows: `repeat(${gridSize}, 1fr)`,
                         gap: '0',
                         backgroundColor: '#536AB3',
                         width: '100%',
