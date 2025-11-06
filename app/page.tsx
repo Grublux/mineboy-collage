@@ -663,7 +663,7 @@ export default function HomePage() {
                     fetchManualNFTs();
                   }
                 }}
-                placeholder="Enter MineBoy numbers (e.g., 1, 42, 100)"
+                placeholder="enter MineBoy numbers seperated by comma"
                 style={{
                   padding: '10px',
                   width: '100%',
