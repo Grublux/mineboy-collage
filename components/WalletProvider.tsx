@@ -2,7 +2,7 @@
 
 import { createConfig, http, WagmiProvider } from "wagmi";
 import { injected, metaMask } from "wagmi/connectors";
-import { RainbowKitProvider, getDefaultWallets } from "@rainbow-me/rainbowkit";
+import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactNode } from "react";
 import { apechain } from "@/lib/constants/chains";
