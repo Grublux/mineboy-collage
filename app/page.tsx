@@ -639,6 +639,11 @@ export default function HomePage() {
               {manualMode ? '✓ Manual Mode' : 'Enter MineBoy Number'}
             </button> */}
             
+            <div style={{ textAlign: 'center', marginBottom: '15px' }}>
+              <div style={{ fontSize: '14px', fontFamily: 'monospace', color: '#ffffff' }}>
+                download MineBoy images below
+              </div>
+            </div>
             <div>
               <input
                 type="text"
@@ -934,22 +939,6 @@ export default function HomePage() {
                         flexDirection: 'column',
                         alignItems: 'center'
                       }}>
-                        {/* Mint Grid Button - creates on-chain NFT */}
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
-                          {selectedNFTs.filter(id => id).length > 0 && selectedNFTs.filter(id => id).length < totalSlots && (
-                            <div style={{ fontSize: '14px', color: '#ff4444', fontFamily: 'monospace', textAlign: 'center' }}>
-                              Grid must be completely full to mint ({selectedNFTs.filter(id => id).length}/{totalSlots} filled)
-                            </div>
-                          )}
-                          <MintGridButton
-                            rows={gridSize}
-                            cols={gridSize}
-                            selectedNFTs={selectedNFTs}
-                            onMinted={handleMintSuccess}
-                            disabled={!isConnected || selectedNFTs.filter(id => id).length !== totalSlots}
-                          />
-                        </div>
-                        
                         {/* Download Button - local high-res export (separate from on-chain) */}
                         <button
                           onClick={downloadGrid}

@@ -15,6 +15,7 @@ import { useState, useEffect } from "react";
 import { getOwnerTokensSmart } from "@/frontend/lib/nft/ownerTokensSmart";
 import { WalletHeader } from "@/components/grids/WalletHeader";
 import { Header } from "@/components/grids/Header";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 // CollageCard component for displaying minted MineBoy grids
 function CollageCard({
@@ -818,6 +819,9 @@ export default function MyCollagesPage() {
             >
               Connect your wallet to view and create MineBoy grids
             </p>
+            <div style={{ marginTop: "20px", display: "flex", justifyContent: "center" }}>
+              <ConnectButton />
+            </div>
           </div>
         </div>
       </div>
