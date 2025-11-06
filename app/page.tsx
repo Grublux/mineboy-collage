@@ -613,10 +613,19 @@ export default function HomePage() {
         color: '#ffffff',
         fontFamily: 'monospace',
         width: '100%',
+        maxWidth: '100vw',
         margin: 0,
-        padding: 0
+        padding: 0,
+        overflowX: 'hidden',
+        boxSizing: 'border-box'
       }}>
-        <div style={{ maxWidth: "1400px", margin: "0 auto", padding: "20px" }}>
+        <div style={{ 
+          maxWidth: "1400px", 
+          margin: "0 auto", 
+          padding: "20px",
+          width: "100%",
+          boxSizing: "border-box"
+        }}>
           {/* Wallet Header */}
           <WalletHeader />
           
