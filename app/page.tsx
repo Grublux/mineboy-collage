@@ -912,8 +912,8 @@ export default function HomePage() {
                               onTouchEnd={handleTouchEnd}
                               onTouchCancel={handleTouchCancel}
                               style={{
-                                width: `${cellSize}px`,
-                                height: `${cellSize}px`,
+                                width: '100%',
+                                height: '100%',
                                 backgroundColor: '#536AB3',
                                 display: 'flex',
                                 alignItems: 'center',

@@ -1200,8 +1200,8 @@ export default function MyCollagesPage() {
                       onDragStart={() => nft && handleDragStart(nft.id)}
                       onDragEnd={(e) => nft && handleGridDragEnd(e, index)}
                       style={{
-                        width: `${cellSize}px`,
-                        height: `${cellSize}px`,
+                        width: "100%",
+                        height: "100%",
                         backgroundColor: "#536AB3",
                         display: "flex",
                         alignItems: "center",
