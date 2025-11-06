@@ -833,6 +833,42 @@ export default function MyCollagesPage() {
             }}
           >
             <Header title="MineBoy Grids" />
+            <div style={{ marginTop: "20px", display: "flex", justifyContent: "center" }}>
+              <ConnectButton.Custom>
+                {({ account, chain, openAccountModal, openChainModal, openConnectModal, mounted }) => {
+                  const ready = mounted;
+                  const connected = ready && account && chain;
+
+                  return (
+                    <button
+                      onClick={connected ? openAccountModal : openConnectModal}
+                      style={{
+                        color: '#ffffff',
+                        fontSize: '14px',
+                        fontFamily: 'monospace',
+                        textTransform: 'uppercase',
+                        padding: '8px 16px',
+                        border: '2px solid #ffffff',
+                        backgroundColor: 'transparent',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: '2px'
+                      }}
+                      type="button"
+                    >
+                      <span>{connected ? `${account.displayName}` : 'Connect Wallet'}</span>
+                      {connected && (
+                        <span style={{ fontSize: '11px', opacity: 0.8 }}>
+                          {account.displayBalance ? `${account.displayBalance}` : ''}
+                        </span>
+                      )}
+                    </button>
+                  );
+                }}
+              </ConnectButton.Custom>
+            </div>
             <p
               style={{
                 fontSize: "clamp(12px, 3vw, 16px)",
@@ -848,11 +884,8 @@ export default function MyCollagesPage() {
                 overflowWrap: "break-word",
               }}
             >
-              Connect your wallet to view and create MineBoy grids
+              To View and create MineBoy grids
             </p>
-            <div style={{ marginTop: "20px", display: "flex", justifyContent: "center" }}>
-              <ConnectButton />
-            </div>
           </div>
         </div>
       </div>
