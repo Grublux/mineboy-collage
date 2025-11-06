@@ -237,25 +237,20 @@ export default function HomePage() {
         // Remove this NFT from the grid
         return prev.filter((id) => id !== nftId);
       } else {
-        // Find the first available slot
+        // Find the first available slot (allow adding beyond current grid size for auto-expansion)
         const newSelectedNFTs = [...prev];
         
-        // Ensure array is large enough
-        while (newSelectedNFTs.length < totalSlots) {
-          newSelectedNFTs.push(undefined as any);
-        }
-        
-        // Find first empty slot
-        for (let i = 0; i < totalSlots; i++) {
+        // Find first empty slot - search through current array
+        for (let i = 0; i < newSelectedNFTs.length; i++) {
           if (!newSelectedNFTs[i]) {
             newSelectedNFTs[i] = nftId;
             return newSelectedNFTs;
           }
         }
         
-        // All slots filled - can't add more
-        // (Auto-expansion disabled to prevent conflicts with manual selection)
-        return prev;
+        // No empty slot found - add to the end (will trigger auto-expand)
+        newSelectedNFTs.push(nftId);
+        return newSelectedNFTs;
       }
     });
   };
