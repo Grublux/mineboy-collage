@@ -1,21 +1,15 @@
 "use client";
 
-export const dynamic = 'force-dynamic';
-export const ssr = false;
-
 import { useAccount, useReadContract, useReadContracts } from "wagmi";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 import Link from "next/link";
-import { gridStakerConfig, sourceCollectionAddress } from "@/frontend/lib/contracts/gridStaker";
-import { ngtTokenAddress, ERC20_ABI } from "@/frontend/lib/contracts/gridStaker";
-import { formatUnits } from "viem";
+import { collageStakerConfig, sourceCollectionAddress } from "@/frontend/lib/contracts/collageStaker";
 import { useTokenMetadata } from "@/frontend/hooks/useTokenMetadata";
 import { UnbindButton } from "@/components/collage/UnbindButton";
-import { MintGridButton } from "@/components/collage/MintGridButton";
+import { MintCollageButton } from "@/components/collage/MintCollageButton";
 import { SnapshotDialog } from "@/components/collage/SnapshotDialog";
 import { useState, useEffect } from "react";
 import { getOwnerTokensSmart } from "@/frontend/lib/nft/ownerTokensSmart";
-import { WalletHeader } from "@/components/grids/WalletHeader";
-import { Header } from "@/components/grids/Header";
 
 // CollageCard component for displaying minted MineBoy grids
 function CollageCard({
@@ -26,13 +20,13 @@ function CollageCard({
   onUnbind: () => void;
 }) {
   const { data: tokenURI } = useReadContract({
-    ...gridStakerConfig,
+    ...collageStakerConfig,
     functionName: "tokenURI",
     args: [collageId],
   });
 
   const { data: underlying } = useReadContract({
-    ...gridStakerConfig,
+    ...collageStakerConfig,
     functionName: "getUnderlying",
     args: [collageId],
   });
@@ -127,31 +121,12 @@ function CollageCard({
 
 export default function MyCollagesPage() {
   const { address, isConnected } = useAccount();
-  
-  // Read NGT balance
-  const { data: ngtBalance } = useReadContract({
-    address: ngtTokenAddress,
-    abi: ERC20_ABI,
-    functionName: "balanceOf",
-    args: address ? [address] : undefined,
-    query: {
-      enabled: !!address,
-    },
-  });
-  
-  const ngtBalanceFormatted = ngtBalance 
-    ? parseFloat(formatUnits(ngtBalance, 18)).toLocaleString(undefined, {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 2,
-      })
-    : "0";
-  
-  const [activeTab, setActiveTab] = useState<"create" | "my-grids">("create");
+  const [activeTab, setActiveTab] = useState<"create" | "my-collages">("create");
   const [refreshKey, setRefreshKey] = useState(0);
 
   // State for Create MineBoy Grid tab
   const [selectedNFTs, setSelectedNFTs] = useState<string[]>([]);
-  const [gridSize, setGridSize] = useState<number>(2); // Default 2x2, but supports 1x1 now
+  const [gridSize, setGridSize] = useState<number>(3);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [cellSize, setCellSize] = useState(100);
   const [showSnapshotDialog, setShowSnapshotDialog] = useState(false);
@@ -161,20 +136,6 @@ export default function MyCollagesPage() {
   const totalSlots = gridSize * gridSize;
 
   // Fetch user's MineBoy NFTs using ERC721Enumerable
-  // Defer loading until after initial render to improve perceived performance
-  const [shouldLoadNFTs, setShouldLoadNFTs] = useState(false);
-  
-  useEffect(() => {
-    // Reset when address changes or component mounts
-    setShouldLoadNFTs(false);
-    
-    // Small delay to allow page to render first
-    const timer = setTimeout(() => {
-      setShouldLoadNFTs(true);
-    }, 100);
-    return () => clearTimeout(timer);
-  }, [address]); // Reset and reload when address changes
-
   const { data: balance } = useReadContract({
     address: sourceCollectionAddress,
     abi: [
@@ -189,7 +150,7 @@ export default function MyCollagesPage() {
     functionName: "balanceOf",
     args: address ? [address] : undefined,
     query: {
-      enabled: !!address && isConnected && shouldLoadNFTs,
+      enabled: !!address && isConnected,
       refetchInterval: 10000, // Refetch every 10 seconds
     },
   });
@@ -203,119 +164,19 @@ export default function MyCollagesPage() {
   const [renderingProgress, setRenderingProgress] = useState({ current: 0, total: 0 });
 
   useEffect(() => {
-    if (!address || !balanceNum || balanceNum === 0 || !isConnected || !shouldLoadNFTs) {
-      console.log("Not loading NFTs:", { address, balanceNum, isConnected, shouldLoadNFTs });
+    if (!address || !balanceNum || balanceNum === 0 || !isConnected) {
+      console.log("Not loading NFTs:", { address, balanceNum, isConnected });
       setOwnedNFTs([]);
       return;
     }
 
-    const loadNFTs = async (incrementalUpdate = false) => {
-      if (!incrementalUpdate) {
-        setLoadingNFTs(true);
-        setLoadingProgress(0);
-      }
-      console.log(`Loading NFTs for address: ${address} (incremental: ${incrementalUpdate})`);
+    const loadNFTs = async () => {
+      setLoadingNFTs(true);
+      setLoadingProgress(0);
+      console.log(`Loading NFTs for address: ${address}`);
       
       try {
-        // Check for incremental update possibility
-        const cacheKey = `mineboy_nfts_${address.toLowerCase()}`;
-        const blockCacheKey = `mineboy_lastblock_${address.toLowerCase()}`;
-        
-        if (incrementalUpdate) {
-          const cached = localStorage.getItem(cacheKey);
-          const lastBlock = localStorage.getItem(blockCacheKey);
-          
-          if (cached && lastBlock) {
-            console.log('🔄 Checking for new transfers since last scan...');
-            const cacheData = JSON.parse(cached);
-            const fromBlock = BigInt(lastBlock);
-            
-            // Get current block
-            const blockResponse = await fetch(`https://apechain.calderachain.xyz/http`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                jsonrpc: '2.0',
-                method: 'eth_blockNumber',
-                params: [],
-                id: 1
-              })
-            });
-            const blockResult = await blockResponse.json();
-            const currentBlock = BigInt(blockResult.result);
-            
-            console.log(`Checking blocks ${fromBlock} → ${currentBlock}`);
-            
-            // Quick check: has balance changed?
-            if (balanceNum !== cacheData.nfts.length) {
-              console.log(`Balance changed: ${cacheData.nfts.length} → ${balanceNum}, need full scan`);
-              // Balance changed, do full scan
-              return loadNFTs(false);
-            }
-            
-            // Check for transfers in recent blocks only
-            const TRANSFER_TOPIC = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
-            const me = address.toLowerCase();
-            
-            // Check inbound transfers
-            const inboundResponse = await fetch(`https://apechain.calderachain.xyz/http`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                jsonrpc: '2.0',
-                method: 'eth_getLogs',
-                params: [{
-                  address: sourceCollectionAddress,
-                  fromBlock: `0x${fromBlock.toString(16)}`,
-                  toBlock: `0x${currentBlock.toString(16)}`,
-                  topics: [
-                    TRANSFER_TOPIC,
-                    null,
-                    `0x000000000000000000000000${me.slice(2)}`
-                  ]
-                }],
-                id: 1
-              })
-            });
-            const inboundResult = await inboundResponse.json();
-            
-            // Check outbound transfers
-            const outboundResponse = await fetch(`https://apechain.calderachain.xyz/http`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                jsonrpc: '2.0',
-                method: 'eth_getLogs',
-                params: [{
-                  address: sourceCollectionAddress,
-                  fromBlock: `0x${fromBlock.toString(16)}`,
-                  toBlock: `0x${currentBlock.toString(16)}`,
-                  topics: [
-                    TRANSFER_TOPIC,
-                    `0x000000000000000000000000${me.slice(2)}`
-                  ]
-                }],
-                id: 1
-              })
-            });
-            const outboundResult = await outboundResponse.json();
-            
-            const hasNewTransfers = (inboundResult.result?.length > 0) || (outboundResult.result?.length > 0);
-            
-            if (!hasNewTransfers) {
-              console.log('✅ No new transfers detected, cache is current!');
-              // Update last block checked
-              localStorage.setItem(blockCacheKey, currentBlock.toString());
-              return; // Cache is still valid
-            } else {
-              console.log(`Found ${inboundResult.result?.length || 0} inbound, ${outboundResult.result?.length || 0} outbound transfers, need full scan`);
-              // New transfers detected, do full scan
-              return loadNFTs(false);
-            }
-          }
-        }
-        
-        console.log(`🔍 Full scan: Checking MineBoy collection for your tokens...`);
+        console.log(`🔍 Scanning MineBoy collection for your tokens...`);
         console.log(`Collection: ${sourceCollectionAddress}`);
         console.log(`Your wallet: ${address}`);
         
@@ -481,33 +342,16 @@ export default function MyCollagesPage() {
         
         console.log("Finished loading NFTs. Total:", nfts.length);
         
-        // Cache the loaded NFTs and current block in localStorage
+        // Cache the loaded NFTs in localStorage
         if (address && nfts.length > 0) {
           try {
-            // Get current block for incremental updates
-            const blockResponse = await fetch(`https://apechain.calderachain.xyz/http`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                jsonrpc: '2.0',
-                method: 'eth_blockNumber',
-                params: [],
-                id: 1
-              })
-            });
-            const blockResult = await blockResponse.json();
-            const currentBlock = BigInt(blockResult.result);
-            
             const cacheKey = `mineboy_nfts_${address.toLowerCase()}`;
-            const blockCacheKey = `mineboy_lastblock_${address.toLowerCase()}`;
             const cacheData = {
               nfts,
               timestamp: Date.now(),
-              expiry: 24 * 60 * 60 * 1000 // 24 hours cache (we check for transfers)
+              expiry: 5 * 60 * 1000 // 5 minutes cache
             };
             localStorage.setItem(cacheKey, JSON.stringify(cacheData));
-            localStorage.setItem(blockCacheKey, currentBlock.toString());
-            console.log(`💾 Cached ${nfts.length} NFTs at block ${currentBlock}`);
           } catch (err) {
             console.warn('Failed to cache NFTs:', err);
           }
@@ -518,11 +362,9 @@ export default function MyCollagesPage() {
         console.error("Failed to load NFTs:", err);
         setOwnedNFTs([]);
       } finally {
-        if (!incrementalUpdate) {
-          setLoadingNFTs(false);
-          setLoadingProgress(0);
-          setRenderingProgress({ current: 0, total: 0 });
-        }
+        setLoadingNFTs(false);
+        setLoadingProgress(0);
+        setRenderingProgress({ current: 0, total: 0 });
       }
     };
 
@@ -535,13 +377,11 @@ export default function MyCollagesPage() {
           const cacheData = JSON.parse(cached);
           const age = Date.now() - cacheData.timestamp;
           if (age < cacheData.expiry) {
-            console.log(`⚡ Instant load from cache (${cacheData.nfts.length} MineBoys)`);
+            console.log('Loading NFTs from cache...');
             setOwnedNFTs(cacheData.nfts);
-            // Check for new transfers in background (smart incremental update)
-            setTimeout(() => loadNFTs(true), 500);
+            // Still refresh in background
+            setTimeout(loadNFTs, 100);
             return;
-          } else {
-            console.log('Cache expired, full reload needed');
           }
         }
       } catch (err) {
@@ -549,61 +389,34 @@ export default function MyCollagesPage() {
       }
     }
 
-    loadNFTs(false);
-  }, [balanceNum, address, isConnected, shouldLoadNFTs]); // Include shouldLoadNFTs to trigger when it becomes true
+    loadNFTs();
+  }, [balanceNum, address, isConnected]);
 
-  // Auto-expand grid when more NFTs selected than current capacity
+  // Auto-adjust grid size based on selected NFT count
   useEffect(() => {
     const count = selectedNFTs.filter(id => id).length;
-    const currentCapacity = gridSize * gridSize;
-    
-    // Only expand if we have more NFTs than current capacity
-    // GridStaker requires minimum 2x2 (MIN_CELLS = 4)
-    if (count > currentCapacity && gridSize < 6) {
-      let newSize = gridSize;
-      // Find the next size that can fit all selected NFTs
-      if (count <= 4 && gridSize < 2) {
-        newSize = 2;
-      } else if (count <= 9 && gridSize < 3) {
-        newSize = 3;
-      } else if (count <= 16 && gridSize < 4) {
-        newSize = 4;
-      } else if (count <= 25 && gridSize < 5) {
-        newSize = 5;
-      } else if (count <= 36 && gridSize < 6) {
-        newSize = 6;
-      }
-      
-      // If we're expanding, ensure selectedNFTs array length matches new grid size
-      if (newSize > gridSize) {
-        const newTotalSlots = newSize * newSize;
-        const preserved = [...selectedNFTs];
-        while (preserved.length < newTotalSlots) {
-          preserved.push('');
-        }
-        setSelectedNFTs(preserved);
-        setGridSize(newSize);
-      }
+    if (count === 0) {
+      setGridSize(2); // Start with 2x2
+    } else if (count <= 4) {
+      setGridSize(2); // 2x2
+    } else if (count <= 9) {
+      setGridSize(3); // 3x3
+    } else if (count <= 16) {
+      setGridSize(4); // 4x4
+    } else if (count <= 25) {
+      setGridSize(5); // 5x5
+    } else {
+      setGridSize(6); // 6x6 max
     }
-  }, [selectedNFTs, gridSize]);
-
-  // Defer loading grids until after initial render
-  const [shouldLoadGrids, setShouldLoadGrids] = useState(false);
-  
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setShouldLoadGrids(true);
-    }, 200);
-    return () => clearTimeout(timer);
-  }, []);
+  }, [selectedNFTs]);
 
   // Read user's MineBoy grids
   const { data: collageBalance, isLoading: loadingCollages } = useReadContract({
-    ...gridStakerConfig,
+    ...collageStakerConfig,
     functionName: "balanceOf",
     args: address ? [address] : undefined,
     query: {
-      enabled: !!address && isConnected && shouldLoadGrids,
+      enabled: !!address && isConnected,
     },
   });
 
@@ -611,12 +424,12 @@ export default function MyCollagesPage() {
 
   const { data: collageTokenIds } = useReadContracts({
     contracts: Array.from({ length: collageBalanceNum }, (_, i) => ({
-      ...gridStakerConfig,
+      ...collageStakerConfig,
       functionName: "tokenOfOwnerByIndex" as const,
       args: [address!, BigInt(i)] as const,
     })) as any,
     query: {
-      enabled: !!address && collageBalanceNum > 0 && isConnected && shouldLoadGrids,
+      enabled: !!address && collageBalanceNum > 0 && isConnected,
     },
   });
 
@@ -639,43 +452,56 @@ export default function MyCollagesPage() {
     return () => window.removeEventListener('resize', updateSize);
   }, [gridSize]);
 
-  // State to track which NFT is being dragged from inventory
-  const [draggedNFTId, setDraggedNFTId] = useState<string | null>(null);
-
-  // Drag and drop handlers - only for reordering within grid
+  // Drag and drop handlers
   const handleDragStart = (nftId: string) => {
     const index = selectedNFTs.findIndex((id) => id === nftId);
     if (index !== -1) {
       setDraggedIndex(index);
+    } else {
+      setDraggedIndex(-1);
     }
   };
 
   const handleDrop = (targetIndex: number) => {
     if (draggedIndex === null) return;
 
-    // Only allow reordering within grid (not from inventory)
     const newSelectedNFTs = [...selectedNFTs];
-    const draggedNFT = newSelectedNFTs[draggedIndex];
-    const targetNFT = newSelectedNFTs[targetIndex];
-    newSelectedNFTs[draggedIndex] = targetNFT || '';
-    newSelectedNFTs[targetIndex] = draggedNFT;
+    
+    if (draggedIndex === -1) {
+      const sourceNFT = ownedNFTs.find((nft) => nft.id === selectedNFTs[targetIndex]);
+      if (sourceNFT) {
+        newSelectedNFTs[targetIndex] = sourceNFT.id;
+      }
+    } else {
+      const draggedNFT = newSelectedNFTs[draggedIndex];
+      const targetNFT = newSelectedNFTs[targetIndex];
+      newSelectedNFTs[draggedIndex] = targetNFT || '';
+      newSelectedNFTs[targetIndex] = draggedNFT;
+    }
     
     setSelectedNFTs(newSelectedNFTs);
     setDraggedIndex(null);
   };
 
-  // Click handler to add/remove NFT to grid
+  const handleListItemDragStart = (nftId: string) => {
+    setDraggedIndex(-1);
+  };
+
+  const handleListItemDrop = (targetIndex: number, nftId: string) => {
+    const newSelectedNFTs = [...selectedNFTs];
+    newSelectedNFTs[targetIndex] = nftId;
+    setSelectedNFTs(newSelectedNFTs);
+    setDraggedIndex(null);
+  };
+
+  // Click handler to add NFT to grid
   const handleNFTClick = (nftId: string) => {
-    // Check if NFT is already in grid - remove it
+    // Check if NFT is already in grid
     if (selectedNFTs.includes(nftId)) {
+      // Remove it
       const newSelectedNFTs = selectedNFTs.map(id => id === nftId ? '' : id);
       setSelectedNFTs(newSelectedNFTs);
       return;
-    }
-
-    // Prevent duplicates - already checked above, but double-check for safety
-    if (selectedNFTs.includes(nftId)) {
-      return; // Already in grid, do nothing
     }
 
     // Find first empty slot
@@ -760,7 +586,7 @@ export default function MyCollagesPage() {
     setMintedCollageId(null);
     setLoadedTileImages([]);
     setRefreshKey(prev => prev + 1);
-    setActiveTab("my-grids");
+    setActiveTab("my-collages");
   };
 
   const handleSnapshotSuccess = () => {
@@ -793,34 +619,25 @@ export default function MyCollagesPage() {
           minHeight: "100vh",
           backgroundColor: "#000000",
           color: "#ffffff",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
           padding: "20px",
         }}
       >
-        <div style={{ maxWidth: "1400px", margin: "0 auto" }}>
-          <WalletHeader />
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              minHeight: "60vh",
-            }}
-          >
-            <Header title="MineBoy Grids" />
-            <p
-              style={{
-                fontSize: "16px",
-                fontFamily: "monospace",
-                textAlign: "center",
-                marginTop: "20px",
-                opacity: 0.7,
-              }}
-            >
-              Connect your wallet to view and create MineBoy grids
-            </p>
-          </div>
-        </div>
+        <h1
+          style={{
+            fontSize: "32px",
+            fontFamily: "monospace",
+            textTransform: "uppercase",
+            marginBottom: "30px",
+            letterSpacing: "2px",
+          }}
+        >
+          My Collages
+        </h1>
+        <ConnectButton />
       </div>
     );
   }
@@ -835,27 +652,33 @@ export default function MyCollagesPage() {
       }}
     >
       <div style={{ maxWidth: "1400px", margin: "0 auto" }}>
-        {/* Wallet Header */}
-        <WalletHeader />
-        
-        {/* Page Header */}
-        <div style={{ marginBottom: "40px" }}>
-          <Link
-            href="/"
-            style={{
-              color: "#ffffff",
-              textDecoration: "none",
-              fontSize: "24px",
-              fontFamily: "monospace",
-              textTransform: "uppercase",
-              letterSpacing: "2px",
-              marginBottom: "20px",
-              display: "inline-block",
-            }}
-          >
-            ← Grids
-          </Link>
-          <Header title="MineBoy Grids" />
+        {/* Header */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "40px",
+            flexWrap: "wrap",
+            gap: "20px",
+          }}
+        >
+          <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
+            <Link
+              href="/"
+              style={{
+                color: "#ffffff",
+                textDecoration: "none",
+                fontSize: "24px",
+                fontFamily: "monospace",
+                textTransform: "uppercase",
+                letterSpacing: "2px",
+              }}
+            >
+              ← MineBoy Grids
+            </Link>
+          </div>
+          <ConnectButton />
         </div>
 
         {/* Tabs */}
@@ -879,13 +702,13 @@ export default function MyCollagesPage() {
             Create Grid
           </button>
           <button
-            onClick={() => setActiveTab("my-grids")}
+            onClick={() => setActiveTab("my-collages")}
             style={{
               padding: "15px 30px",
               backgroundColor: "transparent",
-              color: activeTab === "my-grids" ? "#ffffff" : "#666666",
+              color: activeTab === "my-collages" ? "#ffffff" : "#666666",
               border: "none",
-              borderBottom: activeTab === "my-grids" ? "2px solid #ffffff" : "2px solid transparent",
+              borderBottom: activeTab === "my-collages" ? "2px solid #ffffff" : "2px solid transparent",
               cursor: "pointer",
               fontFamily: "monospace",
               textTransform: "uppercase",
@@ -894,7 +717,7 @@ export default function MyCollagesPage() {
               marginBottom: "-2px",
             }}
           >
-            My MineBoy Grids ({collageBalanceNum})
+            My Grids ({collageBalanceNum})
           </button>
         </div>
 
@@ -913,85 +736,53 @@ export default function MyCollagesPage() {
               Create New MineBoy Grid
             </h2>
 
-            {/* Grid Size Selector - Button Style */}
-            <div style={{ marginBottom: "20px", textAlign: "center" }}>
-              <div style={{ marginBottom: "10px", fontSize: "14px", fontFamily: "monospace", textTransform: "uppercase" }}>
-                Grid Size: (Current: {gridSize}×{gridSize})
-              </div>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px", flexWrap: "wrap", marginBottom: "15px" }}>
-                {[2, 3, 4, 5, 6].map((size) => {
-                  const requiredNFTs = size * size;
-                  const hasEnough = ownedNFTs.length >= requiredNFTs;
-                  return (
-                    <button
-                      key={size}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        console.log('Grid size button clicked! New size:', size);
-                        const newSize = size;
-                        const oldSize = gridSize;
-                        const oldTotalSlots = oldSize * oldSize;
-                        const newTotalSlots = newSize * newSize;
-                        
-                        // Preserve NFTs in their current cell positions
-                        if (newSize < oldSize) {
-                          // Downsizing: keep only NFTs that fit in the new grid
-                          const preserved = selectedNFTs.slice(0, newTotalSlots);
-                          setSelectedNFTs(preserved);
-                        } else {
-                          // Upsizing: keep existing NFTs and add empty slots
-                          const preserved = [...selectedNFTs];
-                          // Ensure array length matches new grid size
-                          while (preserved.length < newTotalSlots) {
-                            preserved.push('');
-                          }
-                          setSelectedNFTs(preserved);
-                        }
-                        
-                        setGridSize(newSize);
-                      }}
-                      style={{
-                        padding: "10px 20px",
-                        backgroundColor: gridSize === size ? "#ffffff" : "#000000",
-                        color: gridSize === size ? "#000000" : "#ffffff",
-                        border: "2px solid #ffffff",
-                        cursor: "pointer",
-                        fontFamily: "monospace",
-                        fontSize: "14px",
-                        fontWeight: gridSize === size ? "bold" : "normal",
-                        opacity: hasEnough ? 1 : 0.5,
-                      }}
-                      onMouseOver={(e) => {
-                        if (gridSize !== size && hasEnough) {
-                          e.currentTarget.style.backgroundColor = "#333333";
-                        }
-                      }}
-                      onMouseOut={(e) => {
-                        if (gridSize !== size) {
-                          e.currentTarget.style.backgroundColor = "#000000";
-                        }
-                      }}
-                    >
-                      {size}×{size}
-                      {!hasEnough && <div style={{ fontSize: "10px", marginTop: "2px" }}>Need {requiredNFTs}</div>}
-                    </button>
-                  );
-                })}
-              </div>
-              <div
+            {/* Grid Size Selector */}
+            <div style={{ marginBottom: "20px" }}>
+              <label
                 style={{
+                  fontSize: "14px",
+                  fontFamily: "monospace",
+                  textTransform: "uppercase",
+                  marginRight: "10px",
+                }}
+              >
+                Grid Size:
+              </label>
+              <select
+                value={gridSize}
+                onChange={(e) => {
+                  setGridSize(parseInt(e.target.value));
+                  setSelectedNFTs([]); // Clear selections when changing grid size
+                }}
+                style={{
+                  padding: "8px",
+                  backgroundColor: "#000000",
+                  color: "#ffffff",
+                  border: "2px solid #ffffff",
+                  fontFamily: "monospace",
+                  fontSize: "14px",
+                }}
+              >
+                <option value={2}>2x2 {ownedNFTs.length > 0 && ownedNFTs.length < 4 ? "(Need 4 NFTs)" : ""}</option>
+                <option value={3}>3x3 {ownedNFTs.length > 0 && ownedNFTs.length < 9 ? "(Need 9 NFTs)" : ""}</option>
+                <option value={4}>4x4 {ownedNFTs.length > 0 && ownedNFTs.length < 16 ? "(Need 16 NFTs)" : ""}</option>
+                <option value={5}>5x5 {ownedNFTs.length > 0 && ownedNFTs.length < 25 ? "(Need 25 NFTs)" : ""}</option>
+                <option value={6}>6x6 {ownedNFTs.length > 0 && ownedNFTs.length < 36 ? "(Need 36 NFTs)" : ""}</option>
+              </select>
+              <span
+                style={{
+                  marginLeft: "15px",
                   fontSize: "14px",
                   color: hasEnoughNFTs ? "#00ff00" : "#ff4444",
                   fontFamily: "monospace",
                 }}
               >
-                {hasEnoughNFTs ? `✓ You have ${ownedNFTs.length} MineBoys` : `⚠ Need ${totalSlots} MineBoys (you have ${ownedNFTs.length})`}
-              </div>
+                {hasEnoughNFTs ? `✓ You have ${ownedNFTs.length} NFTs` : `⚠ Need ${totalSlots} NFTs (you have ${ownedNFTs.length})`}
+              </span>
             </div>
 
             {/* My NFTs List */}
-            <div style={{ marginBottom: "80px" }}>
+            <div style={{ marginBottom: "30px" }}>
               <h3
                 style={{
                   fontSize: "18px",
@@ -1004,24 +795,13 @@ export default function MyCollagesPage() {
               </h3>
               <div
                 style={{
-                  fontSize: "14px",
-                  fontFamily: "monospace",
-                  color: "#00ff00",
-                  marginBottom: "15px",
-                  textAlign: "center",
-                }}
-              >
-                Click/Tap to add to Grid
-              </div>
-              <div
-                style={{
                   display: "grid",
                   gridTemplateColumns: "repeat(auto-fill, minmax(100px, 1fr))",
                   gap: "10px",
+                  maxHeight: "400px",
+                  overflowY: "auto",
                   padding: "10px",
                   border: "2px solid #333333",
-                  boxSizing: "border-box",
-                  width: "100%",
                 }}
               >
                 {loadingNFTs ? (
@@ -1095,7 +875,9 @@ export default function MyCollagesPage() {
                     return (
                       <div
                         key={nft.id}
+                        draggable
                         onClick={() => handleNFTClick(nft.id)}
+                        onDragStart={() => handleListItemDragStart(nft.id)}
                         style={{
                           cursor: "pointer",
                           border: isSelected ? "3px solid #00ff00" : "2px solid #ffffff",
@@ -1104,7 +886,7 @@ export default function MyCollagesPage() {
                           transition: "all 0.2s",
                           opacity: isSelected ? 0.6 : 1,
                         }}
-                        title={isSelected ? "Click to remove from grid" : "Click to add to grid"}
+                        title={isSelected ? "Click to remove from grid" : "Click or drag to add to grid"}
                       >
                         {nft.image && (
                           <img
@@ -1138,7 +920,7 @@ export default function MyCollagesPage() {
             </div>
 
             {/* MineBoy Grid */}
-            <div style={{ marginBottom: "30px" }}>
+            <div style={{ marginTop: "40px", marginBottom: "30px" }}>
               <h3
                 style={{
                   fontSize: "18px",
@@ -1169,8 +951,11 @@ export default function MyCollagesPage() {
                       key={index}
                       onDragOver={(e) => e.preventDefault()}
                       onDrop={() => {
-                        // Only allow reordering within grid (not from inventory)
-                        if (draggedIndex !== null && draggedIndex !== -1) {
+                        if (draggedIndex === -1) {
+                          // Dragged from list
+                          handleListItemDrop(index, ownedNFTs[0]?.id);
+                        } else if (draggedIndex !== null) {
+                          // Dragged from grid (reorder)
                           handleDrop(index);
                         }
                       }}
@@ -1211,23 +996,17 @@ export default function MyCollagesPage() {
 
               {/* Mint Button */}
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
-                {!isGridFull ? (
+                {!isGridFull && (
                   <div style={{ fontSize: "14px", color: "#ff4444", fontFamily: "monospace", textAlign: "center" }}>
-                    Grid must be completely full to mint
-                  </div>
-                ) : (
-                  <div style={{ fontSize: "14px", color: "#ffff00", fontFamily: "monospace", textAlign: "center", fontWeight: "bold" }}>
-                    Coming soon
+                    Grid must be completely full to mint ({selectedNFTs.filter(id => id).length}/{totalSlots} filled)
                   </div>
                 )}
-                <MintGridButton
+                <MintCollageButton
                   rows={gridSize}
                   cols={gridSize}
-                  selectedNFTs={selectedNFTs}
+                  selectedTokenIds={getSelectedTokenIds()}
                   onMinted={handleMintSuccess}
-                  disabled={true}
-                  showFilledCount={!isGridFull}
-                  totalSlots={totalSlots}
+                  disabled={!isConnected || !isGridFull}
                 />
               </div>
             </div>
@@ -1235,7 +1014,7 @@ export default function MyCollagesPage() {
         )}
 
         {/* My MineBoy Grids Tab */}
-        {activeTab === "my-grids" && (
+        {activeTab === "my-collages" && (
           <div>
             <div
               style={{

@@ -1,6 +1,7 @@
 "use client";
 
 export const dynamic = 'force-dynamic';
+export const ssr = false;
 
 import { useAccount } from "wagmi";
 import Link from "next/link";

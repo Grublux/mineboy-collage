@@ -1,6 +1,7 @@
 "use client";
 
 export const dynamic = 'force-dynamic';
+export const ssr = false;
 
 import { useAccount, useReadContract } from "wagmi";
 import { useState, useEffect } from "react";
