@@ -1,5 +1,7 @@
 "use client";
 
+export const dynamic = 'force-dynamic';
+
 import { useAccount, useReadContract, useReadContracts } from "wagmi";
 import { gridStakerConfig } from "@/frontend/lib/contracts/gridStaker";
 import { useTokenMetadata } from "@/frontend/hooks/useTokenMetadata";

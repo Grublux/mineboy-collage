@@ -1,5 +1,7 @@
 "use client";
 
+export const dynamic = 'force-dynamic';
+
 import { useAccount, useReadContract, useReadContracts } from "wagmi";
 import Link from "next/link";
 import { gridStakerConfig, sourceCollectionAddress } from "@/frontend/lib/contracts/gridStaker";
