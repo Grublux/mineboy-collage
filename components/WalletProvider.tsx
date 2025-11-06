@@ -2,18 +2,33 @@
 
 import { createConfig, http, WagmiProvider } from "wagmi";
 import { injected, metaMask } from "wagmi/connectors";
-import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import { RainbowKitProvider, connectorsForWallets } from "@rainbow-me/rainbowkit";
+import {
+  metaMaskWallet,
+  injectedWallet,
+} from "@rainbow-me/rainbowkit/wallets";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactNode } from "react";
 import { apechain } from "@/lib/constants/chains";
 
+// Create connectors for RainbowKit
+const connectors = connectorsForWallets(
+  [
+    {
+      groupName: "Recommended",
+      wallets: [metaMaskWallet, injectedWallet],
+    },
+  ],
+  {
+    appName: "MineBoy Collage",
+    projectId: "", // Empty to disable WalletConnect
+  }
+);
+
 // Create config with only injected wallets (no WalletConnect)
 const config = createConfig({
   chains: [apechain],
-  connectors: [
-    injected(),
-    metaMask(),
-  ],
+  connectors,
   transports: {
     [apechain.id]: http(),
   },
