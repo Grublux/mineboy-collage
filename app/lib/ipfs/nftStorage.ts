@@ -6,13 +6,15 @@ export async function uploadPngToNftStorage(
   pngBytes: Uint8Array,
   apiKey: string
 ): Promise<string> {
+  // Create a new Uint8Array to ensure we have a proper ArrayBuffer
+  const bytes = new Uint8Array(pngBytes);
   const response = await fetch("https://api.nft.storage/upload", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${apiKey}`,
       "Content-Type": "image/png",
     },
-    body: new Blob([pngBytes], { type: "image/png" }),
+    body: new Blob([bytes], { type: "image/png" }),
   });
 
   if (!response.ok) {
