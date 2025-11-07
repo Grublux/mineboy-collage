@@ -1,5 +1,5 @@
 import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
-import { Address, encodeFunctionData, parseAbi } from "viem";
+import { Address, encodeFunctionData, parseAbi, Hex } from "viem";
 import { blockTokenConfig, blockVaultConfig, blockHubConfig } from "../../lib/contracts/blocks";
 
 // Writers
@@ -165,10 +165,10 @@ export function useSetSnapshotCid() {
 
   const setSnapshotCID = async (
     id: bigint,
-    cid: Uint8Array,
+    cid: Hex,
     width: number,
     height: number,
-    hash: `0x${string}`
+    hash: Hex
   ) => {
     return await writeContractAsync({
       ...blockVaultConfig,
