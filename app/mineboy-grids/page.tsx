@@ -1248,7 +1248,7 @@ export default function MyCollagesPage() {
                       onDragEnd={(e) => nft && handleGridDragEnd(e, index)}
                       style={{
                         width: "100%",
-                        height: "100%",
+                        aspectRatio: "1",
                         backgroundColor: "#536AB3",
                         display: "flex",
                         alignItems: "center",
