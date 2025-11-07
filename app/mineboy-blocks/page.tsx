@@ -17,7 +17,7 @@ import { WalletHeader } from "@/components/grids/WalletHeader";
 import { Header } from "@/components/grids/Header";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 
-// CollageCard component for displaying minted MineBoy blocks
+// CollageCard component for displaying minted MineBlocks blocks
 function CollageCard({
   collageId,
   onUnbind,
@@ -67,7 +67,7 @@ function CollageCard({
           >
             <img
               src={metadata.image}
-              alt={metadata.name || `MineBoy Block #${collageId}`}
+              alt={metadata.name || `MineBlocks Block #${collageId}`}
               style={{
                 width: "100%",
                 height: "100%",
@@ -90,7 +90,7 @@ function CollageCard({
             textTransform: "uppercase",
           }}
         >
-          {metadata?.name || `MineBoy Block #${collageId}`}
+          {metadata?.name || `MineBlocks Block #${collageId}`}
         </h3>
         <div style={{ fontSize: "14px", color: "#888888", fontFamily: "monospace", marginBottom: "5px" }}>
           Block: {rows.toString()}×{cols.toString()}
@@ -149,7 +149,7 @@ export default function MyCollagesPage() {
   const [activeTab, setActiveTab] = useState<"create" | "my-grids">("create");
   const [refreshKey, setRefreshKey] = useState(0);
 
-  // State for Create MineBoy Block tab
+  // State for Create MineBlocks Block tab
   const [selectedNFTs, setSelectedNFTs] = useState<string[]>([]);
   const [gridSize, setGridSize] = useState<number>(2); // Default 2x2, but supports 1x1 now
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
@@ -160,7 +160,7 @@ export default function MyCollagesPage() {
 
   const totalSlots = gridSize * gridSize;
 
-  // Fetch user\'s MineBoy NFTs using ERC721Enumerable
+  // Fetch user\'s MineBlocks NFTs using ERC721Enumerable
   // Defer loading until after initial render to improve perceived performance
   const [shouldLoadNFTs, setShouldLoadNFTs] = useState(false);
   
@@ -316,7 +316,7 @@ export default function MyCollagesPage() {
           }
         }
         
-        console.log(`🔍 Full scan: Checking MineBoy collection for your tokens...`);
+        console.log(`🔍 Full scan: Checking MineBlocks collection for your tokens...`);
         console.log(`Collection: ${sourceCollectionAddress}`);
         console.log(`Your wallet: ${address}`);
         
@@ -464,7 +464,7 @@ export default function MyCollagesPage() {
                 
                 nfts.push({
                   id: `owned-${tokenId}`,
-                  name: metadata.name || `MineBoy #${tokenId}`,
+                  name: metadata.name || `MineBlocks #${tokenId}`,
                   image: metadata.image || '',
                   tokenId: tokenId.toString(),
                   contract: sourceCollectionAddress,
@@ -598,7 +598,7 @@ export default function MyCollagesPage() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Read user\'s MineBoy blocks
+  // Read user\'s MineBlocks blocks
   const { data: collageBalance, isLoading: loadingCollages } = useReadContract({
     ...gridStakerConfig,
     functionName: "balanceOf",
@@ -832,7 +832,7 @@ export default function MyCollagesPage() {
               minHeight: "60vh",
             }}
           >
-            <Header title="MineBoy Blocks" />
+            <Header title="MineBlocks" />
             <div style={{ marginTop: "20px", display: "flex", justifyContent: "center" }}>
               <ConnectButton.Custom>
                 {({ account, chain, openAccountModal, openChainModal, openConnectModal, mounted }) => {
@@ -884,7 +884,7 @@ export default function MyCollagesPage() {
                 overflowWrap: "break-word",
               }}
             >
-              To View and create MineBoy blocks
+              To View and create MineBlocks blocks
             </p>
           </div>
         </div>
@@ -961,11 +961,11 @@ export default function MyCollagesPage() {
               marginBottom: "-2px",
             }}
           >
-            My MineBoy Blocks ({collageBalanceNum})
+            My MineBlocks ({collageBalanceNum})
           </button>
         </div>
 
-        {/* Create MineBoy Block Tab */}
+        {/* Create MineBlocks Block Tab */}
         {activeTab === "create" && (
           <div>
             <h2
@@ -977,7 +977,7 @@ export default function MyCollagesPage() {
                 marginBottom: "20px",
               }}
             >
-              Create New MineBoy Block
+              Create New MineBlock
             </h2>
 
             {/* Grid Size Selector - Button Style */}
@@ -1154,7 +1154,7 @@ export default function MyCollagesPage() {
                   </div>
                 ) : ownedNFTs.length === 0 ? (
                   <div style={{ padding: "20px", color: "#666666", gridColumn: "1 / -1" }}>
-                    No MineBoy NFTs found in your wallet
+                    No MineBlocks NFTs found in your wallet
                   </div>
                 ) : (
                   ownedNFTs.map((nft) => {
@@ -1204,7 +1204,7 @@ export default function MyCollagesPage() {
               </div>
             </div>
 
-            {/* MineBoy Block */}
+            {/* MineBlocks Block */}
             <div style={{ marginBottom: "30px" }}>
               <h3
                 style={{
@@ -1214,7 +1214,7 @@ export default function MyCollagesPage() {
                   marginBottom: "15px",
                 }}
               >
-                MineBoy Block ({gridSize}×{gridSize})
+                MineBlocks Block ({gridSize}×{gridSize})
               </h3>
               <div
                 style={{
@@ -1303,7 +1303,7 @@ export default function MyCollagesPage() {
           </div>
         )}
 
-        {/* My MineBoy Blocks Tab */}
+        {/* My MineBlocks Blocks Tab */}
         {activeTab === "my-grids" && (
           <div>
             <div
@@ -1323,7 +1323,7 @@ export default function MyCollagesPage() {
                   margin: 0,
                 }}
               >
-                Your Minted MineBoy Blocks
+                Your Minted MineBlocks Blocks
               </h2>
               <button
                 onClick={handleRefresh}
@@ -1353,7 +1353,7 @@ export default function MyCollagesPage() {
                   color: "#666666",
                 }}
               >
-                <p style={{ fontSize: "18px", marginBottom: "10px" }}>No MineBoy blocks yet</p>
+                <p style={{ fontSize: "18px", marginBottom: "10px" }}>No MineBlocks blocks yet</p>
                 <p style={{ fontSize: "14px" }}>
                   Create your first block using the "Create Block" tab!
                 </p>

@@ -12,7 +12,7 @@ export default function NPCGridsPage() {
       style={{
         minHeight: "100vh",
         backgroundColor: "#000000",
-        color: "#ffffff",
+        color: "rgba(255, 255, 255, 0.85)",
         padding: "20px",
       }}
     >
@@ -23,7 +23,7 @@ export default function NPCGridsPage() {
           <Link
             href="/"
             style={{
-              color: "#ffffff",
+              color: "rgba(255, 255, 255, 0.85)",
               textDecoration: "none",
               fontSize: "24px",
               fontFamily: "monospace",

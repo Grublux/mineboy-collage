@@ -121,7 +121,7 @@ export default function CollagePage() {
       style={{
         minHeight: "100vh",
         backgroundColor: "#000000",
-        color: "#ffffff",
+        color: "rgba(255, 255, 255, 0.85)",
         padding: "20px",
       }}
     >
@@ -145,7 +145,7 @@ export default function CollagePage() {
           <Link
             href="/my-blocks"
             style={{
-              color: "#ffffff",
+              color: "rgba(255, 255, 255, 0.85)",
               textDecoration: "none",
               fontFamily: "monospace",
               fontSize: "14px",
@@ -270,7 +270,7 @@ export default function CollagePage() {
                     <div style={{ color: "#666666", marginBottom: "5px" }}>
                       Grid Size
                     </div>
-                    <div style={{ color: "#ffffff" }}>
+                    <div style={{ color: "rgba(255, 255, 255, 0.85)" }}>
                       {rows.toString()}×{cols.toString()}
                     </div>
                   </div>
@@ -278,7 +278,7 @@ export default function CollagePage() {
                     <div style={{ color: "#666666", marginBottom: "5px" }}>
                       Token Count
                     </div>
-                    <div style={{ color: "#ffffff" }}>
+                    <div style={{ color: "rgba(255, 255, 255, 0.85)" }}>
                       {(tokenIds as bigint[])?.length || 0}
                     </div>
                   </div>
@@ -288,7 +288,7 @@ export default function CollagePage() {
                     </div>
                     <div
                       style={{
-                        color: "#ffffff",
+                        color: "rgba(255, 255, 255, 0.85)",
                         fontSize: "12px",
                       wordBreak: "break-all",
                     }}
@@ -341,7 +341,7 @@ export default function CollagePage() {
                           padding: "6px 12px",
                           backgroundColor: "#000000",
                           border: "1px solid #666666",
-                          color: "#ffffff",
+                          color: "rgba(255, 255, 255, 0.85)",
                         }}
                       >
                         #{id.toString()}
@@ -366,7 +366,7 @@ export default function CollagePage() {
                     padding: "12px 24px",
                     backgroundColor: "#ffffff",
                     color: "#000000",
-                    border: "2px solid #ffffff",
+                    border: "2px solid rgba(255, 255, 255, 0.85)",
                     cursor: "pointer",
                     fontFamily: "monospace",
                     textTransform: "uppercase",

@@ -42,13 +42,13 @@ export function WalletHeader() {
         <Link
           href="/my-blocks"
           style={{
-            color: "#ffffff",
+            color: "rgba(255, 255, 255, 0.85)",
             textDecoration: "none",
             fontSize: "16px",
             fontFamily: "monospace",
             textTransform: "uppercase",
             padding: "10px 20px",
-            border: "2px solid #ffffff",
+            border: "2px solid rgba(255, 255, 255, 0.85)",
             backgroundColor: "transparent",
             display: "inline-block",
           }}
@@ -87,12 +87,12 @@ export function WalletHeader() {
               <button
                 onClick={connected ? openAccountModal : openConnectModal}
                 style={{
-                  color: '#ffffff',
+                  color: 'rgba(255, 255, 255, 0.85)',
                   fontSize: '14px',
                   fontFamily: 'monospace',
                   textTransform: 'uppercase',
                   padding: '8px 16px',
-                  border: '2px solid #ffffff',
+                  border: '2px solid rgba(255, 255, 255, 0.85)',
                   backgroundColor: 'transparent',
                   cursor: 'pointer',
                   display: 'flex',

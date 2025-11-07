@@ -12,7 +12,7 @@ import { ngtTokenAddress, ERC20_ABI } from "@/frontend/lib/contracts/gridStaker"
 import { formatUnits } from "viem";
 
 const collections = [
-  { name: "MineBoy Blocks", href: "/mineboy-blocks" },
+  { name: "MineBlocks", href: "/mineblocks" },
   { name: "NPC Blocks", href: "/npc-blocks" },
   { name: "Goobaloo Blocks", href: "/goobaloo-blocks" },
 ];
@@ -610,7 +610,7 @@ export default function HomePage() {
       <div style={{
         minHeight: '100vh',
         backgroundColor: '#000000',
-        color: '#ffffff',
+        color: 'rgba(255, 255, 255, 0.85)',
         fontFamily: 'monospace',
         width: '100%',
         maxWidth: '100vw',
@@ -652,7 +652,7 @@ export default function HomePage() {
                 padding: '10px 20px',
                 backgroundColor: manualMode ? '#00ff00' : '#ffffff',
                 color: '#000000',
-                border: '2px solid #ffffff',
+                border: '2px solid rgba(255, 255, 255, 0.85)',
                 cursor: 'pointer',
                 fontFamily: 'monospace',
                 textTransform: 'uppercase',
@@ -664,7 +664,7 @@ export default function HomePage() {
             </button> */}
             
             <div style={{ textAlign: 'center', marginBottom: '15px' }}>
-              <div style={{ fontSize: '14px', fontFamily: 'monospace', color: '#ffffff' }}>
+              <div style={{ fontSize: '14px', fontFamily: 'monospace', color: 'rgba(255, 255, 255, 0.85)' }}>
                 download MineBoy images below
               </div>
             </div>
@@ -685,8 +685,8 @@ export default function HomePage() {
                   width: '100%',
                   maxWidth: '300px',
                   backgroundColor: '#000000',
-                  color: '#ffffff',
-                  border: '2px solid #ffffff',
+                  color: 'rgba(255, 255, 255, 0.85)',
+                  border: '2px solid rgba(255, 255, 255, 0.85)',
                   fontFamily: 'monospace',
                   fontSize: '14px'
                 }}
@@ -702,7 +702,7 @@ export default function HomePage() {
                   padding: '10px 20px',
                   backgroundColor: '#ffffff',
                   color: '#000000',
-                  border: '2px solid #ffffff',
+                  border: '2px solid rgba(255, 255, 255, 0.85)',
                   cursor: loadingManual ? 'not-allowed' : 'pointer',
                   fontFamily: 'monospace',
                   textTransform: 'uppercase',
@@ -814,7 +814,7 @@ export default function HomePage() {
                           padding: '6px 8px',
                           backgroundColor: '#ffffff',
                           color: '#000000',
-                          border: '2px solid #ffffff',
+                          border: '2px solid rgba(255, 255, 255, 0.85)',
                           cursor: 'pointer',
                           fontFamily: 'monospace',
                           textTransform: 'uppercase',
@@ -864,7 +864,7 @@ export default function HomePage() {
                           padding: '10px 20px',
                           backgroundColor: gridSize === size ? '#ffffff' : '#000000',
                           color: gridSize === size ? '#000000' : '#ffffff',
-                          border: '2px solid #ffffff',
+                          border: '2px solid rgba(255, 255, 255, 0.85)',
                           cursor: 'pointer',
                           fontFamily: 'monospace',
                           fontSize: '14px',
@@ -986,7 +986,7 @@ export default function HomePage() {
                             padding: '12px 24px',
                             backgroundColor: '#ffffff',
                             color: '#000000',
-                            border: '2px solid #ffffff',
+                            border: '2px solid rgba(255, 255, 255, 0.85)',
                             cursor: selectedNFTs.filter(id => id).length === 0 ? 'not-allowed' : 'pointer',
                             fontFamily: 'monospace',
                             textTransform: 'uppercase',

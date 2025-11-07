@@ -15,6 +15,7 @@ export function Header({ title }: HeaderProps) {
         marginBottom: "30px",
         letterSpacing: "2px",
         textAlign: "center",
+        color: "rgba(255, 255, 255, 0.85)",
         WebkitFontSmoothing: "none",
         MozOsxFontSmoothing: "grayscale",
         textRendering: "optimizeSpeed",

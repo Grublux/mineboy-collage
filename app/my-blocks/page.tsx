@@ -35,7 +35,7 @@ function BlockCard({
   return (
     <div
       style={{
-        border: "2px solid #ffffff",
+        border: "2px solid rgba(255, 255, 255, 0.85)",
         padding: "20px",
         backgroundColor: "#111111",
         display: "flex",
@@ -75,7 +75,7 @@ function BlockCard({
             margin: "0 0 10px 0",
             fontSize: "18px",
             fontWeight: "bold",
-            color: "#ffffff",
+            color: "rgba(255, 255, 255, 0.85)",
             fontFamily: "monospace",
             textTransform: "uppercase",
           }}
@@ -98,7 +98,7 @@ function BlockCard({
             padding: "10px",
             backgroundColor: "#ffffff",
             color: "#000000",
-            border: "2px solid #ffffff",
+            border: "2px solid rgba(255, 255, 255, 0.85)",
             textAlign: "center",
             textDecoration: "none",
             fontFamily: "monospace",
@@ -146,7 +146,7 @@ export default function MyBlocksPage() {
         style={{
           minHeight: "100vh",
           backgroundColor: "#000000",
-          color: "#ffffff",
+          color: "rgba(255, 255, 255, 0.85)",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -168,7 +168,7 @@ export default function MyBlocksPage() {
       style={{
         minHeight: "100vh",
         backgroundColor: "#000000",
-        color: "#ffffff",
+        color: "rgba(255, 255, 255, 0.85)",
         padding: "20px",
       }}
     >
@@ -179,7 +179,7 @@ export default function MyBlocksPage() {
           <Link
             href="/"
             style={{
-              color: "#ffffff",
+              color: "rgba(255, 255, 255, 0.85)",
               textDecoration: "none",
               fontSize: "24px",
               fontFamily: "monospace",

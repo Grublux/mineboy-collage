@@ -27,13 +27,13 @@ export function CollectionLinks({ collections }: CollectionLinksProps) {
           key={collection.href}
           href={collection.href}
           style={{
-            color: "#ffffff",
+            color: "rgba(255, 255, 255, 0.85)",
             textDecoration: "none",
             fontSize: "18px",
             fontFamily: "monospace",
             textTransform: "uppercase",
             padding: "20px 40px",
-            border: "2px solid #ffffff",
+            border: "2px solid rgba(255, 255, 255, 0.85)",
             backgroundColor: "transparent",
             display: "inline-block",
             minWidth: "200px",
@@ -46,7 +46,7 @@ export function CollectionLinks({ collections }: CollectionLinksProps) {
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.backgroundColor = "transparent";
-            e.currentTarget.style.color = "#ffffff";
+            e.currentTarget.style.color = "rgba(255, 255, 255, 0.85)";
           }}
         >
           {collection.name}

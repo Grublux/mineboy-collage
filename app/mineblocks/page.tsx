@@ -4,12 +4,9 @@ export const dynamic = 'force-dynamic';
 
 import { useAccount, useReadContract, useReadContracts } from "wagmi";
 import Link from "next/link";
-import { gridStakerConfig } from "@/frontend/lib/contracts/gridStaker";
+import { gridStakerConfig, sourceCollectionAddress } from "@/frontend/lib/contracts/gridStaker";
 import { ngtTokenAddress, ERC20_ABI } from "@/frontend/lib/contracts/gridStaker";
-import { formatUnits, getAddress } from "viem";
-
-// Goobaloo Collection on ApeChain
-const goobalooCollectionAddress = getAddress("0xDeAD14d547030f71ED3EeD6523525d61E1474807");
+import { formatUnits } from "viem";
 import { useTokenMetadata } from "@/frontend/hooks/useTokenMetadata";
 import { UnbindButton } from "@/components/collage/UnbindButton";
 import { MintGridButton } from "@/components/collage/MintGridButton";
@@ -20,7 +17,7 @@ import { WalletHeader } from "@/components/grids/WalletHeader";
 import { Header } from "@/components/grids/Header";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 
-// CollageCard component for displaying minted Goobaloo blocks
+// CollageCard component for displaying minted MineBlocks blocks
 function CollageCard({
   collageId,
   onUnbind,
@@ -70,7 +67,7 @@ function CollageCard({
           >
             <img
               src={metadata.image}
-              alt={metadata.name || `Goobaloo Block #${collageId}`}
+              alt={metadata.name || `MineBlocks Block #${collageId}`}
               style={{
                 width: "100%",
                 height: "100%",
@@ -93,7 +90,7 @@ function CollageCard({
             textTransform: "uppercase",
           }}
         >
-          {metadata?.name || `Goobaloo Block #${collageId}`}
+          {metadata?.name || `MineBlocks Block #${collageId}`}
         </h3>
         <div style={{ fontSize: "14px", color: "#888888", fontFamily: "monospace", marginBottom: "5px" }}>
           Block: {rows.toString()}×{cols.toString()}
@@ -110,7 +107,7 @@ function CollageCard({
             flex: 1,
             padding: "10px",
             backgroundColor: "#ffffff",
-            color: "#000000",
+            color: "rgba(0, 0, 0, 0.85)",
             border: "2px solid rgba(255, 255, 255, 0.85)",
             textAlign: "center",
             textDecoration: "none",
@@ -152,7 +149,7 @@ export default function MyCollagesPage() {
   const [activeTab, setActiveTab] = useState<"create" | "my-grids">("create");
   const [refreshKey, setRefreshKey] = useState(0);
 
-  // State for Create Goobaloo Block tab
+  // State for Create MineBlocks Block tab
   const [selectedNFTs, setSelectedNFTs] = useState<string[]>([]);
   const [gridSize, setGridSize] = useState<number>(2); // Default 2x2, but supports 1x1 now
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
@@ -163,7 +160,7 @@ export default function MyCollagesPage() {
 
   const totalSlots = gridSize * gridSize;
 
-  // Fetch user's Goobaloo NFTs using ERC721Enumerable
+  // Fetch user\'s MineBlocks NFTs using ERC721Enumerable
   // Defer loading until after initial render to improve perceived performance
   const [shouldLoadNFTs, setShouldLoadNFTs] = useState(false);
   
@@ -179,7 +176,7 @@ export default function MyCollagesPage() {
   }, [address]); // Reset and reload when address changes
 
   const { data: balance } = useReadContract({
-    address: goobalooCollectionAddress,
+    address: sourceCollectionAddress,
     abi: [
       {
         inputs: [{ name: "owner", type: "address" }],
@@ -222,8 +219,8 @@ export default function MyCollagesPage() {
       
       try {
         // Check for incremental update possibility
-        const cacheKey = `goobaloo_nfts_${address.toLowerCase()}`;
-        const blockCacheKey = `goobaloo_lastblock_${address.toLowerCase()}`;
+        const cacheKey = `mineboy_nfts_${address.toLowerCase()}`;
+        const blockCacheKey = `mineboy_lastblock_${address.toLowerCase()}`;
         
         if (incrementalUpdate) {
           const cached = localStorage.getItem(cacheKey);
@@ -269,7 +266,7 @@ export default function MyCollagesPage() {
                 jsonrpc: '2.0',
                 method: 'eth_getLogs',
                 params: [{
-                  address: goobalooCollectionAddress,
+                  address: sourceCollectionAddress,
                   fromBlock: `0x${fromBlock.toString(16)}`,
                   toBlock: `0x${currentBlock.toString(16)}`,
                   topics: [
@@ -291,7 +288,7 @@ export default function MyCollagesPage() {
                 jsonrpc: '2.0',
                 method: 'eth_getLogs',
                 params: [{
-                  address: goobalooCollectionAddress,
+                  address: sourceCollectionAddress,
                   fromBlock: `0x${fromBlock.toString(16)}`,
                   toBlock: `0x${currentBlock.toString(16)}`,
                   topics: [
@@ -319,8 +316,8 @@ export default function MyCollagesPage() {
           }
         }
         
-        console.log(`🔍 Full scan: Checking Goobaloo collection for your tokens...`);
-        console.log(`Collection: ${goobalooCollectionAddress}`);
+        console.log(`🔍 Full scan: Checking MineBlocks collection for your tokens...`);
+        console.log(`Collection: ${sourceCollectionAddress}`);
         console.log(`Your wallet: ${address}`);
         
         // Try to get totalSupply first
@@ -333,7 +330,7 @@ export default function MyCollagesPage() {
               jsonrpc: '2.0',
               method: 'eth_call',
               params: [{
-                to: goobalooCollectionAddress,
+                to: sourceCollectionAddress,
                 data: `0x18160ddd` // totalSupply()
               }, 'latest'],
               id: 1
@@ -372,7 +369,7 @@ export default function MyCollagesPage() {
                   jsonrpc: '2.0',
                   method: 'eth_call',
                   params: [{
-                    to: goobalooCollectionAddress,
+                    to: sourceCollectionAddress,
                     data: `0x6352211e${BigInt(id).toString(16).padStart(64, '0')}` // ownerOf
                   }, 'latest'],
                   id: 1
@@ -403,7 +400,7 @@ export default function MyCollagesPage() {
         }
         
         setLoadingProgress(100);
-        console.log(`✅ Scan complete! You own ${ownedIds.length} Goobaloos:`, ownedIds);
+        console.log(`✅ Scan complete! You own ${ownedIds.length} MineBoys:`, ownedIds);
         
         // Show "Rendering" message after scan completes
         setLoadingProgress(101); // Special value to trigger rendering message
@@ -426,7 +423,7 @@ export default function MyCollagesPage() {
                 jsonrpc: '2.0',
                 method: 'eth_call',
                 params: [{
-                  to: goobalooCollectionAddress,
+                  to: sourceCollectionAddress,
                   data: `0xc87b56dd${tokenId.toString(16).padStart(64, '0')}`
                 }, 'latest'],
                 id: 1
@@ -467,10 +464,10 @@ export default function MyCollagesPage() {
                 
                 nfts.push({
                   id: `owned-${tokenId}`,
-                  name: metadata.name || `Goobaloo #${tokenId}`,
+                  name: metadata.name || `MineBlocks #${tokenId}`,
                   image: metadata.image || '',
                   tokenId: tokenId.toString(),
-                  contract: goobalooCollectionAddress,
+                  contract: sourceCollectionAddress,
                 });
                 
                 console.log(`Successfully loaded token ${tokenId}`);
@@ -502,8 +499,8 @@ export default function MyCollagesPage() {
             const blockResult = await blockResponse.json();
             const currentBlock = BigInt(blockResult.result);
             
-            const cacheKey = `goobaloo_nfts_${address.toLowerCase()}`;
-            const blockCacheKey = `goobaloo_lastblock_${address.toLowerCase()}`;
+            const cacheKey = `mineboy_nfts_${address.toLowerCase()}`;
+            const blockCacheKey = `mineboy_lastblock_${address.toLowerCase()}`;
             const cacheData = {
               nfts,
               timestamp: Date.now(),
@@ -533,13 +530,13 @@ export default function MyCollagesPage() {
     // Try to load from cache first
     if (address) {
       try {
-        const cacheKey = `goobaloo_nfts_${address.toLowerCase()}`;
+        const cacheKey = `mineboy_nfts_${address.toLowerCase()}`;
         const cached = localStorage.getItem(cacheKey);
         if (cached) {
           const cacheData = JSON.parse(cached);
           const age = Date.now() - cacheData.timestamp;
           if (age < cacheData.expiry) {
-            console.log(`⚡ Instant load from cache (${cacheData.nfts.length} Goobaloos)`);
+            console.log(`⚡ Instant load from cache (${cacheData.nfts.length} MineBoys)`);
             setOwnedNFTs(cacheData.nfts);
             // Check for new transfers in background (smart incremental update)
             setTimeout(() => loadNFTs(true), 500);
@@ -601,7 +598,7 @@ export default function MyCollagesPage() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Read user\'s Goobaloo blocks
+  // Read user\'s MineBlocks blocks
   const { data: collageBalance, isLoading: loadingCollages } = useReadContract({
     ...gridStakerConfig,
     functionName: "balanceOf",
@@ -835,7 +832,7 @@ export default function MyCollagesPage() {
               minHeight: "60vh",
             }}
           >
-            <Header title="Goobaloo Blocks" />
+            <Header title="MineBlocks" />
             <div style={{ marginTop: "20px", display: "flex", justifyContent: "center" }}>
               <ConnectButton.Custom>
                 {({ account, chain, openAccountModal, openChainModal, openConnectModal, mounted }) => {
@@ -887,7 +884,7 @@ export default function MyCollagesPage() {
                 overflowWrap: "break-word",
               }}
             >
-              To View and create Goobaloo blocks
+              To View and create MineBlocks blocks
             </p>
           </div>
         </div>
@@ -925,7 +922,7 @@ export default function MyCollagesPage() {
           >
             ← Blocks
           </Link>
-          <Header title="Goobaloo Blocks" />
+          <Header title="MineBlocks" />
         </div>
 
         {/* Tabs */}
@@ -935,7 +932,7 @@ export default function MyCollagesPage() {
             style={{
               padding: "15px 30px",
               backgroundColor: "transparent",
-              color: activeTab === "create" ? "#ffffff" : "#666666",
+              color: activeTab === "create" ? "rgba(255, 255, 255, 0.85)" : "#666666",
               border: "none",
               borderBottom: activeTab === "create" ? "2px solid #ffffff" : "2px solid transparent",
               cursor: "pointer",
@@ -953,7 +950,7 @@ export default function MyCollagesPage() {
             style={{
               padding: "15px 30px",
               backgroundColor: "transparent",
-              color: activeTab === "my-grids" ? "#ffffff" : "#666666",
+              color: activeTab === "my-grids" ? "rgba(255, 255, 255, 0.85)" : "#666666",
               border: "none",
               borderBottom: activeTab === "my-grids" ? "2px solid #ffffff" : "2px solid transparent",
               cursor: "pointer",
@@ -964,11 +961,11 @@ export default function MyCollagesPage() {
               marginBottom: "-2px",
             }}
           >
-            My Goobaloo Blocks ({collageBalanceNum})
+            My MineBlocks ({collageBalanceNum})
           </button>
         </div>
 
-        {/* Create Goobaloo Block Tab */}
+        {/* Create MineBlocks Block Tab */}
         {activeTab === "create" && (
           <div>
             <h2
@@ -980,7 +977,7 @@ export default function MyCollagesPage() {
                 marginBottom: "20px",
               }}
             >
-              Create New Goobaloo Block
+              Create New MineBlock
             </h2>
 
             {/* Grid Size Selector - Button Style */}
@@ -1052,11 +1049,11 @@ export default function MyCollagesPage() {
               <div
                 style={{
                   fontSize: "14px",
-                  color: loadingNFTs ? "#00ff00" : (hasEnoughNFTs ? "#00ff00" : "#ff4444"),
+                  color: hasEnoughNFTs ? "#00ff00" : "#ff4444",
                   fontFamily: "monospace",
                 }}
               >
-                {loadingNFTs ? "Scanning wallet..." : (hasEnoughNFTs ? `✓ You have ${ownedNFTs.length} Goobaloos` : `⚠ Need ${totalSlots} Goobaloos (you have ${ownedNFTs.length})`)}
+                {hasEnoughNFTs ? `✓ You have ${ownedNFTs.length} MineBoys` : `⚠ Need ${totalSlots} MineBoys (you have ${ownedNFTs.length})`}
               </div>
             </div>
 
@@ -1070,7 +1067,7 @@ export default function MyCollagesPage() {
                   marginBottom: "15px",
                 }}
               >
-                Your Goobaloo NFTs ({ownedNFTs.length})
+                Your MineBoy NFTs ({ownedNFTs.length})
               </h3>
               <div
                 style={{
@@ -1097,7 +1094,7 @@ export default function MyCollagesPage() {
                 {loadingNFTs ? (
                   <div style={{ padding: "20px", gridColumn: "1 / -1" }}>
                     <div style={{ color: "#00ff00", marginBottom: "15px" }}>
-                      {loadingProgress > 100 ? "Rendering Your Goobaloos..." : "Loading your Goobaloo NFTs..."}
+                      {loadingProgress > 100 ? "Rendering Your MineBoys..." : "Loading your MineBoy NFTs..."}
                     </div>
                     
                     {loadingProgress > 100 ? (
@@ -1156,8 +1153,8 @@ export default function MyCollagesPage() {
                     </div>
                   </div>
                 ) : ownedNFTs.length === 0 ? (
-                  <div style={{ padding: "20px", color: "#666666", gridColumn: "1 / -1" }}>
-                    No Goobaloo NFTs found in your wallet
+                  <div style={{ padding: "20px", color: "rgba(102, 102, 102, 0.85)", gridColumn: "1 / -1" }}>
+                    No MineBlocks NFTs found in your wallet
                   </div>
                 ) : (
                   ownedNFTs.map((nft) => {
@@ -1207,7 +1204,7 @@ export default function MyCollagesPage() {
               </div>
             </div>
 
-            {/* Goobaloo Block */}
+            {/* MineBlocks Block */}
             <div style={{ marginBottom: "30px" }}>
               <h3
                 style={{
@@ -1217,7 +1214,7 @@ export default function MyCollagesPage() {
                   marginBottom: "15px",
                 }}
               >
-                Goobaloo Block ({gridSize}×{gridSize})
+                MineBlocks Block ({gridSize}×{gridSize})
               </h3>
               <div
                 style={{
@@ -1306,7 +1303,7 @@ export default function MyCollagesPage() {
           </div>
         )}
 
-        {/* My Goobaloo Blocks Tab */}
+        {/* My MineBlocks Blocks Tab */}
         {activeTab === "my-grids" && (
           <div>
             <div
@@ -1326,7 +1323,7 @@ export default function MyCollagesPage() {
                   margin: 0,
                 }}
               >
-                Your Minted Goobaloo Blocks
+                Your Minted MineBlocks Blocks
               </h2>
               <button
                 onClick={handleRefresh}
@@ -1346,17 +1343,17 @@ export default function MyCollagesPage() {
             </div>
 
             {loadingCollages ? (
-              <div style={{ textAlign: "center", padding: "40px", color: "#666666" }}>Loading...</div>
+              <div style={{ textAlign: "center", padding: "40px", color: "rgba(102, 102, 102, 0.85)" }}>Loading...</div>
             ) : collageBalanceNum === 0 ? (
               <div
                 style={{
                   textAlign: "center",
                   padding: "60px 20px",
                   border: "2px dashed #333333",
-                  color: "#666666",
+                  color: "rgba(102, 102, 102, 0.85)",
                 }}
               >
-                <p style={{ fontSize: "18px", marginBottom: "10px" }}>No Goobaloo blocks yet</p>
+                <p style={{ fontSize: "18px", marginBottom: "10px" }}>No MineBlocks blocks yet</p>
                 <p style={{ fontSize: "14px" }}>
                   Create your first block using the "Create Block" tab!
                 </p>
