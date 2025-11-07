@@ -29,8 +29,7 @@ Files keep becoming empty when using `search_replace` tool, especially:
 
 ### Immediate Fix: Use Shell Commands
 
-For critical files, use shell `cat` heredoc instead of `search_replace`:
-
+**Option 1: Simple `cat` (Good, but not perfect)**
 ```bash
 cat > components/grids/WalletHeader.tsx << 'ENDOFFILE'
 [full file content]
@@ -38,9 +37,30 @@ ENDOFFILE
 ```
 
 **Why this works:**
-- Atomic write (entire file written at once)
+- Writes entire file at once (better than read-modify-write)
 - Less interference from file watchers
-- More reliable on macOS
+- More reliable than `search_replace`
+- **Limitation**: Still has a small window where Next.js could read during write
+
+**Option 2: Atomic Write (Most Reliable)**
+```bash
+# Write to temp file first
+cat > components/grids/WalletHeader.tsx.tmp << 'ENDOFFILE'
+[full file content]
+ENDOFFILE
+
+# Validate temp file
+[ -s components/grids/WalletHeader.tsx.tmp ] || exit 1
+
+# Atomic rename (mv is atomic on macOS)
+mv components/grids/WalletHeader.tsx.tmp components/grids/WalletHeader.tsx
+```
+
+**Why this is better:**
+- `mv` (rename) is atomic on macOS - either old or new file, never partial
+- Next.js only sees complete file transitions
+- Temp file validation catches errors before overwriting
+- **This is the most reliable method**
 
 ### Long-term Solutions
 
