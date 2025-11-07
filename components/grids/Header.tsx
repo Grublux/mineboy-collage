@@ -8,9 +8,10 @@ export function Header({ title }: HeaderProps) {
   return (
     <h1
       style={{
-        fontSize: "32px",
+        fontSize: "33px",
         fontFamily: "monospace",
         textTransform: "uppercase",
+        marginTop: "33px",
         marginBottom: "30px",
         letterSpacing: "2px",
         textAlign: "center",

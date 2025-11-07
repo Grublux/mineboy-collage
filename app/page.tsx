@@ -630,7 +630,7 @@ export default function HomePage() {
           <WalletHeader />
           
           {/* Page Header */}
-          <Header title="Blocked" />
+          <Header title="Blocks" />
           
           {/* Collection Links */}
           <CollectionLinks collections={collections} />
