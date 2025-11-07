@@ -1,0 +1,58 @@
+===========================================
+GRIDSTAKER CONTRACT VERIFICATION INFO
+===========================================
+
+📋 Contract Details:
+--------------------
+Contract Address: 0xaDBCBb5C031cF7AEbB09d4fFE8906cfbcDdAd1c0
+Chain: ApeChain (Chain ID: 33139)
+Block Explorer: https://apescan.io/address/0xaDBCBb5C031cF7AEbB09d4fFE8906cfbcDdAd1c0
+
+🔧 Constructor Arguments:
+-------------------------
+Collection: 0xa8A16C3259aD84162a0868E7927523B81eF8BF2D
+Initial Payout: 0x634989990acb7F95d07Ac09a6c35491Ac8dFa3Cf
+
+For ApeScan verification, use this format:
+Constructor Arguments ABI-encoded:
+000000000000000000000000a8a16c3259ad84162a0868e7927523b81ef8bf2d000000000000000000000000634989990acb7f95d07ac09a6c35491ac8dfa3cf
+
+📝 Compiler Settings:
+---------------------
+Compiler Version: 0.8.24
+EVM Version: Cancun
+Optimization: Enabled (200 runs)
+Via IR: false
+
+🔑 Verification Steps:
+-----------------------
+1. Go to: https://apescan.io/address/0xaDBCBb5C031cF7AEbB09d4fFE8906cfbcDdAd1c0#code
+2. Click "Contract" tab
+3. Click "Verify and Publish"
+4. Select "Via flattened source code"
+5. Paste the flattened contract code (already in clipboard)
+6. Set Compiler: 0.8.24
+7. Set EVM Version: Cancun
+8. Enable Optimization: Yes (200 runs)
+9. Set License: MIT
+10. Constructor Arguments: 000000000000000000000000a8a16c3259ad84162a0868e7927523b81ef8bf2d000000000000000000000000634989990acb7f95d07ac09a6c35491ac8dfa3cf
+11. Click "Verify and Publish"
+
+✅ Contract Configuration:
+---------------------------
+- NGT Price: 3333 NGT (3333000000000000000000 wei)
+- NGT Token: 0x72CddB64A72176B442bdfD9C8Bb7968E652d8D1a
+- Collection: 0xa8A16C3259aD84162a0868E7927523B81eF8BF2D
+- Payout: 0x634989990acb7F95d07Ac09a6c35491Ac8dFa3Cf
+
+📄 Flattened Contract:
+-----------------------
+The flattened contract code has been copied to your clipboard.
+If you need it again, see: GridStaker_flattened.sol
+
+🔗 Links:
+---------
+Contract: https://apescan.io/address/0xaDBCBb5C031cF7AEbB09d4fFE8906cfbcDdAd1c0
+Deployment Tx: https://apescan.io/tx/0x86fe725d41cf2c1288649ccd655e9360ea58f98cb2031ca86b23cc8637b52d37
+Price Set Tx: https://apescan.io/tx/0xaf0f92b301ebc9d6d0da15605d460e2f1d1e61bbd99f41780b0b4c5a4625c7ec
+

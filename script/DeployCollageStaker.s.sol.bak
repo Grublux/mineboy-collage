@@ -1,0 +1,35 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+
+import "forge-std/Script.sol";
+import "../contracts/CollageStaker.sol";
+
+contract DeployCollageStaker is Script {
+    function run() external {
+        // MineBoy collection on ApeChain
+        address mineBoyCollection = 0xa8A16C3259aD84162a0868E7927523B81eF8BF2D;
+
+        uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+
+        vm.startBroadcast(deployerPrivateKey);
+
+        // Deploy CollageStaker
+        CollageStaker staker = new CollageStaker(mineBoyCollection);
+
+        console.log("================================");
+        console.log("CollageStaker deployed to:", address(staker));
+        console.log("Target collection:", mineBoyCollection);
+        console.log("Deployer:", vm.addr(deployerPrivateKey));
+        console.log("================================");
+        console.log("");
+        console.log("Next steps:");
+        console.log("1. Verify contract:");
+        console.log("   forge verify-contract %s CollageStaker --chain 33139 --watch", address(staker));
+        console.log("");
+        console.log("2. Add to .env.local:");
+        console.log("   NEXT_PUBLIC_COLLAGE_STAKER_ADDRESS=%s", address(staker));
+        console.log("================================");
+
+        vm.stopBroadcast();
+    }
+}

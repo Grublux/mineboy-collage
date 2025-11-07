@@ -1,0 +1,12 @@
+{
+  "compiler": {
+    "solcVersion": "0.8.24",
+    "evmVersion": "cancun",
+    "optimizer": {
+      "enabled": true,
+      "runs": 200
+    }
+  }
+}
+
+

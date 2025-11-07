@@ -31,64 +31,88 @@ export function WalletHeader() {
     <div
       style={{
         display: "flex",
-        justifyContent: "center",
+        justifyContent: "space-between",
         alignItems: "center",
         padding: "20px",
-        flexWrap: "wrap",
-        gap: "20px",
+        flexWrap: "nowrap",
+        position: "relative",
       }}
     >
-      <Link
-        href="/my-grids"
+      <div style={{ flexShrink: 0 }}>
+        <Link
+          href="/my-blocks"
+          style={{
+            color: "#ffffff",
+            textDecoration: "none",
+            fontSize: "16px",
+            fontFamily: "monospace",
+            textTransform: "uppercase",
+            padding: "10px 20px",
+            border: "2px solid #ffffff",
+            backgroundColor: "transparent",
+            display: "inline-block",
+          }}
+        >
+          My Blocks
+        </Link>
+      </div>
+      {/* Logo - centered over header */}
+      <div
         style={{
-          color: "#ffffff",
-          textDecoration: "none",
-          fontSize: "16px",
-          fontFamily: "monospace",
-          textTransform: "uppercase",
-          padding: "10px 20px",
-          border: "2px solid #ffffff",
-          backgroundColor: "transparent",
-          display: "inline-block",
+          position: "absolute",
+          left: "50%",
+          transform: "translateX(-50%)",
+          zIndex: 10,
+          pointerEvents: "none",
+          paddingTop: "33px",
         }}
       >
-        My Grids
-      </Link>
-      <ConnectButton.Custom>
-        {({ account, chain, openAccountModal, openChainModal, openConnectModal, mounted }) => {
-          const ready = mounted;
-          const connected = ready && account && chain;
+        <img
+          src="/logo.png"
+          alt="Blocked Logo"
+          style={{
+            height: "120px",
+            width: "auto",
+            display: "block",
+          }}
+        />
+      </div>
+      <div style={{ flexShrink: 0 }}>
+        <ConnectButton.Custom>
+          {({ account, chain, openAccountModal, openChainModal, openConnectModal, mounted }) => {
+            const ready = mounted;
+            const connected = ready && account && chain;
 
-          return (
-            <button
-              onClick={connected ? openAccountModal : openConnectModal}
-              style={{
-                color: '#ffffff',
-                fontSize: '14px',
-                fontFamily: 'monospace',
-                textTransform: 'uppercase',
-                padding: '8px 16px',
-                border: '2px solid #ffffff',
-                backgroundColor: 'transparent',
-                cursor: 'pointer',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: '2px'
-              }}
-              type="button"
-            >
-              <span>{connected ? `${account.displayName}` : 'Connect Wallet'}</span>
-              {connected && (
-                <span style={{ fontSize: '11px', opacity: 0.8 }}>
-                  {ngtBalanceFormatted} NGT
-                </span>
-              )}
-            </button>
-          );
-        }}
-      </ConnectButton.Custom>
+            return (
+              <button
+                onClick={connected ? openAccountModal : openConnectModal}
+                style={{
+                  color: '#ffffff',
+                  fontSize: '14px',
+                  fontFamily: 'monospace',
+                  textTransform: 'uppercase',
+                  padding: '8px 16px',
+                  border: '2px solid #ffffff',
+                  backgroundColor: 'transparent',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '2px'
+                }}
+                type="button"
+              >
+                <span>{connected ? `${account.displayName}` : 'Connect Wallet'}</span>
+                {connected && (
+                  <span style={{ fontSize: '11px', opacity: 0.8 }}>
+                    {ngtBalanceFormatted} NGT
+                  </span>
+                )}
+              </button>
+            );
+          }}
+        </ConnectButton.Custom>
+      </div>
     </div>
   );
 }
-

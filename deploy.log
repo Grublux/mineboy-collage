@@ -1,0 +1,265 @@
+No files changed, compilation skipped
+Traces:
+  [4635415] DeployGridStaker::run()
+    ├─ [0] VM::envUint("PRIVATE_KEY") [staticcall]
+    │   └─ ← [Return] <env var value>
+    ├─ [0] VM::addr(<pk>) [staticcall]
+    │   └─ ← [Return] 0x634989990acb7F95d07Ac09a6c35491Ac8dFa3Cf
+    ├─ [0] console::log("Deploying GridStaker with:") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("  Deployer:", 0x634989990acb7F95d07Ac09a6c35491Ac8dFa3Cf) [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("  Collection:", 0xa8A16C3259aD84162a0868E7927523B81eF8BF2D) [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("  Initial Payout:", 0x634989990acb7F95d07Ac09a6c35491Ac8dFa3Cf) [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("  Royalty Receiver:", 0x634989990acb7F95d07Ac09a6c35491Ac8dFa3Cf) [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("  Default Royalty: 6.9%") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] VM::startBroadcast(<pk>)
+    │   └─ ← [Return] 
+    ├─ [4466868] → new GridStaker@0x9E16F09ef9d1B122D90Cca704fdB9415207b2F8c
+    │   ├─ emit RoleGranted(role: 0x0000000000000000000000000000000000000000000000000000000000000000, account: 0x634989990acb7F95d07Ac09a6c35491Ac8dFa3Cf, sender: 0x634989990acb7F95d07Ac09a6c35491Ac8dFa3Cf)
+    │   ├─ emit RoleGranted(role: 0x65d7a28e3265b37a6474929f336521b332c1681b933f6cb9f3376673440d862a, account: 0x634989990acb7F95d07Ac09a6c35491Ac8dFa3Cf, sender: 0x634989990acb7F95d07Ac09a6c35491Ac8dFa3Cf)
+    │   ├─ emit RoleGranted(role: 0x427da25fe773164f88948d3e215c94b6554e2ed5e5f203a821c9f2f6131cf75a, account: 0x634989990acb7F95d07Ac09a6c35491Ac8dFa3Cf, sender: 0x634989990acb7F95d07Ac09a6c35491Ac8dFa3Cf)
+    │   ├─ emit RoleGranted(role: 0x7840a44bf6bbc1b45786ad46ece0694a9179b33e609d4ac4a51e6466e1f664c2, account: 0x634989990acb7F95d07Ac09a6c35491Ac8dFa3Cf, sender: 0x634989990acb7F95d07Ac09a6c35491Ac8dFa3Cf)
+    │   └─ ← [Return] 21145 bytes of code
+    ├─ [0] console::log("\n=== GridStaker Deployed ===") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("Address:", GridStaker: [0x9E16F09ef9d1B122D90Cca704fdB9415207b2F8c]) [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [24936] GridStaker::setErc20Price(0x72CddB64A72176B442bdfD9C8Bb7968E652d8D1a, 3333000000000000000000 [3.333e21])
+    │   ├─ emit Erc20PriceUpdated(by: 0x634989990acb7F95d07Ac09a6c35491Ac8dFa3Cf, token: 0x72CddB64A72176B442bdfD9C8Bb7968E652d8D1a, price: 3333000000000000000000 [3.333e21])
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("\n=== Pricing Configured ===") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("NGT Price:", 3333, "NGT") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("NGT Token:", 0x72CddB64A72176B442bdfD9C8Bb7968E652d8D1a) [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [24263] GridStaker::setUnbindFeeETH(50000000000000000 [5e16])
+    │   ├─ emit UnbindFeeETHUpdated(by: 0x634989990acb7F95d07Ac09a6c35491Ac8dFa3Cf, feeWei: 50000000000000000 [5e16])
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("\n=== Unbind Fee Configured ===") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("Unbind Fee: 0.05 APE (native currency)") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("This covers gas for:") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("  - Authorization call: ~30,000 gas") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("  - Unbind function: ~200,000-400,000 gas") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("  - Total: ~230,000-430,000 gas") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("  - 0.05 APE provides large safety margin") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [24470] GridStaker::setTransferValidator(0x721C008fdff27BF06E7E123956E2Fe03B63342e3)
+    │   ├─ emit TransferValidatorUpdated(by: 0x634989990acb7F95d07Ac09a6c35491Ac8dFa3Cf, validator: 0x721C008fdff27BF06E7E123956E2Fe03B63342e3)
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("\n=== Transfer Validator Configured ===") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("Validator Address:", 0x721C008fdff27BF06E7E123956E2Fe03B63342e3) [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("IMPORTANT: GridStaker must be whitelisted on validator!") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("\n=== Roles (all assigned to deployer) ===") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("DEFAULT_ADMIN_ROLE: Can grant/revoke all roles") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("PAUSER_ROLE: Can pause contract") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("UNPAUSER_ROLE: Can unpause contract") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("FUNDS_ROLE: Can change prices, payout, ticket checker, royalties") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [3260] GridStaker::getRoyaltyRate(0) [staticcall]
+    │   └─ ← [Return] 0x634989990acb7F95d07Ac09a6c35491Ac8dFa3Cf, 690
+    ├─ [0] console::log("\n=== Royalty Configuration ===") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("Receiver:", 0x634989990acb7F95d07Ac09a6c35491Ac8dFa3Cf) [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("Rate:", 690, "basis points") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("Percentage:", 6, "%") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("\n=== CRITICAL: Pre-fund GridStaker with APE ===") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("GridStaker needs APE balance to authorize itself during unbind") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("Send 0.1 APE to GridStaker contract:", GridStaker: [0x9E16F09ef9d1B122D90Cca704fdB9415207b2F8c]) [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("This will cover authorization gas for many unbinds") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("The 0.05 APE unbind fee goes to payout, not to GridStaker") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("\n=== Next Steps ===") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("1. Update .env: NEXT_PUBLIC_GRID_STAKER_ADDRESS=", GridStaker: [0x9E16F09ef9d1B122D90Cca704fdB9415207b2F8c]) [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("2. PRE-FUND GRIDSTAKER:") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("   - Send 0.1 APE to:", GridStaker: [0x9E16F09ef9d1B122D90Cca704fdB9415207b2F8c]) [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("   - This covers authorization gas for unbinds") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("3. (Optional) WHITELIST GRIDSTAKER ON VALIDATOR:") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("   - Only needed if authorization mode is DISABLED") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("   - If authorization mode is enabled, user authorization is sufficient") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("   - Validator: 0x721C008fdff27BF06E7E123956E2Fe03B63342e3") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("   - GridStaker: 0x32C7d8841E3dEfaE125Cd19d8283985e2A2Fe56E") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("4. REGISTER GRIDSTAKER AS COLLECTION ON VALIDATOR:") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("   - Apply operator whitelist to GridStaker collection") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("   - Whitelist marketplace operators (OpenSea, Magic Eden, etc.)") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("   - This is for Grid NFT secondary sales, not MineBoy transfers") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("5. (Optional) Call setPayout(newAddress) to change payout destination") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("6. (Optional) Adjust royalty:") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("   - Current: 6.9% (690 basis points)") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("   - Use setDefaultRoyalty(receiver, basisPoints) to change") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("   - Use getRoyaltyRate(tokenId) to check current rate") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("7. (Optional) Configure additional prices:") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("   - setErc20Price(APE, amount) for APE minting") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("   - setEthPrice(amount) for ETH minting") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("8. (Optional) Configure additional unbind fees:") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("   - setUnbindFeeETH(amount) for ETH unbind fee") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("   - setUnbindFeeERC20(NGT/APE, amount) for token unbind fees") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] VM::stopBroadcast()
+    │   └─ ← [Return] 
+    └─ ← [Stop] 
+
+
+Script ran successfully.
+
+== Logs ==
+  Deploying GridStaker with:
+    Deployer: 0x634989990acb7F95d07Ac09a6c35491Ac8dFa3Cf
+    Collection: 0xa8A16C3259aD84162a0868E7927523B81eF8BF2D
+    Initial Payout: 0x634989990acb7F95d07Ac09a6c35491Ac8dFa3Cf
+    Royalty Receiver: 0x634989990acb7F95d07Ac09a6c35491Ac8dFa3Cf
+    Default Royalty: 6.9%
+  
+=== GridStaker Deployed ===
+  Address: 0x9E16F09ef9d1B122D90Cca704fdB9415207b2F8c
+  
+=== Pricing Configured ===
+  NGT Price: 3333 NGT
+  NGT Token: 0x72CddB64A72176B442bdfD9C8Bb7968E652d8D1a
+  
+=== Unbind Fee Configured ===
+  Unbind Fee: 0.05 APE (native currency)
+  This covers gas for:
+    - Authorization call: ~30,000 gas
+    - Unbind function: ~200,000-400,000 gas
+    - Total: ~230,000-430,000 gas
+    - 0.05 APE provides large safety margin
+  
+=== Transfer Validator Configured ===
+  Validator Address: 0x721C008fdff27BF06E7E123956E2Fe03B63342e3
+  IMPORTANT: GridStaker must be whitelisted on validator!
+  
+=== Roles (all assigned to deployer) ===
+  DEFAULT_ADMIN_ROLE: Can grant/revoke all roles
+  PAUSER_ROLE: Can pause contract
+  UNPAUSER_ROLE: Can unpause contract
+  FUNDS_ROLE: Can change prices, payout, ticket checker, royalties
+  
+=== Royalty Configuration ===
+  Receiver: 0x634989990acb7F95d07Ac09a6c35491Ac8dFa3Cf
+  Rate: 690 basis points
+  Percentage: 6 %
+  
+=== CRITICAL: Pre-fund GridStaker with APE ===
+  GridStaker needs APE balance to authorize itself during unbind
+  Send 0.1 APE to GridStaker contract: 0x9E16F09ef9d1B122D90Cca704fdB9415207b2F8c
+  This will cover authorization gas for many unbinds
+  The 0.05 APE unbind fee goes to payout, not to GridStaker
+  
+=== Next Steps ===
+  1. Update .env: NEXT_PUBLIC_GRID_STAKER_ADDRESS= 0x9E16F09ef9d1B122D90Cca704fdB9415207b2F8c
+  2. PRE-FUND GRIDSTAKER:
+     - Send 0.1 APE to: 0x9E16F09ef9d1B122D90Cca704fdB9415207b2F8c
+     - This covers authorization gas for unbinds
+  3. (Optional) WHITELIST GRIDSTAKER ON VALIDATOR:
+     - Only needed if authorization mode is DISABLED
+     - If authorization mode is enabled, user authorization is sufficient
+     - Validator: 0x721C008fdff27BF06E7E123956E2Fe03B63342e3
+     - GridStaker: 0x32C7d8841E3dEfaE125Cd19d8283985e2A2Fe56E
+  4. REGISTER GRIDSTAKER AS COLLECTION ON VALIDATOR:
+     - Apply operator whitelist to GridStaker collection
+     - Whitelist marketplace operators (OpenSea, Magic Eden, etc.)
+     - This is for Grid NFT secondary sales, not MineBoy transfers
+  5. (Optional) Call setPayout(newAddress) to change payout destination
+  6. (Optional) Adjust royalty:
+     - Current: 6.9% (690 basis points)
+     - Use setDefaultRoyalty(receiver, basisPoints) to change
+     - Use getRoyaltyRate(tokenId) to check current rate
+  7. (Optional) Configure additional prices:
+     - setErc20Price(APE, amount) for APE minting
+     - setEthPrice(amount) for ETH minting
+  8. (Optional) Configure additional unbind fees:
+     - setUnbindFeeETH(amount) for ETH unbind fee
+     - setUnbindFeeERC20(NGT/APE, amount) for token unbind fees
+
+## Setting up 1 EVM.
+==========================
+Simulated On-chain Traces:
+
+  [4466868] → new GridStaker@0x9E16F09ef9d1B122D90Cca704fdB9415207b2F8c
+    ├─ emit RoleGranted(role: 0x0000000000000000000000000000000000000000000000000000000000000000, account: 0x634989990acb7F95d07Ac09a6c35491Ac8dFa3Cf, sender: 0x634989990acb7F95d07Ac09a6c35491Ac8dFa3Cf)
+    ├─ emit RoleGranted(role: 0x65d7a28e3265b37a6474929f336521b332c1681b933f6cb9f3376673440d862a, account: 0x634989990acb7F95d07Ac09a6c35491Ac8dFa3Cf, sender: 0x634989990acb7F95d07Ac09a6c35491Ac8dFa3Cf)
+    ├─ emit RoleGranted(role: 0x427da25fe773164f88948d3e215c94b6554e2ed5e5f203a821c9f2f6131cf75a, account: 0x634989990acb7F95d07Ac09a6c35491Ac8dFa3Cf, sender: 0x634989990acb7F95d07Ac09a6c35491Ac8dFa3Cf)
+    ├─ emit RoleGranted(role: 0x7840a44bf6bbc1b45786ad46ece0694a9179b33e609d4ac4a51e6466e1f664c2, account: 0x634989990acb7F95d07Ac09a6c35491Ac8dFa3Cf, sender: 0x634989990acb7F95d07Ac09a6c35491Ac8dFa3Cf)
+    └─ ← [Return] 21145 bytes of code
+
+  [26936] GridStaker::setErc20Price(0x72CddB64A72176B442bdfD9C8Bb7968E652d8D1a, 3333000000000000000000 [3.333e21])
+    ├─ emit Erc20PriceUpdated(by: 0x634989990acb7F95d07Ac09a6c35491Ac8dFa3Cf, token: 0x72CddB64A72176B442bdfD9C8Bb7968E652d8D1a, price: 3333000000000000000000 [3.333e21])
+    └─ ← [Stop] 
+
+  [26263] GridStaker::setUnbindFeeETH(50000000000000000 [5e16])
+    ├─ emit UnbindFeeETHUpdated(by: 0x634989990acb7F95d07Ac09a6c35491Ac8dFa3Cf, feeWei: 50000000000000000 [5e16])
+    └─ ← [Stop] 
+
+  [26470] GridStaker::setTransferValidator(0x721C008fdff27BF06E7E123956E2Fe03B63342e3)
+    ├─ emit TransferValidatorUpdated(by: 0x634989990acb7F95d07Ac09a6c35491Ac8dFa3Cf, validator: 0x721C008fdff27BF06E7E123956E2Fe03B63342e3)
+    └─ ← [Stop] 
+
+
+==========================
+
+Chain 33139
+
+Estimated gas price: 50.84138 gwei
+
+Estimated total gas used for script: 6551480
+
+Estimated amount required: 0.3330862842424 ETH
+
+==========================
+
+Transactions saved to: /Users/stoph/Desktop/learn_to_code/Cursor/Project_Downloads/Backups/nft-collage/broadcast/DeployGridStaker.s.sol/33139/run-latest.json
+
+Sensitive values saved to: /Users/stoph/Desktop/learn_to_code/Cursor/Project_Downloads/Backups/nft-collage/cache/DeployGridStaker.s.sol/33139/run-latest.json
+
+Error: 
+Missing etherscan key for chain 33139

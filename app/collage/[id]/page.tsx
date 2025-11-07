@@ -83,7 +83,7 @@ export default function CollagePage() {
   };
 
   const handleUnbindSuccess = () => {
-    router.push("/my-grids");
+    router.push("/my-blocks");
   };
 
   const isLoading = loadingURI || loadingUnderlying;
@@ -143,7 +143,7 @@ export default function CollagePage() {
           }}
         >
           <Link
-            href="/my-grids"
+            href="/my-blocks"
             style={{
               color: "#ffffff",
               textDecoration: "none",

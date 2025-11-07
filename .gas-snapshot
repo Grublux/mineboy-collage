@@ -1,0 +1,6 @@
+CollageStakerTest:testGas_Mint16Tokens() (gas: 1086649)
+CollageStakerTest:testGas_Mint36Tokens() (gas: 2223340)
+CollageStakerTest:testGas_Mint9Tokens() (gas: 689196)
+CollageStakerTest:testGas_Unbind16Tokens() (gas: 974911)
+CollageStakerTest:testGas_Unbind36Tokens() (gas: 1965349)
+CollageStakerTest:testGas_Unbind9Tokens() (gas: 627977)

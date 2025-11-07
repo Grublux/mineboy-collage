@@ -1,0 +1,137 @@
+No files changed, compilation skipped
+Traces:
+  [4130272] DeployGridStaker::run()
+    ├─ [0] VM::envUint("PRIVATE_KEY") [staticcall]
+    │   └─ ← [Return] <env var value>
+    ├─ [0] VM::addr(<pk>) [staticcall]
+    │   └─ ← [Return] 0x634989990acb7F95d07Ac09a6c35491Ac8dFa3Cf
+    ├─ [0] console::log("Deploying GridStaker with:") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("  Deployer:", 0x634989990acb7F95d07Ac09a6c35491Ac8dFa3Cf) [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("  Collection:", 0xa8A16C3259aD84162a0868E7927523B81eF8BF2D) [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("  Initial Payout:", 0x634989990acb7F95d07Ac09a6c35491Ac8dFa3Cf) [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] VM::startBroadcast(<pk>)
+    │   └─ ← [Return] 
+    ├─ [4042497] → new GridStaker@0xaDBCBb5C031cF7AEbB09d4fFE8906cfbcDdAd1c0
+    │   ├─ emit RoleGranted(role: 0x0000000000000000000000000000000000000000000000000000000000000000, account: 0x634989990acb7F95d07Ac09a6c35491Ac8dFa3Cf, sender: 0x634989990acb7F95d07Ac09a6c35491Ac8dFa3Cf)
+    │   ├─ emit RoleGranted(role: 0x65d7a28e3265b37a6474929f336521b332c1681b933f6cb9f3376673440d862a, account: 0x634989990acb7F95d07Ac09a6c35491Ac8dFa3Cf, sender: 0x634989990acb7F95d07Ac09a6c35491Ac8dFa3Cf)
+    │   ├─ emit RoleGranted(role: 0x427da25fe773164f88948d3e215c94b6554e2ed5e5f203a821c9f2f6131cf75a, account: 0x634989990acb7F95d07Ac09a6c35491Ac8dFa3Cf, sender: 0x634989990acb7F95d07Ac09a6c35491Ac8dFa3Cf)
+    │   ├─ emit RoleGranted(role: 0x7840a44bf6bbc1b45786ad46ece0694a9179b33e609d4ac4a51e6466e1f664c2, account: 0x634989990acb7F95d07Ac09a6c35491Ac8dFa3Cf, sender: 0x634989990acb7F95d07Ac09a6c35491Ac8dFa3Cf)
+    │   └─ ← [Return] 19139 bytes of code
+    ├─ [0] console::log("\n=== GridStaker Deployed ===") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("Address:", GridStaker: [0xaDBCBb5C031cF7AEbB09d4fFE8906cfbcDdAd1c0]) [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [24936] GridStaker::setErc20Price(0x72CddB64A72176B442bdfD9C8Bb7968E652d8D1a, 3333000000000000000000 [3.333e21])
+    │   ├─ emit Erc20PriceUpdated(by: 0x634989990acb7F95d07Ac09a6c35491Ac8dFa3Cf, token: 0x72CddB64A72176B442bdfD9C8Bb7968E652d8D1a, price: 3333000000000000000000 [3.333e21])
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("\n=== Pricing Configured ===") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("NGT Price:", 3333, "NGT") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("NGT Token:", 0x72CddB64A72176B442bdfD9C8Bb7968E652d8D1a) [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("\n=== Roles (all assigned to deployer) ===") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("DEFAULT_ADMIN_ROLE: Can grant/revoke all roles") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("PAUSER_ROLE: Can pause contract") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("UNPAUSER_ROLE: Can unpause contract") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("FUNDS_ROLE: Can change prices, payout, ticket checker") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("\n=== Next Steps ===") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("1. Update .env: NEXT_PUBLIC_GRID_STAKER_ADDRESS=", GridStaker: [0xaDBCBb5C031cF7AEbB09d4fFE8906cfbcDdAd1c0]) [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("2. (Optional) Call setPayout(newAddress) to change payout destination") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("3. (Optional) Configure additional prices:") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("   - setErc20Price(APE, amount) for APE minting") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("   - setEthPrice(amount) for ETH minting") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("4. (Optional) Configure unbind fees:") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("   - setUnbindFeeETH(amount) for ETH unbind fee") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("   - setUnbindFeeERC20(NGT/APE, amount) for token unbind fees") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("5. (Future) Deploy GridTicketVault1155 and call setTicketChecker if needed") [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] VM::stopBroadcast()
+    │   └─ ← [Return] 
+    └─ ← [Stop] 
+
+
+Script ran successfully.
+
+== Logs ==
+  Deploying GridStaker with:
+    Deployer: 0x634989990acb7F95d07Ac09a6c35491Ac8dFa3Cf
+    Collection: 0xa8A16C3259aD84162a0868E7927523B81eF8BF2D
+    Initial Payout: 0x634989990acb7F95d07Ac09a6c35491Ac8dFa3Cf
+  
+=== GridStaker Deployed ===
+  Address: 0xaDBCBb5C031cF7AEbB09d4fFE8906cfbcDdAd1c0
+  
+=== Pricing Configured ===
+  NGT Price: 3333 NGT
+  NGT Token: 0x72CddB64A72176B442bdfD9C8Bb7968E652d8D1a
+  
+=== Roles (all assigned to deployer) ===
+  DEFAULT_ADMIN_ROLE: Can grant/revoke all roles
+  PAUSER_ROLE: Can pause contract
+  UNPAUSER_ROLE: Can unpause contract
+  FUNDS_ROLE: Can change prices, payout, ticket checker
+  
+=== Next Steps ===
+  1. Update .env: NEXT_PUBLIC_GRID_STAKER_ADDRESS= 0xaDBCBb5C031cF7AEbB09d4fFE8906cfbcDdAd1c0
+  2. (Optional) Call setPayout(newAddress) to change payout destination
+  3. (Optional) Configure additional prices:
+     - setErc20Price(APE, amount) for APE minting
+     - setEthPrice(amount) for ETH minting
+  4. (Optional) Configure unbind fees:
+     - setUnbindFeeETH(amount) for ETH unbind fee
+     - setUnbindFeeERC20(NGT/APE, amount) for token unbind fees
+  5. (Future) Deploy GridTicketVault1155 and call setTicketChecker if needed
+
+## Setting up 1 EVM.
+==========================
+Simulated On-chain Traces:
+
+  [4042497] → new GridStaker@0xaDBCBb5C031cF7AEbB09d4fFE8906cfbcDdAd1c0
+    ├─ emit RoleGranted(role: 0x0000000000000000000000000000000000000000000000000000000000000000, account: 0x634989990acb7F95d07Ac09a6c35491Ac8dFa3Cf, sender: 0x634989990acb7F95d07Ac09a6c35491Ac8dFa3Cf)
+    ├─ emit RoleGranted(role: 0x65d7a28e3265b37a6474929f336521b332c1681b933f6cb9f3376673440d862a, account: 0x634989990acb7F95d07Ac09a6c35491Ac8dFa3Cf, sender: 0x634989990acb7F95d07Ac09a6c35491Ac8dFa3Cf)
+    ├─ emit RoleGranted(role: 0x427da25fe773164f88948d3e215c94b6554e2ed5e5f203a821c9f2f6131cf75a, account: 0x634989990acb7F95d07Ac09a6c35491Ac8dFa3Cf, sender: 0x634989990acb7F95d07Ac09a6c35491Ac8dFa3Cf)
+    ├─ emit RoleGranted(role: 0x7840a44bf6bbc1b45786ad46ece0694a9179b33e609d4ac4a51e6466e1f664c2, account: 0x634989990acb7F95d07Ac09a6c35491Ac8dFa3Cf, sender: 0x634989990acb7F95d07Ac09a6c35491Ac8dFa3Cf)
+    └─ ← [Return] 19139 bytes of code
+
+  [26936] GridStaker::setErc20Price(0x72CddB64A72176B442bdfD9C8Bb7968E652d8D1a, 3333000000000000000000 [3.333e21])
+    ├─ emit Erc20PriceUpdated(by: 0x634989990acb7F95d07Ac09a6c35491Ac8dFa3Cf, token: 0x72CddB64A72176B442bdfD9C8Bb7968E652d8D1a, price: 3333000000000000000000 [3.333e21])
+    └─ ← [Stop] 
+
+
+==========================
+
+Chain 33139
+
+Estimated gas price: 50.84138 gwei
+
+Estimated total gas used for script: 5812854
+
+Estimated amount required: 0.29553351909852 ETH
+
+==========================
+
+Transactions saved to: /Users/stoph/Desktop/learn_to_code/Cursor/Project_Downloads/Backups/nft-collage/broadcast/DeployGridStaker.s.sol/33139/run-latest.json
+
+Sensitive values saved to: /Users/stoph/Desktop/learn_to_code/Cursor/Project_Downloads/Backups/nft-collage/cache/DeployGridStaker.s.sol/33139/run-latest.json
+
+Error: 
+Missing etherscan key for chain 33139

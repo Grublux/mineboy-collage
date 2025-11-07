@@ -12,9 +12,9 @@ import { ngtTokenAddress, ERC20_ABI } from "@/frontend/lib/contracts/gridStaker"
 import { formatUnits } from "viem";
 
 const collections = [
-  { name: "MineBoy Grids", href: "/mineboy-grids" },
-  { name: "NPC Grids", href: "/npc-grids" },
-  { name: "Goobaloo Grids", href: "/goobaloo-grids" },
+  { name: "MineBoy Blocks", href: "/mineboy-blocks" },
+  { name: "NPC Blocks", href: "/npc-blocks" },
+  { name: "Goobaloo Blocks", href: "/goobaloo-blocks" },
 ];
 
 export default function HomePage() {
@@ -630,7 +630,7 @@ export default function HomePage() {
           <WalletHeader />
           
           {/* Page Header */}
-          <Header title="Grids" />
+          <Header title="Blocked" />
           
           {/* Collection Links */}
           <CollectionLinks collections={collections} />

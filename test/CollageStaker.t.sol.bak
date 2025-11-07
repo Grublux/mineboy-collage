@@ -1,0 +1,416 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+
+import "forge-std/Test.sol";
+import "../contracts/CollageStaker.sol";
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
+import "solady/utils/Base64.sol";
+
+// Mock ERC721 for testing
+contract ERC721MintableMock is ERC721 {
+    uint256 private _nextTokenId;
+
+    constructor() ERC721("Mock NFT", "MOCK") {}
+
+    function mint(address to) external returns (uint256) {
+        uint256 tokenId = _nextTokenId++;
+        _mint(to, tokenId);
+        return tokenId;
+    }
+}
+
+contract CollageStakerTest is Test {
+    CollageStaker public staker;
+    ERC721MintableMock public mockNFT;
+
+    address public user = address(0x1);
+    address public user2 = address(0x2);
+
+    event CollageMinted(uint256 indexed id, address indexed owner, uint16 rows, uint16 cols, uint256[] tokenIds);
+    event CollageSnapshotSet(uint256 indexed id, uint256 sizeBytes);
+    event CollageUnbound(uint256 indexed id, address indexed owner);
+
+    function setUp() public {
+        mockNFT = new ERC721MintableMock();
+        staker = new CollageStaker(address(mockNFT));
+    }
+
+    function _mintAndApproveNFTs(address to, uint256 count) internal returns (uint256[] memory) {
+        uint256[] memory tokenIds = new uint256[](count);
+        for (uint256 i = 0; i < count; i++) {
+            tokenIds[i] = mockNFT.mint(to);
+        }
+
+        vm.prank(to);
+        mockNFT.setApprovalForAll(address(staker), true);
+
+        return tokenIds;
+    }
+
+    function testMintStoresDataAndMintsNft() public {
+        uint256[] memory tokenIds = _mintAndApproveNFTs(user, 4);
+
+        vm.prank(user);
+        vm.expectEmit(true, true, false, true);
+        emit CollageMinted(1, user, 2, 2, tokenIds);
+        uint256 collageId = staker.mintCollage(2, 2, tokenIds);
+
+        assertEq(collageId, 1);
+        assertEq(staker.ownerOf(collageId), user);
+
+        (address collection, uint16 rows, uint16 cols, uint256[] memory storedTokenIds) =
+            staker.getUnderlying(collageId);
+        assertEq(collection, address(mockNFT));
+        assertEq(rows, 2);
+        assertEq(cols, 2);
+        assertEq(storedTokenIds.length, 4);
+        for (uint256 i = 0; i < 4; i++) {
+            assertEq(storedTokenIds[i], tokenIds[i]);
+            assertEq(mockNFT.ownerOf(tokenIds[i]), address(staker));
+        }
+    }
+
+    function testSnapshotOnceOnlyAndSizeCap() public {
+        uint256[] memory tokenIds = _mintAndApproveNFTs(user, 4);
+
+        vm.prank(user);
+        uint256 collageId = staker.mintCollage(2, 2, tokenIds);
+
+        // Create small PNG data
+        bytes memory smallPng = new bytes(1000);
+        for (uint256 i = 0; i < 1000; i++) {
+            smallPng[i] = bytes1(uint8(i % 256));
+        }
+
+        // Set snapshot successfully
+        vm.prank(user);
+        vm.expectEmit(true, false, false, true);
+        emit CollageSnapshotSet(collageId, 1000);
+        staker.setSnapshot(collageId, smallPng);
+
+        // Try to set again - should revert
+        vm.prank(user);
+        vm.expectRevert(CollageStaker.SnapshotAlreadySet.selector);
+        staker.setSnapshot(collageId, smallPng);
+
+        // Test size cap with too large data
+        uint256[] memory tokenIds2 = _mintAndApproveNFTs(user, 4);
+        vm.prank(user);
+        uint256 collageId2 = staker.mintCollage(2, 2, tokenIds2);
+
+        bytes memory tooBigPng = new bytes(180_001);
+        vm.prank(user);
+        vm.expectRevert(CollageStaker.SnapshotTooLarge.selector);
+        staker.setSnapshot(collageId2, tooBigPng);
+
+        // Test empty snapshot
+        vm.prank(user);
+        vm.expectRevert(CollageStaker.EmptySnapshot.selector);
+        staker.setSnapshot(collageId2, "");
+    }
+
+    function testTokenURI_SchematicBeforeSnapshot() public {
+        uint256[] memory tokenIds = _mintAndApproveNFTs(user, 4);
+
+        vm.prank(user);
+        uint256 collageId = staker.mintCollage(2, 2, tokenIds);
+
+        string memory uri = staker.tokenURI(collageId);
+
+        // Should be base64 JSON
+        assertTrue(bytes(uri).length > 0);
+        assertEq(keccak256(bytes(substring(uri, 0, 29))), keccak256(bytes("data:application/json;base64,")));
+
+        // Decode the JSON
+        string memory base64Json = substring(uri, 29, bytes(uri).length - 29);
+        bytes memory jsonBytes = Base64.decode(base64Json);
+        string memory json = string(jsonBytes);
+
+        // Check that it contains SVG image
+        assertTrue(contains(json, "data:image/svg+xml;base64,"));
+        assertTrue(contains(json, "Collage #1"));
+        assertTrue(contains(json, "2x2"));
+    }
+
+    function testTokenURI_PngAfterSnapshot() public {
+        uint256[] memory tokenIds = _mintAndApproveNFTs(user, 4);
+
+        vm.prank(user);
+        uint256 collageId = staker.mintCollage(2, 2, tokenIds);
+
+        // Create and set PNG snapshot
+        bytes memory pngData = new bytes(100);
+        for (uint256 i = 0; i < 100; i++) {
+            pngData[i] = bytes1(uint8(i % 256));
+        }
+
+        vm.prank(user);
+        staker.setSnapshot(collageId, pngData);
+
+        string memory uri = staker.tokenURI(collageId);
+
+        // Decode the JSON
+        string memory base64Json = substring(uri, 29, bytes(uri).length - 29);
+        bytes memory jsonBytes = Base64.decode(base64Json);
+        string memory json = string(jsonBytes);
+
+        // Check that it contains SVG wrapping the PNG (after our update)
+        assertTrue(contains(json, "data:image/svg+xml;base64,"));
+        // The SVG should contain an embedded PNG
+        // Decode the SVG to verify it contains PNG reference
+        // Note: The JSON contains SVG which contains PNG, so we check for SVG wrapper
+    }
+
+    function testTransferCollageThenUnbindByNewOwner() public {
+        uint256[] memory tokenIds = _mintAndApproveNFTs(user, 4);
+
+        vm.prank(user);
+        uint256 collageId = staker.mintCollage(2, 2, tokenIds);
+
+        // Transfer to user2
+        vm.prank(user);
+        staker.transferFrom(user, user2, collageId);
+
+        assertEq(staker.ownerOf(collageId), user2);
+
+        // user2 unbinds
+        vm.prank(user2);
+        vm.expectEmit(true, true, false, false);
+        emit CollageUnbound(collageId, user2);
+        staker.unbind(collageId);
+
+        // Collage should be burned
+        vm.expectRevert();
+        staker.ownerOf(collageId);
+
+        // Tokens should be returned to user2
+        for (uint256 i = 0; i < 4; i++) {
+            assertEq(mockNFT.ownerOf(tokenIds[i]), user2);
+        }
+    }
+
+    function testPauseBlocksMintAndUnbind() public {
+        uint256[] memory tokenIds = _mintAndApproveNFTs(user, 4);
+
+        // Pause the contract
+        staker.pause();
+
+        // Mint should fail
+        vm.prank(user);
+        vm.expectRevert(abi.encodeWithSignature("EnforcedPause()"));
+        staker.mintCollage(2, 2, tokenIds);
+
+        // Unpause
+        staker.unpause();
+
+        // Mint should work now
+        vm.prank(user);
+        uint256 collageId = staker.mintCollage(2, 2, tokenIds);
+
+        // Pause again
+        staker.pause();
+
+        // Unbind should NOT be blocked (unbind is nonReentrant but not whenNotPaused)
+        // Actually, looking at the contract, unbind doesn't have whenNotPaused, so it should work
+        vm.prank(user);
+        staker.unbind(collageId);
+
+        // Let's verify mint is blocked when paused
+        uint256[] memory tokenIds2 = _mintAndApproveNFTs(user, 4);
+        vm.prank(user);
+        vm.expectRevert(abi.encodeWithSignature("EnforcedPause()"));
+        staker.mintCollage(2, 2, tokenIds2);
+    }
+
+    function testReentrancyGuards() public {
+        // Deploy malicious contract that tries to reenter
+        MaliciousReentrancy malicious = new MaliciousReentrancy();
+
+        uint256[] memory tokenIds = _mintAndApproveNFTs(address(malicious), 4);
+
+        malicious.setStaker(address(staker));
+        malicious.setTokenIds(tokenIds);
+
+        // Attempt to mint which will try to reenter - should revert due to reentrancy guard
+        vm.expectRevert();
+        malicious.attemptReentrancy();
+    }
+
+    function testInvalidGridSize() public {
+        uint256[] memory tokenIds = _mintAndApproveNFTs(user, 4);
+
+        vm.startPrank(user);
+        vm.expectRevert(CollageStaker.InvalidGridSize.selector);
+        staker.mintCollage(0, 2, tokenIds);
+
+        vm.expectRevert(CollageStaker.InvalidGridSize.selector);
+        staker.mintCollage(2, 0, tokenIds);
+        vm.stopPrank();
+    }
+
+    function testNoTokensProvided() public {
+        uint256[] memory emptyTokenIds = new uint256[](0);
+
+        vm.prank(user);
+        vm.expectRevert(CollageStaker.NoTokensProvided.selector);
+        staker.mintCollage(2, 2, emptyTokenIds);
+    }
+
+    function testNotCollageOwner() public {
+        uint256[] memory tokenIds = _mintAndApproveNFTs(user, 4);
+
+        vm.prank(user);
+        uint256 collageId = staker.mintCollage(2, 2, tokenIds);
+
+        // user2 tries to set snapshot
+        bytes memory pngData = new bytes(100);
+        vm.prank(user2);
+        vm.expectRevert(CollageStaker.NotCollageOwner.selector);
+        staker.setSnapshot(collageId, pngData);
+
+        // user2 tries to unbind
+        vm.prank(user2);
+        vm.expectRevert(CollageStaker.NotCollageOwner.selector);
+        staker.unbind(collageId);
+    }
+
+    // Gas snapshots
+    function testGas_Mint9Tokens() public {
+        uint256[] memory tokenIds = _mintAndApproveNFTs(user, 9);
+
+        vm.prank(user);
+        uint256 gasBefore = gasleft();
+        staker.mintCollage(3, 3, tokenIds);
+        uint256 gasUsed = gasBefore - gasleft();
+
+        console.log("Gas used for mint with 9 tokens:", gasUsed);
+    }
+
+    function testGas_Mint16Tokens() public {
+        uint256[] memory tokenIds = _mintAndApproveNFTs(user, 16);
+
+        vm.prank(user);
+        uint256 gasBefore = gasleft();
+        staker.mintCollage(4, 4, tokenIds);
+        uint256 gasUsed = gasBefore - gasleft();
+
+        console.log("Gas used for mint with 16 tokens:", gasUsed);
+    }
+
+    function testGas_Mint36Tokens() public {
+        uint256[] memory tokenIds = _mintAndApproveNFTs(user, 36);
+
+        vm.prank(user);
+        uint256 gasBefore = gasleft();
+        staker.mintCollage(6, 6, tokenIds);
+        uint256 gasUsed = gasBefore - gasleft();
+
+        console.log("Gas used for mint with 36 tokens:", gasUsed);
+    }
+
+    function testGas_Unbind9Tokens() public {
+        uint256[] memory tokenIds = _mintAndApproveNFTs(user, 9);
+
+        vm.prank(user);
+        uint256 collageId = staker.mintCollage(3, 3, tokenIds);
+
+        vm.prank(user);
+        uint256 gasBefore = gasleft();
+        staker.unbind(collageId);
+        uint256 gasUsed = gasBefore - gasleft();
+
+        console.log("Gas used for unbind with 9 tokens:", gasUsed);
+    }
+
+    function testGas_Unbind16Tokens() public {
+        uint256[] memory tokenIds = _mintAndApproveNFTs(user, 16);
+
+        vm.prank(user);
+        uint256 collageId = staker.mintCollage(4, 4, tokenIds);
+
+        vm.prank(user);
+        uint256 gasBefore = gasleft();
+        staker.unbind(collageId);
+        uint256 gasUsed = gasBefore - gasleft();
+
+        console.log("Gas used for unbind with 16 tokens:", gasUsed);
+    }
+
+    function testGas_Unbind36Tokens() public {
+        uint256[] memory tokenIds = _mintAndApproveNFTs(user, 36);
+
+        vm.prank(user);
+        uint256 collageId = staker.mintCollage(6, 6, tokenIds);
+
+        vm.prank(user);
+        uint256 gasBefore = gasleft();
+        staker.unbind(collageId);
+        uint256 gasUsed = gasBefore - gasleft();
+
+        console.log("Gas used for unbind with 36 tokens:", gasUsed);
+    }
+
+    // Helper functions
+    function substring(string memory str, uint256 startIndex, uint256 length) internal pure returns (string memory) {
+        bytes memory strBytes = bytes(str);
+        bytes memory result = new bytes(length);
+        for (uint256 i = 0; i < length; i++) {
+            result[i] = strBytes[startIndex + i];
+        }
+        return string(result);
+    }
+
+    function contains(string memory haystack, string memory needle) internal pure returns (bool) {
+        bytes memory haystackBytes = bytes(haystack);
+        bytes memory needleBytes = bytes(needle);
+
+        if (needleBytes.length > haystackBytes.length) {
+            return false;
+        }
+
+        for (uint256 i = 0; i <= haystackBytes.length - needleBytes.length; i++) {
+            bool found = true;
+            for (uint256 j = 0; j < needleBytes.length; j++) {
+                if (haystackBytes[i + j] != needleBytes[j]) {
+                    found = false;
+                    break;
+                }
+            }
+            if (found) {
+                return true;
+            }
+        }
+        return false;
+    }
+}
+
+// Malicious contract for reentrancy testing
+contract MaliciousReentrancy is IERC721Receiver {
+    CollageStaker public staker;
+    uint256[] public tokenIds;
+    bool public attacking;
+
+    function setStaker(address _staker) external {
+        staker = CollageStaker(_staker);
+    }
+
+    function setTokenIds(uint256[] memory _tokenIds) external {
+        tokenIds = _tokenIds;
+    }
+
+    function attemptReentrancy() external {
+        attacking = true;
+        staker.mintCollage(2, 2, tokenIds);
+    }
+
+    function onERC721Received(address, address, uint256, bytes calldata) external override returns (bytes4) {
+        // Attempt to reenter during NFT transfer
+        if (attacking) {
+            attacking = false;
+            // This should fail due to reentrancy guard
+            staker.mintCollage(2, 2, tokenIds);
+        }
+        return IERC721Receiver.onERC721Received.selector;
+    }
+}

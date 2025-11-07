@@ -1,0 +1,54 @@
+===========================================
+APESCAN VERIFICATION SETTINGS
+===========================================
+
+📝 Compiler Settings (CRITICAL - Must Match Exactly):
+-----------------------------------------------------
+Compiler Version: 0.8.24
+EVM Version: Cancun
+Optimization: Enabled
+Optimization Runs: 200
+Via IR: No (false)
+
+⚠️ IMPORTANT: These settings MUST match your foundry.toml exactly!
+
+🔧 Step-by-Step Verification:
+------------------------------
+1. Go to: https://apescan.io/address/0xaDBCBb5C031cF7AEbB09d4fFE8906cfbcDdAd1c0#code
+
+2. Click "Contract" tab → "Verify and Publish"
+
+3. Select "Via flattened source code"
+
+4. Paste the flattened contract code (already in clipboard)
+
+5. Fill in these EXACT settings:
+   - Compiler Version: 0.8.24
+   - EVM Version: Cancun
+   - Optimization: Yes (check the box)
+   - Optimization Runs: 200
+   - Via IR: No (unchecked)
+   - License: MIT
+
+6. Constructor Arguments (ABI-encoded):
+   000000000000000000000000a8a16c3259ad84162a0868e7927523b81ef8bf2d000000000000000000000000634989990acb7f95d07ac09a6c35491ac8dfa3cf
+
+7. Click "Verify and Publish"
+
+📋 What the Constructor Arguments Mean:
+---------------------------------------
+Arg 1: Collection address (0xa8A16C3259aD84162a0868E7927523B81eF8BF2D)
+Arg 2: Initial payout address (0x634989990acb7F95d07Ac09a6c35491Ac8dFa3Cf)
+
+✅ Verification Checklist:
+--------------------------
+□ Contract code pasted (in clipboard)
+□ Compiler: 0.8.24
+□ EVM: Cancun
+□ Optimization: Enabled
+□ Optimization Runs: 200
+□ Via IR: Disabled
+□ License: MIT
+□ Constructor args pasted
+□ Clicked "Verify and Publish"
+
