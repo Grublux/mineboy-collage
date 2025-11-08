@@ -1898,10 +1898,10 @@ export default function MyCollagesPage() {
             <div className={styles.contentWrapper}>
               <div className={styles.textContent}>
                 <p>
-                  MineBlocks™ are an evolving experiment in NFT composability — exploring new and creative ways to combine, package, and financialize NFTs.
+                  MineBlocks™ are an evolving experiment in NFT composability - exploring new and creative ways to combine, package, and financialize NFTs.
                 </p>
                 <p>
-                  Created by the team at NGMI / Not A Punks Cult, MineBlocks reflects our passion for on-chain innovation and creative experimentation.
+                  Created by the team at NGMI / Not A Punks Cult, MineBlocks reflect our passion for on-chain innovation and creative experimentation.
                 </p>
               </div>
 
