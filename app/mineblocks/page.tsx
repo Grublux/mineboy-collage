@@ -145,6 +145,25 @@ export default function MyCollagesPage() {
         maximumFractionDigits: 2,
       })
     : "0";
+
+  // Read MineBoy total supply
+  const { data: mineboyTotalSupply } = useReadContract({
+    address: sourceCollectionAddress,
+    abi: [
+      {
+        inputs: [],
+        name: "totalSupply",
+        outputs: [{ name: "", type: "uint256" }],
+        stateMutability: "view",
+        type: "function",
+      },
+    ],
+    functionName: "totalSupply",
+  });
+
+  const totalSupplyFormatted = mineboyTotalSupply 
+    ? Number(mineboyTotalSupply).toLocaleString()
+    : "0";
   
   const [activeTab, setActiveTab] = useState<"create" | "my-grids">("create");
   const [refreshKey, setRefreshKey] = useState(0);
@@ -856,6 +875,96 @@ export default function MyCollagesPage() {
         <div style={{ maxWidth: "1400px", margin: "0 auto" }}>
           <WalletHeader showCollectionNav />
           <Header title="MineBlocks" />
+          
+          {/* Staking Banner */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              gap: "clamp(8px, 2vw, 20px)",
+              flexWrap: "wrap",
+              marginBottom: "clamp(15px, 4vw, 30px)",
+              padding: "clamp(10px, 2vw, 15px) clamp(10px, 3vw, 20px)",
+              backgroundColor: "rgba(255, 255, 255, 0.05)",
+              border: "1px solid rgba(255, 255, 255, 0.2)",
+              borderRadius: "4px",
+              width: "100%",
+              boxSizing: "border-box",
+            }}
+          >
+            <div style={{ 
+              display: "flex", 
+              flexDirection: "column", 
+              alignItems: "center",
+              gap: "4px",
+              minWidth: "fit-content",
+            }}>
+              <div style={{ fontSize: "clamp(9px, 2vw, 11px)", color: "rgba(255, 255, 255, 0.6)", fontFamily: "monospace", textTransform: "uppercase" }}>
+                Pooled Rewards
+              </div>
+              <div style={{ fontSize: "clamp(11px, 2.5vw, 14px)", color: "#00ff00", fontFamily: "monospace", fontWeight: "bold" }}>
+                1,000 APE
+              </div>
+            </div>
+            <div style={{ 
+              display: "flex", 
+              flexDirection: "column", 
+              alignItems: "center",
+              gap: "4px",
+              minWidth: "fit-content",
+            }}>
+            <div style={{ fontSize: "clamp(9px, 2vw, 11px)", color: "rgba(255, 255, 255, 0.6)", fontFamily: "monospace", textTransform: "uppercase" }}>
+              Total Blocked
+            </div>
+            <div style={{ fontSize: "clamp(11px, 2.5vw, 14px)", color: "rgba(255, 255, 255, 0.85)", fontFamily: "monospace" }}>
+              0 / {totalSupplyFormatted}
+            </div>
+          </div>
+          <div style={{ 
+              display: "flex", 
+              flexDirection: "column", 
+              alignItems: "center",
+              gap: "4px",
+              minWidth: "fit-content",
+            }}>
+              <div style={{ fontSize: "clamp(9px, 2vw, 11px)", color: "rgba(255, 255, 255, 0.6)", fontFamily: "monospace", textTransform: "uppercase" }}>
+                My Blocked
+              </div>
+              <div style={{ fontSize: "clamp(11px, 2.5vw, 14px)", color: "rgba(255, 255, 255, 0.4)", fontFamily: "monospace" }}>
+                -
+              </div>
+            </div>
+            <div style={{ 
+              display: "flex", 
+              flexDirection: "column", 
+              alignItems: "center",
+              gap: "4px",
+              minWidth: "fit-content",
+            }}>
+              <div style={{ fontSize: "clamp(9px, 2vw, 11px)", color: "rgba(255, 255, 255, 0.6)", fontFamily: "monospace", textTransform: "uppercase" }}>
+                My Shares
+              </div>
+              <div style={{ fontSize: "clamp(11px, 2.5vw, 14px)", color: "rgba(255, 255, 255, 0.4)", fontFamily: "monospace" }}>
+                -
+              </div>
+            </div>
+            <div style={{ 
+              display: "flex", 
+              flexDirection: "column", 
+              alignItems: "center",
+              gap: "4px",
+              minWidth: "fit-content",
+            }}>
+              <div style={{ fontSize: "clamp(9px, 2vw, 11px)", color: "rgba(255, 255, 255, 0.6)", fontFamily: "monospace", textTransform: "uppercase" }}>
+                Pending Share
+              </div>
+              <div style={{ fontSize: "clamp(11px, 2.5vw, 14px)", color: "rgba(255, 255, 255, 0.4)", fontFamily: "monospace" }}>
+                -
+              </div>
+            </div>
+          </div>
+
           <div
             style={{
               display: "flex",
@@ -966,8 +1075,8 @@ export default function MyCollagesPage() {
             <div style={{ fontSize: "clamp(9px, 2vw, 11px)", color: "rgba(255, 255, 255, 0.6)", fontFamily: "monospace", textTransform: "uppercase" }}>
               Pooled Rewards
             </div>
-            <div style={{ fontSize: "clamp(11px, 2.5vw, 14px)", color: "rgba(255, 255, 255, 0.85)", fontFamily: "monospace" }}>
-              {isConnected ? "0 APE" : "-"}
+            <div style={{ fontSize: "clamp(11px, 2.5vw, 14px)", color: "#00ff00", fontFamily: "monospace", fontWeight: "bold" }}>
+              1,000 APE
             </div>
           </div>
           <div style={{ 
@@ -981,7 +1090,7 @@ export default function MyCollagesPage() {
               Total Blocked
             </div>
             <div style={{ fontSize: "clamp(11px, 2.5vw, 14px)", color: "rgba(255, 255, 255, 0.85)", fontFamily: "monospace" }}>
-              {isConnected ? "0 / 0" : "-"}
+              0 / {totalSupplyFormatted}
             </div>
           </div>
           <div style={{ 
@@ -992,9 +1101,9 @@ export default function MyCollagesPage() {
             minWidth: "fit-content",
           }}>
             <div style={{ fontSize: "clamp(9px, 2vw, 11px)", color: "rgba(255, 255, 255, 0.6)", fontFamily: "monospace", textTransform: "uppercase" }}>
-              My Blocked
+              My Blocks
             </div>
-            <div style={{ fontSize: "clamp(11px, 2.5vw, 14px)", color: "rgba(255, 255, 255, 0.85)", fontFamily: "monospace" }}>
+            <div style={{ fontSize: "clamp(11px, 2.5vw, 14px)", color: isConnected ? "rgba(255, 255, 255, 0.85)" : "rgba(255, 255, 255, 0.4)", fontFamily: "monospace" }}>
               {isConnected ? "0" : "-"}
             </div>
           </div>
@@ -1008,22 +1117,8 @@ export default function MyCollagesPage() {
             <div style={{ fontSize: "clamp(9px, 2vw, 11px)", color: "rgba(255, 255, 255, 0.6)", fontFamily: "monospace", textTransform: "uppercase" }}>
               My Shares
             </div>
-            <div style={{ fontSize: "clamp(11px, 2.5vw, 14px)", color: "rgba(255, 255, 255, 0.85)", fontFamily: "monospace" }}>
-              {isConnected ? "0" : "-"}
-            </div>
-          </div>
-          <div style={{ 
-            display: "flex", 
-            flexDirection: "column", 
-            alignItems: "center",
-            gap: "4px",
-            minWidth: "fit-content",
-          }}>
-            <div style={{ fontSize: "clamp(9px, 2vw, 11px)", color: "rgba(255, 255, 255, 0.6)", fontFamily: "monospace", textTransform: "uppercase" }}>
-              Total Shares
-            </div>
-            <div style={{ fontSize: "clamp(11px, 2.5vw, 14px)", color: "rgba(255, 255, 255, 0.85)", fontFamily: "monospace" }}>
-              {isConnected ? "0" : "-"}
+            <div style={{ fontSize: "clamp(11px, 2.5vw, 14px)", color: isConnected ? "rgba(255, 255, 255, 0.85)" : "rgba(255, 255, 255, 0.4)", fontFamily: "monospace" }}>
+              {isConnected ? "0 / 0" : "-"}
             </div>
           </div>
           <div style={{ 
@@ -1036,7 +1131,7 @@ export default function MyCollagesPage() {
             <div style={{ fontSize: "clamp(9px, 2vw, 11px)", color: "rgba(255, 255, 255, 0.6)", fontFamily: "monospace", textTransform: "uppercase" }}>
               Pending Share
             </div>
-            <div style={{ fontSize: "clamp(11px, 2.5vw, 14px)", color: "rgba(255, 255, 255, 0.85)", fontFamily: "monospace" }}>
+            <div style={{ fontSize: "clamp(11px, 2.5vw, 14px)", color: isConnected ? "rgba(255, 255, 255, 0.85)" : "rgba(255, 255, 255, 0.4)", fontFamily: "monospace" }}>
               {isConnected ? "0 APE" : "-"}
             </div>
           </div>
