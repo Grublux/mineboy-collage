@@ -1362,6 +1362,44 @@ export default function MyCollagesPage() {
                   )}
               </div>
             </div>
+
+            {/* About MineBlocks Section */}
+            <h2
+              style={{
+                fontSize: "clamp(20px, 6vw, 33px)",
+                fontFamily: "monospace",
+                textTransform: "uppercase",
+                letterSpacing: "clamp(1px, 0.5vw, 2px)",
+                marginTop: "40px",
+                marginBottom: "20px",
+                textAlign: "center",
+                color: "rgba(255, 255, 255, 0.85)",
+                WebkitFontSmoothing: "none",
+                MozOsxFontSmoothing: "grayscale",
+                textRendering: "optimizeSpeed",
+                filter: "contrast(1.2)",
+                wordWrap: "break-word",
+                overflowWrap: "break-word",
+                wordBreak: "break-word",
+                width: "100%",
+                maxWidth: "100%",
+                boxSizing: "border-box",
+                padding: "0 clamp(10px, 3vw, 20px)",
+                overflowX: "hidden",
+              }}
+            >
+              About MineBlocks
+            </h2>
+            <div className={styles.contentWrapper}>
+              <div className={styles.textContent}>
+                <p>
+                  MineBlocks™ are an evolving experiment in NFT composability - exploring new and creative ways to combine, package, and financialize NFTs.
+                </p>
+                <p>
+                  Created by the team at NGMI / Not A Punks Cult, MineBlocks reflect our passion for on-chain innovation and creative experimentation.
+                </p>
+              </div>
+            </div>
             </div>
           </div>
         </div>
