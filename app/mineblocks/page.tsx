@@ -2075,9 +2075,9 @@ export default function MyCollagesPage() {
                       </span>
                     </button>
                     {expandedFaq === 6 && (
-                      <div className={styles.faqAnswer}>
-                        <p>Yes. MineBlocks are fully transferable NFTs, even while your MineBoys remain staked inside.</p>
-                        <p>If you sell your MineBlock mid-season, all associated rights - including your future reward claim - transfer automatically to the new owner. Whoever holds the MineBlock when the season ends will be eligible to claim its rewards and recieve the associated MineBoys.</p>
+                      <div className={styles.faqAnswer} style={{ wordWrap: "break-word", overflowWrap: "anywhere", wordBreak: "break-word", whiteSpace: "normal", width: "100%", maxWidth: "100%", boxSizing: "border-box", overflowX: "hidden", overflow: "hidden" }}>
+                        <p style={{ wordWrap: "break-word", overflowWrap: "anywhere", wordBreak: "break-word", whiteSpace: "normal", width: "100%", maxWidth: "100%", boxSizing: "border-box", overflowX: "hidden", overflow: "hidden" }}>Yes. MineBlocks are fully transferable NFTs, even while your MineBoys remain staked inside.</p>
+                        <p style={{ wordWrap: "break-word", overflowWrap: "anywhere", wordBreak: "break-word", whiteSpace: "normal", width: "100%", maxWidth: "100%", boxSizing: "border-box", overflowX: "hidden", overflow: "hidden" }}>If you sell your MineBlock mid-season, all associated rights - including your future reward claim - transfer automatically to the new owner. Whoever holds the MineBlock when the season ends will be eligible to claim its rewards and recieve the associated MineBoys.</p>
                       </div>
                     )}
                 </div>

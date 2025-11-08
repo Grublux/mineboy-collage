@@ -143,7 +143,7 @@
   color: rgba(255, 255, 255, 0.85);
   line-height: 1.6;
   word-wrap: break-word !important;
-  overflow-wrap: break-word !important;
+  overflow-wrap: anywhere !important;
   word-break: break-word !important;
   white-space: normal !important;
   box-sizing: border-box !important;
@@ -153,18 +153,31 @@
   overflow-y: visible;
   position: relative;
   contain: layout style;
+  overflow: hidden !important;
+}
+
+.faqAnswer * {
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  overflow-x: hidden !important;
+  word-wrap: break-word !important;
+  overflow-wrap: anywhere !important;
 }
 
 .faqAnswer p {
   word-wrap: break-word !important;
-  overflow-wrap: break-word !important;
+  overflow-wrap: anywhere !important;
   word-break: break-word !important;
   white-space: normal !important;
   width: 100% !important;
   max-width: 100% !important;
   box-sizing: border-box !important;
   overflow-x: hidden !important;
+  overflow: hidden !important;
   margin-bottom: 10px;
+  hyphens: none !important;
+  -webkit-hyphens: none !important;
+  -moz-hyphens: none !important;
 }
 
 .faqAnswer p:last-child {
