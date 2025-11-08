@@ -1937,7 +1937,7 @@ export default function MyCollagesPage() {
                     {expandedFaq === 1 && (
                       <div className={styles.faqAnswer}>
                         <p>A MineBlock is created from your MineBoy layout. When you form a MineBlock, your MineBoys are transferred from your wallet into the MineBoy Staking Contract for the duration of the active season.</p>
-                        <p>You'll receive a MineBlock NFT - a transferable claim token that represents your position and entitles you to season rewards.</p>
+                        <p>You'll receive a MineBlock NFT — a transferable claim token that represents your position and entitles you to season rewards.</p>
                       </div>
                     )}
                   </div>
@@ -2077,7 +2077,7 @@ export default function MyCollagesPage() {
                     {expandedFaq === 6 && (
                       <div className={styles.faqAnswer}>
                         <p>Yes. MineBlocks are fully transferable NFTs, even while your MineBoys remain staked inside.</p>
-                        <p>If you sell your MineBlock mid-season, all associated rights - including your future reward claim - transfer automatically to the new owner. Whoever holds the MineBlock when the season ends will be eligible to claim its rewards.</p>
+                        <p>If you sell your MineBlock mid-season, all associated rights - including your future reward claim - transfer automatically to the new owner. Whoever holds the MineBlock when the season ends will be eligible to claim its rewards and recieve the associated MineBoys.</p>
                       </div>
                     )}
                 </div>
