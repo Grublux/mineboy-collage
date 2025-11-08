@@ -24,6 +24,7 @@ import { getOwnerTokensSmart } from "@/frontend/lib/nft/ownerTokensSmart";
 import { Header } from "@/components/grids/Header";
 import { WalletHeader } from "@/components/grids/WalletHeader";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+import styles from "./AboutTab.module.css";
 
 // CollageCard component for displaying minted MineBlocks
 function CollageCard({
@@ -320,9 +321,10 @@ export default function MyCollagesPage() {
       })
     : "0";
   
-  const [activeTab, setActiveTab] = useState<"create" | "my-grids">("create");
+  const [activeTab, setActiveTab] = useState<"create" | "my-grids" | "about">("create");
   const [refreshKey, setRefreshKey] = useState(0);
   const [selectedSizeFilter, setSelectedSizeFilter] = useState<number | null>(null);
+  const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
 
   // State for Create MineBlocks Block tab
   const [selectedNFTs, setSelectedNFTs] = useState<string[]>([]);
@@ -1348,6 +1350,28 @@ export default function MyCollagesPage() {
           >
             My MineBlocks ({collageBalanceNum})
           </button>
+          <button
+            onClick={() => setActiveTab("about")}
+            style={{
+              padding: "clamp(10px, 2.5vw, 15px) clamp(15px, 4vw, 30px)",
+              backgroundColor: "transparent",
+              color: activeTab === "about" ? "rgba(255, 255, 255, 0.85)" : "#666666",
+              border: "none",
+              borderBottom: activeTab === "about" ? "2px solid #ffffff" : "2px solid transparent",
+              cursor: "pointer",
+              fontFamily: "monospace",
+              textTransform: "uppercase",
+              fontSize: "clamp(11px, 3vw, 16px)",
+              fontWeight: "bold",
+              marginBottom: "-2px",
+              whiteSpace: "nowrap",
+              boxSizing: "border-box",
+              wordWrap: "break-word",
+              overflowWrap: "break-word",
+            }}
+          >
+            About
+          </button>
         </div>
 
         {/* Create MineBlocks Block Tab */}
@@ -1840,6 +1864,85 @@ export default function MyCollagesPage() {
                 })}
               </div>
             )}
+          </div>
+        )}
+
+        {/* About Tab */}
+        {activeTab === "about" && (
+          <div className={styles.container}>
+            <h2
+              style={{
+                fontSize: "clamp(20px, 6vw, 33px)",
+                fontFamily: "monospace",
+                textTransform: "uppercase",
+                letterSpacing: "clamp(1px, 0.5vw, 2px)",
+                marginBottom: "20px",
+                textAlign: "center",
+                color: "rgba(255, 255, 255, 0.85)",
+                WebkitFontSmoothing: "none",
+                MozOsxFontSmoothing: "grayscale",
+                textRendering: "optimizeSpeed",
+                filter: "contrast(1.2)",
+                wordWrap: "break-word",
+                overflowWrap: "break-word",
+                wordBreak: "break-word",
+                width: "100%",
+                maxWidth: "100%",
+                boxSizing: "border-box",
+                padding: "0 clamp(10px, 3vw, 20px)",
+                overflowX: "hidden",
+              }}
+            >
+              About MineBlocks
+            </h2>
+            <div className={styles.contentWrapper}>
+              <div className={styles.textContent}>
+                <p>
+                  MineBlocks™ are an evolving experiment in NFT composability — exploring new and creative ways to combine, package, and financialize NFTs.
+                </p>
+                <p>
+                  Created by the team at NGMI / Not A Punks Cult, MineBlocks reflects our passion for on-chain innovation and creative experimentation.
+                </p>
+              </div>
+
+              {/* FAQ Section */}
+              <div className={styles.faqSection}>
+                <h3
+                  style={{
+                    fontSize: "clamp(16px, 4vw, 24px)",
+                    fontFamily: "monospace",
+                    textTransform: "uppercase",
+                    color: "rgba(255, 255, 255, 0.85)",
+                    marginBottom: "20px",
+                    textAlign: "center",
+                    wordWrap: "break-word",
+                    overflowWrap: "break-word",
+                  }}
+                >
+                  FAQ
+                </h3>
+                <div className={styles.faqList}>
+                  <div className={styles.faqItem}>
+                    <button
+                      onClick={() => setExpandedFaq(expandedFaq === 0 ? null : 0)}
+                      className={styles.faqButton}
+                    >
+                      <span className={styles.faqQuestion}>
+                        Question placeholder
+                      </span>
+                      <span style={{ marginLeft: "10px", fontSize: "18px", flexShrink: 0 }}>
+                        {expandedFaq === 0 ? "−" : "+"}
+                      </span>
+                    </button>
+                    {expandedFaq === 0 && (
+                      <div className={styles.faqAnswer}>
+                        Answer placeholder
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         )}
       </div>
