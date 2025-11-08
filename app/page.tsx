@@ -13,8 +13,6 @@ import { formatUnits } from "viem";
 
 const collections = [
   { name: "MineBlocks", href: "/mineblocks" },
-  { name: "NPC Blocks", href: "/npc-blocks" },
-  { name: "Goobaloo Blocks", href: "/goobaloo-blocks" },
 ];
 
 export default function HomePage() {

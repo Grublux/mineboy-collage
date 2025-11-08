@@ -111,10 +111,10 @@ export function WalletHeader({ showCollectionNav = false }: WalletHeaderProps = 
                 onClick={connected ? openAccountModal : openConnectModal}
                 style={{
                   color: 'rgba(255, 255, 255, 0.85)',
-                  fontSize: 'clamp(10px, 2.5vw, 14px)',
+                  fontSize: 'clamp(7px, 1.7vw, 10px)',
                   fontFamily: 'monospace',
                   textTransform: 'uppercase',
-                  padding: 'clamp(6px, 1.5vw, 8px) clamp(10px, 2.5vw, 16px)',
+                  padding: 'clamp(4px, 1vw, 6px) clamp(7px, 1.7vw, 11px)',
                   border: '2px solid rgba(255, 255, 255, 0.85)',
                   backgroundColor: 'transparent',
                   cursor: 'pointer',
@@ -128,7 +128,7 @@ export function WalletHeader({ showCollectionNav = false }: WalletHeaderProps = 
               >
                 <span>{connected ? `${account.displayName}` : 'Connect Wallet'}</span>
                 {connected && (
-                  <span style={{ fontSize: 'clamp(8px, 2vw, 11px)', opacity: 0.8 }}>
+                  <span style={{ fontSize: 'clamp(6px, 1.4vw, 8px)', opacity: 0.8 }}>
                     {ngtBalanceFormatted} NGT
                   </span>
                 )}

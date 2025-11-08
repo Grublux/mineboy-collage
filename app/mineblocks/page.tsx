@@ -17,7 +17,7 @@ import { Header } from "@/components/grids/Header";
 import { WalletHeader } from "@/components/grids/WalletHeader";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 
-// CollageCard component for displaying minted MineBlocks blocks
+// CollageCard component for displaying minted MineBlocks
 function CollageCard({
   collageId,
   onUnbind,
@@ -148,6 +148,7 @@ export default function MyCollagesPage() {
   
   const [activeTab, setActiveTab] = useState<"create" | "my-grids">("create");
   const [refreshKey, setRefreshKey] = useState(0);
+  const [selectedSizeFilter, setSelectedSizeFilter] = useState<number | null>(null);
 
   // State for Create MineBlocks Block tab
   const [selectedNFTs, setSelectedNFTs] = useState<string[]>([]);
@@ -598,7 +599,7 @@ export default function MyCollagesPage() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Read user\'s MineBlocks blocks
+  // Read user\'s MineBlocks
   const { data: collageBalance, isLoading: loadingCollages } = useReadContract({
     ...gridStakerConfig,
     functionName: "balanceOf",
@@ -620,6 +621,54 @@ export default function MyCollagesPage() {
       enabled: !!address && collageBalanceNum > 0 && isConnected && shouldLoadGrids,
     },
   });
+
+  // Fetch underlying data for all collages to determine sizes
+  const validTokenIds = collageTokenIds?.filter((r: any) => r.status === "success" && r.result) || [];
+  const { data: allUnderlying } = useReadContracts({
+    contracts: validTokenIds.map((r: any) => ({
+      ...gridStakerConfig,
+      functionName: "getUnderlying" as const,
+      args: [r.result] as const,
+    })) as any,
+    query: {
+      enabled: validTokenIds.length > 0 && isConnected,
+    },
+  });
+
+  // Create a map of tokenId -> underlying data for quick lookup
+  const tokenIdToUnderlying = new Map<bigint, [string, number, number, bigint[]]>();
+  if (allUnderlying && validTokenIds.length > 0) {
+    allUnderlying.forEach((result: any, index: number) => {
+      if (result.status === "success" && result.result && validTokenIds[index]) {
+        const tokenId = validTokenIds[index].result as bigint;
+        tokenIdToUnderlying.set(tokenId, result.result as [string, number, number, bigint[]]);
+      }
+    });
+  }
+
+  // Calculate which sizes the user owns
+  const ownedSizes = new Set<number>();
+  tokenIdToUnderlying.forEach((underlying) => {
+    const [, rows, cols] = underlying;
+    if (rows === cols && rows > 0) {
+      ownedSizes.add(rows);
+    }
+  });
+
+  // Filter collages by selected size
+  const filteredCollageTokenIds = selectedSizeFilter === null 
+    ? collageTokenIds
+    : collageTokenIds?.filter((result: any) => {
+        if (result.status === "success" && result.result) {
+          const tokenId = result.result as bigint;
+          const underlying = tokenIdToUnderlying.get(tokenId);
+          if (underlying) {
+            const [, rows, cols] = underlying;
+            return rows === cols && rows === selectedSizeFilter;
+          }
+        }
+        return false;
+      });
 
   // Cell size calculation - debounced to prevent excessive updates
   useEffect(() => {
@@ -867,7 +916,7 @@ export default function MyCollagesPage() {
                 overflowWrap: "break-word",
               }}
             >
-              To View and create MineBlocks blocks
+              To View and create MineBlocks
             </p>
           </div>
         </div>
@@ -953,12 +1002,23 @@ export default function MyCollagesPage() {
           <div>
             <h2
               style={{
-                fontSize: "24px",
+                fontSize: "clamp(20px, 6vw, 33px)",
                 fontFamily: "monospace",
                 textTransform: "uppercase",
-                letterSpacing: "2px",
+                letterSpacing: "clamp(1px, 0.5vw, 2px)",
                 marginBottom: "20px",
-              }}
+                textAlign: "center",
+                color: "rgba(255, 255, 255, 0.85)",
+                WebkitFontSmoothing: "none",
+                MozOsxFontSmoothing: "grayscale",
+                textRendering: "optimizeSpeed",
+                filter: "contrast(1.2)",
+                wordWrap: "break-word",
+                overflowWrap: "break-word",
+                padding: "0 clamp(10px, 3vw, 20px)",
+                boxSizing: "border-box",
+                width: "100%",
+              } as React.CSSProperties}
             >
               Create New MineBlock
             </h2>
@@ -968,7 +1028,7 @@ export default function MyCollagesPage() {
               <div style={{ marginBottom: "10px", fontSize: "14px", fontFamily: "monospace", textTransform: "uppercase" }}>
                 Block Size: (Current: {gridSize}×{gridSize})
               </div>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px", flexWrap: "wrap", marginBottom: "15px" }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "clamp(5px, 1.5vw, 10px)", flexWrap: "nowrap", marginBottom: "15px", width: "100%", boxSizing: "border-box", padding: "0 clamp(5px, 2vw, 10px)", overflowX: "auto" }}>
                 {[2, 3, 4, 5, 6].map((size) => {
                   const requiredNFTs = size * size;
                   const hasEnough = ownedNFTs.length >= requiredNFTs;
@@ -1002,15 +1062,17 @@ export default function MyCollagesPage() {
                         setGridSize(newSize);
                       }}
                       style={{
-                        padding: "10px 20px",
+                        padding: "clamp(5px, 1.5vw, 10px) clamp(10px, 3vw, 20px)",
                         backgroundColor: gridSize === size ? "#ffffff" : "#000000",
                         color: gridSize === size ? "#000000" : "#ffffff",
                         border: "2px solid rgba(255, 255, 255, 0.85)",
                         cursor: "pointer",
                         fontFamily: "monospace",
-                        fontSize: "14px",
+                        fontSize: "clamp(10px, 2.5vw, 14px)",
                         fontWeight: gridSize === size ? "bold" : "normal",
                         opacity: hasEnough ? 1 : 0.5,
+                        whiteSpace: "nowrap",
+                        flexShrink: 0,
                       }}
                       onMouseOver={(e) => {
                         if (gridSize !== size && hasEnough) {
@@ -1286,39 +1348,101 @@ export default function MyCollagesPage() {
           </div>
         )}
 
-        {/* My MineBlocks Blocks Tab */}
+        {/* My MineBlocks Tab */}
         {activeTab === "my-grids" && (
           <div>
+            <h2
+              style={{
+                fontSize: "clamp(20px, 6vw, 33px)",
+                fontFamily: "monospace",
+                textTransform: "uppercase",
+                letterSpacing: "clamp(1px, 0.5vw, 2px)",
+                marginBottom: "20px",
+                textAlign: "center",
+                color: "rgba(255, 255, 255, 0.85)",
+                WebkitFontSmoothing: "none",
+                MozOsxFontSmoothing: "grayscale",
+                textRendering: "optimizeSpeed",
+                filter: "contrast(1.2)",
+                wordWrap: "break-word",
+                overflowWrap: "break-word",
+                padding: "0 clamp(10px, 3vw, 20px)",
+                boxSizing: "border-box",
+                width: "100%",
+              } as React.CSSProperties}
+            >
+              My MineBlocks
+            </h2>
+
+            {/* Block Size Filter */}
+            <div style={{ marginBottom: "20px", textAlign: "center" }}>
+              <div style={{ marginBottom: "10px", fontSize: "14px", fontFamily: "monospace", textTransform: "uppercase" }}>
+                Block Size: {selectedSizeFilter ? `(Filtered: ${selectedSizeFilter}×${selectedSizeFilter})` : "(All Sizes)"}
+              </div>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "clamp(5px, 1.5vw, 10px)", flexWrap: "nowrap", marginBottom: "15px", width: "100%", boxSizing: "border-box", padding: "0 clamp(5px, 2vw, 10px)", overflowX: "auto" }}>
+                <button
+                  onClick={() => setSelectedSizeFilter(null)}
+                  style={{
+                    padding: "clamp(5px, 1.5vw, 10px) clamp(10px, 3vw, 20px)",
+                    backgroundColor: selectedSizeFilter === null ? "#ffffff" : "#000000",
+                    color: selectedSizeFilter === null ? "#000000" : "#ffffff",
+                    border: "2px solid rgba(255, 255, 255, 0.85)",
+                    cursor: "pointer",
+                    fontFamily: "monospace",
+                    fontSize: "clamp(10px, 2.5vw, 14px)",
+                    fontWeight: selectedSizeFilter === null ? "bold" : "normal",
+                    whiteSpace: "nowrap",
+                    flexShrink: 0,
+                  }}
+                >
+                  All
+                </button>
+                {[2, 3, 4, 5, 6].map((size) => {
+                  const hasSize = ownedSizes.has(size);
+                  return (
+                    <button
+                      key={size}
+                      onClick={() => setSelectedSizeFilter(hasSize ? size : null)}
+                      style={{
+                        padding: "clamp(5px, 1.5vw, 10px) clamp(10px, 3vw, 20px)",
+                        backgroundColor: selectedSizeFilter === size ? "#ffffff" : "#000000",
+                        color: selectedSizeFilter === size ? "#000000" : (hasSize ? "#ffffff" : "#666666"),
+                        border: "2px solid rgba(255, 255, 255, 0.85)",
+                        cursor: hasSize ? "pointer" : "not-allowed",
+                        fontFamily: "monospace",
+                        fontSize: "clamp(10px, 2.5vw, 14px)",
+                        fontWeight: selectedSizeFilter === size ? "bold" : "normal",
+                        opacity: hasSize ? 1 : 0.5,
+                        whiteSpace: "nowrap",
+                        flexShrink: 0,
+                      }}
+                    >
+                      {size}×{size}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
             <div
               style={{
                 display: "flex",
-                justifyContent: "space-between",
+                justifyContent: "flex-end",
                 alignItems: "center",
                 marginBottom: "30px",
               }}
             >
-              <h2
-                style={{
-                  fontSize: "24px",
-                  fontFamily: "monospace",
-                  textTransform: "uppercase",
-                  letterSpacing: "2px",
-                  margin: 0,
-                }}
-              >
-                My Blocks
-              </h2>
               <button
                 onClick={handleRefresh}
                 style={{
-                  padding: "10px 20px",
+                  padding: "7px 14px",
                   backgroundColor: "transparent",
                   color: "rgba(255, 255, 255, 0.85)",
                   border: "2px solid rgba(255, 255, 255, 0.85)",
                   cursor: "pointer",
                   fontFamily: "monospace",
                   textTransform: "uppercase",
-                  fontSize: "12px",
+                  fontSize: "clamp(8px, 2vw, 9px)",
                 }}
               >
                 Refresh
@@ -1336,7 +1460,7 @@ export default function MyCollagesPage() {
                   color: "rgba(102, 102, 102, 0.85)",
                 }}
               >
-                <p style={{ fontSize: "18px", marginBottom: "10px" }}>No MineBlocks blocks yet</p>
+                <p style={{ fontSize: "18px", marginBottom: "10px" }}>No MineBlocks yet</p>
                 <p style={{ fontSize: "14px" }}>
                   Create your first block using the "Create Block" tab!
                 </p>
@@ -1349,7 +1473,7 @@ export default function MyCollagesPage() {
                   gap: "30px",
                 }}
               >
-                {collageTokenIds?.map((result: any, index: number) => {
+                {(filteredCollageTokenIds || collageTokenIds)?.map((result: any, index: number) => {
                   if (result.status === "success" && result.result) {
                     return (
                       <CollageCard

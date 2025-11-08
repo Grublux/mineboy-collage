@@ -17,7 +17,7 @@ import { WalletHeader } from "@/components/grids/WalletHeader";
 import { Header } from "@/components/grids/Header";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 
-// CollageCard component for displaying minted MineBlocks blocks
+// CollageCard component for displaying minted MineBlocks
 function CollageCard({
   collageId,
   onUnbind,
@@ -598,7 +598,7 @@ export default function MyCollagesPage() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Read user\'s MineBlocks blocks
+  // Read user\'s MineBlocks
   const { data: collageBalance, isLoading: loadingCollages } = useReadContract({
     ...gridStakerConfig,
     functionName: "balanceOf",
@@ -884,7 +884,7 @@ export default function MyCollagesPage() {
                 overflowWrap: "break-word",
               }}
             >
-              To View and create MineBlocks blocks
+              To View and create MineBlocks
             </p>
           </div>
         </div>
@@ -1321,7 +1321,7 @@ export default function MyCollagesPage() {
           </div>
         )}
 
-        {/* My MineBlocks Blocks Tab */}
+        {/* My MineBlocks Tab */}
         {activeTab === "my-grids" && (
           <div>
             <div
@@ -1341,7 +1341,7 @@ export default function MyCollagesPage() {
                   margin: 0,
                 }}
               >
-                Your Minted MineBlocks Blocks
+                Your Minted MineBlocks
               </h2>
               <button
                 onClick={handleRefresh}
@@ -1371,7 +1371,7 @@ export default function MyCollagesPage() {
                   color: "#666666",
                 }}
               >
-                <p style={{ fontSize: "18px", marginBottom: "10px" }}>No MineBlocks blocks yet</p>
+                <p style={{ fontSize: "18px", marginBottom: "10px" }}>No MineBlocks yet</p>
                 <p style={{ fontSize: "14px" }}>
                   Create your first block using the "Create Block" tab!
                 </p>
