@@ -744,16 +744,32 @@ export default function HomePage() {
               </div>
             )
           ) : (
-              <div>
-                <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-                  <div style={{ marginBottom: '10px' }}>
+              <div style={{ width: '100%', boxSizing: 'border-box' }}>
+                <div style={{ 
+                  textAlign: 'center', 
+                  marginBottom: '20px',
+                  width: '100%',
+                  boxSizing: 'border-box',
+                  padding: '0 clamp(10px, 3vw, 20px)'
+                }}>
+                  <div style={{ 
+                    marginBottom: '10px',
+                    width: '100%',
+                    textAlign: 'center',
+                    boxSizing: 'border-box'
+                  }}>
                     Found {displayedNFTs.length} NFT{displayedNFTs.length !== 1 ? 's' : ''}
                     {loadingManual && <span style={{ marginLeft: '10px', color: '#ffff00' }}>Loading more...</span>}
                   </div>
                   <div style={{ 
-                    fontSize: '14px', 
+                    fontSize: 'clamp(12px, 3vw, 14px)', 
                     color: '#00ff00',
-                    fontFamily: 'monospace'
+                    fontFamily: 'monospace',
+                    width: '100%',
+                    textAlign: 'center',
+                    boxSizing: 'border-box',
+                    wordWrap: 'break-word',
+                    overflowWrap: 'break-word'
                   }}>
                     Click/tap MineBoy to add to grid
                   </div>
