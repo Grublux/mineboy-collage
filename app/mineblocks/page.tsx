@@ -1924,7 +1924,7 @@ export default function MyCollagesPage() {
                 <div className={styles.faqList}>
                   <div className={styles.faqItem}>
                     <button
-                      onClick={() => setExpandedFaq(expandedFaq === 1 ? null : 0)}
+                      onClick={() => setExpandedFaq(expandedFaq === 1 ? null : 1)}
                       className={styles.faqButton}
                     >
                       <span className={styles.faqQuestion}>
@@ -1937,7 +1937,7 @@ export default function MyCollagesPage() {
                     {expandedFaq === 1 && (
                       <div className={styles.faqAnswer}>
                         <p>A MineBlock is created from your MineBoy layout. When you form a MineBlock, your MineBoys are transferred from your wallet into the MineBoy Staking Contract for the duration of the active season.</p>
-                        <p>You'll receive a MineBlock NFT — a transferable claim token that represents your position and entitles you to season rewards.</p>
+                        <p>You'll receive a MineBlock NFT - a transferable claim token that represents your position and entitles you to season rewards.</p>
                       </div>
                     )}
                   </div>
