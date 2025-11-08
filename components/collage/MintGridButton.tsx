@@ -235,15 +235,13 @@ export function MintGridButton({
     if (showFilledCount && totalSlots !== undefined) {
       return `${filledCount}/${totalSlots} filled`;
     }
-    if (!isConnected) return "Mint Grid (Connect Wallet)";
+    if (!isConnected) return "Mint MineBlock";
     if (checkingMineBoyApproval || checkingNGTApproval || checkingPrice) return "Checking Approvals...";
-    if (!ngtPriceSet) return "Mint Grid (Price Not Set)";
+    if (!ngtPriceSet) return "Mint MineBlock";
     if (!isMineBoyApproved) return "Approve MineBoys & Mint";
     if (!isNGTApproved) return "Approve NGT & Mint";
     if (isPending) return "Minting...";
-    // Format price: ngtPrice is in wei (18 decimals), divide by 1e18 to get NGT
-    const priceInNGT = ngtPrice ? Number(ngtPrice) / 1e18 : 3333;
-    return `Mint Grid (${priceInNGT.toLocaleString()} NGT)`;
+    return "Mint MineBlock";
   };
 
   const isDisabled = disabled || isPending || !isConnected;

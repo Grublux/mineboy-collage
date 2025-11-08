@@ -7,6 +7,14 @@ import Link from "next/link";
 import { gridStakerConfig, sourceCollectionAddress } from "@/frontend/lib/contracts/gridStaker";
 import { ngtTokenAddress, ERC20_ABI } from "@/frontend/lib/contracts/gridStaker";
 import { formatUnits } from "viem";
+import {
+  useReadMineBlocksV1GetCurrentPeriodEarnings,
+  useReadMineBlocksV1TotalSupply,
+  useReadMineBlocksV1BalanceOf,
+  useReadMineBlocksV1NextStakeTokenId,
+  useReadMineBlocksV1StakePositions,
+  useReadMineBlocksV1CalculateEarnings,
+} from "@/app/lib/contracts/generated";
 import { useTokenMetadata } from "@/frontend/hooks/useTokenMetadata";
 import { UnbindButton } from "@/components/collage/UnbindButton";
 import { MintGridButton } from "@/components/collage/MintGridButton";
@@ -163,6 +171,153 @@ export default function MyCollagesPage() {
 
   const totalSupplyFormatted = mineboyTotalSupply 
     ? Number(mineboyTotalSupply).toLocaleString()
+    : "0";
+
+  // Staking contract reads
+  const { data: currentPeriodEarnings } = useReadMineBlocksV1GetCurrentPeriodEarnings({
+    query: {
+      enabled: true,
+    },
+  });
+
+  const { data: stakingTotalSupply } = useReadMineBlocksV1TotalSupply({
+    query: {
+      enabled: true,
+    },
+  });
+
+  const { data: myStakedBalance } = useReadMineBlocksV1BalanceOf({
+    args: address ? [address] : undefined,
+    query: {
+      enabled: !!address && isConnected,
+    },
+  });
+
+  const { data: nextStakeTokenId } = useReadMineBlocksV1NextStakeTokenId({
+    query: {
+      enabled: true,
+    },
+  });
+
+  // Calculate pooled rewards (total earnings in APE)
+  const pooledRewards = currentPeriodEarnings?.[0] 
+    ? parseFloat(formatUnits(currentPeriodEarnings[0], 18)).toLocaleString(undefined, {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2,
+      })
+    : "0";
+
+  // Total Blocked: staking contract totalSupply / MineBoy totalSupply
+  const totalBlocked = stakingTotalSupply 
+    ? Number(stakingTotalSupply).toLocaleString()
+    : "0";
+
+  // My Blocks: user's staked balance
+  const myBlocks = myStakedBalance 
+    ? Number(myStakedBalance).toString()
+    : "0";
+
+  // Calculate user's shares and pending earnings
+  // We need to iterate through user's stake tokens
+  const stakeTokenCount = myStakedBalance ? Number(myStakedBalance) : 0;
+  
+  // Get all stake token IDs owned by user (we'll need to use tokenOfOwnerByIndex or similar)
+  // For now, we'll use a simplified approach - get stake positions for tokens 0 to nextStakeTokenId-1
+  // and filter by owner
+  const maxStakeTokenId = nextStakeTokenId ? Number(nextStakeTokenId) : 0;
+  
+  // Get user's stake token IDs (simplified - in production you'd want to use tokenOfOwnerByIndex)
+  const { data: userStakeTokenIds } = useReadContracts({
+    contracts: Array.from({ length: Math.min(stakeTokenCount, 100) }, (_, i) => ({
+      address: "0x0Bf7e7D6C936FEA58891d8eEb273ed685AD04F5f" as const,
+      abi: [
+        {
+          type: "function",
+          name: "tokenOfOwnerByIndex",
+          inputs: [
+            { name: "owner", type: "address" },
+            { name: "index", type: "uint256" },
+          ],
+          outputs: [{ name: "", type: "uint256" }],
+          stateMutability: "view",
+        },
+      ] as const,
+      functionName: "tokenOfOwnerByIndex" as const,
+      args: address ? [address, BigInt(i)] : undefined,
+    })) as any,
+    query: {
+      enabled: !!address && stakeTokenCount > 0 && isConnected && stakeTokenCount <= 100,
+    },
+  });
+
+  // Calculate total shares and pending earnings
+  const validStakeTokenIds = userStakeTokenIds?.filter((r: any) => r.status === "success" && r.result) || [];
+  
+  const { data: stakePositionsData } = useReadContracts({
+    contracts: validStakeTokenIds.map((r: any) => ({
+      address: "0x0Bf7e7D6C936FEA58891d8eEb273ed685AD04F5f" as const,
+      abi: [
+        {
+          type: "function",
+          name: "stakePositions",
+          inputs: [{ name: "", type: "uint256" }],
+          outputs: [{ name: "periodId", type: "uint256" }],
+          stateMutability: "view",
+        },
+      ] as const,
+      functionName: "stakePositions" as const,
+      args: [r.result] as const,
+    })) as any,
+    query: {
+      enabled: validStakeTokenIds.length > 0 && isConnected,
+    },
+  });
+
+  const { data: earningsData } = useReadContracts({
+    contracts: validStakeTokenIds.map((r: any) => ({
+      address: "0x0Bf7e7D6C936FEA58891d8eEb273ed685AD04F5f" as const,
+      abi: [
+        {
+          type: "function",
+          name: "calculateEarnings",
+          inputs: [{ name: "stakeTokenId", type: "uint256" }],
+          outputs: [{ name: "", type: "uint256" }],
+          stateMutability: "view",
+        },
+      ] as const,
+      functionName: "calculateEarnings" as const,
+      args: [r.result] as const,
+    })) as any,
+    query: {
+      enabled: validStakeTokenIds.length > 0 && isConnected,
+    },
+  });
+
+  // Calculate total shares (simplified - would need period data to get actual shares)
+  // For now, we'll use totalShares from current period
+  const totalShares = currentPeriodEarnings?.[1] 
+    ? Number(currentPeriodEarnings[1]).toLocaleString()
+    : "0";
+
+  // Calculate my shares (simplified - in production you'd sum actual shares from periods)
+  // For now, we'll show user's stake count as a proxy
+  const myShares = myStakedBalance 
+    ? Number(myStakedBalance).toString()
+    : "0";
+
+  // Calculate pending share (sum of all earnings)
+  const pendingShare = earningsData?.reduce((sum: bigint, result: any) => {
+    if (result.status === "success" && result.result) {
+      return sum + (result.result as bigint);
+    }
+    return sum;
+  }, 0n) || 0n;
+
+  const pendingShareFormatted = pendingShare > 0n
+    ? parseFloat(formatUnits(pendingShare, 18)).toLocaleString(undefined, {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 4,
+      })
     : "0";
   
   const [activeTab, setActiveTab] = useState<"create" | "my-grids">("create");
@@ -904,7 +1059,7 @@ export default function MyCollagesPage() {
                 Pooled Rewards
               </div>
               <div style={{ fontSize: "clamp(11px, 2.5vw, 14px)", color: "#00ff00", fontFamily: "monospace", fontWeight: "bold" }}>
-                1,000 APE
+                {pooledRewards} APE
               </div>
             </div>
             <div style={{ 
@@ -918,7 +1073,7 @@ export default function MyCollagesPage() {
               Total Blocked
             </div>
             <div style={{ fontSize: "clamp(11px, 2.5vw, 14px)", color: "rgba(255, 255, 255, 0.85)", fontFamily: "monospace" }}>
-              0 / {totalSupplyFormatted}
+              {totalBlocked} / {totalSupplyFormatted}
             </div>
           </div>
           <div style={{ 
@@ -1076,7 +1231,7 @@ export default function MyCollagesPage() {
               Pooled Rewards
             </div>
             <div style={{ fontSize: "clamp(11px, 2.5vw, 14px)", color: "#00ff00", fontFamily: "monospace", fontWeight: "bold" }}>
-              1,000 APE
+              {pooledRewards} APE
             </div>
           </div>
           <div style={{ 
@@ -1090,7 +1245,7 @@ export default function MyCollagesPage() {
               Total Blocked
             </div>
             <div style={{ fontSize: "clamp(11px, 2.5vw, 14px)", color: "rgba(255, 255, 255, 0.85)", fontFamily: "monospace" }}>
-              0 / {totalSupplyFormatted}
+              {totalBlocked} / {totalSupplyFormatted}
             </div>
           </div>
           <div style={{ 
@@ -1104,7 +1259,7 @@ export default function MyCollagesPage() {
               My Blocks
             </div>
             <div style={{ fontSize: "clamp(11px, 2.5vw, 14px)", color: isConnected ? "rgba(255, 255, 255, 0.85)" : "rgba(255, 255, 255, 0.4)", fontFamily: "monospace" }}>
-              {isConnected ? "0" : "-"}
+              {isConnected ? myBlocks : "-"}
             </div>
           </div>
           <div style={{ 
@@ -1118,7 +1273,7 @@ export default function MyCollagesPage() {
               My Shares
             </div>
             <div style={{ fontSize: "clamp(11px, 2.5vw, 14px)", color: isConnected ? "rgba(255, 255, 255, 0.85)" : "rgba(255, 255, 255, 0.4)", fontFamily: "monospace" }}>
-              {isConnected ? "0 / 0" : "-"}
+              {isConnected ? `${myShares} / ${totalShares}` : "-"}
             </div>
           </div>
           <div style={{ 
@@ -1132,7 +1287,7 @@ export default function MyCollagesPage() {
               Pending Share
             </div>
             <div style={{ fontSize: "clamp(11px, 2.5vw, 14px)", color: isConnected ? "rgba(255, 255, 255, 0.85)" : "rgba(255, 255, 255, 0.4)", fontFamily: "monospace" }}>
-              {isConnected ? "0 APE" : "-"}
+              {isConnected ? `${pendingShareFormatted} APE` : "-"}
             </div>
           </div>
         </div>
@@ -1326,7 +1481,7 @@ export default function MyCollagesPage() {
               <div
                 style={{
                   display: "grid",
-                  gridTemplateColumns: "repeat(auto-fill, minmax(100px, 1fr))",
+                  gridTemplateColumns: "repeat(auto-fill, minmax(clamp(80px, 25vw, 120px), 1fr))",
                   gap: "10px",
                   padding: "10px",
                   border: "2px solid #333333",
