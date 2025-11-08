@@ -926,11 +926,21 @@ export default function MyCollagesPage() {
         </div>
 
         {/* Tabs */}
-        <div style={{ display: "flex", gap: "10px", marginBottom: "30px", borderBottom: "2px solid #333333" }}>
+        <div style={{ 
+          display: "flex", 
+          gap: "clamp(5px, 2vw, 10px)", 
+          marginBottom: "clamp(15px, 4vw, 30px)", 
+          borderBottom: "2px solid #333333",
+          justifyContent: "center",
+          flexWrap: "wrap",
+          width: "100%",
+          boxSizing: "border-box",
+          padding: "0 clamp(10px, 3vw, 20px)"
+        }}>
           <button
             onClick={() => setActiveTab("create")}
             style={{
-              padding: "15px 30px",
+              padding: "clamp(10px, 2.5vw, 15px) clamp(15px, 4vw, 30px)",
               backgroundColor: "transparent",
               color: activeTab === "create" ? "#ffffff" : "#666666",
               border: "none",
@@ -938,9 +948,13 @@ export default function MyCollagesPage() {
               cursor: "pointer",
               fontFamily: "monospace",
               textTransform: "uppercase",
-              fontSize: "16px",
+              fontSize: "clamp(11px, 3vw, 16px)",
               fontWeight: "bold",
               marginBottom: "-2px",
+              whiteSpace: "nowrap",
+              boxSizing: "border-box",
+              wordWrap: "break-word",
+              overflowWrap: "break-word",
             }}
           >
             Create Block
@@ -948,7 +962,7 @@ export default function MyCollagesPage() {
           <button
             onClick={() => setActiveTab("my-grids")}
             style={{
-              padding: "15px 30px",
+              padding: "clamp(10px, 2.5vw, 15px) clamp(15px, 4vw, 30px)",
               backgroundColor: "transparent",
               color: activeTab === "my-grids" ? "#ffffff" : "#666666",
               border: "none",
@@ -956,9 +970,13 @@ export default function MyCollagesPage() {
               cursor: "pointer",
               fontFamily: "monospace",
               textTransform: "uppercase",
-              fontSize: "16px",
+              fontSize: "clamp(11px, 3vw, 16px)",
               fontWeight: "bold",
               marginBottom: "-2px",
+              whiteSpace: "nowrap",
+              boxSizing: "border-box",
+              wordWrap: "break-word",
+              overflowWrap: "break-word",
             }}
           >
             My MineBlocks ({collageBalanceNum})

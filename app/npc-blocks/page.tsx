@@ -19,24 +19,7 @@ export default function NPCGridsPage() {
       <div style={{ maxWidth: "1400px", margin: "0 auto" }}>
         <WalletHeader />
         
-        <div style={{ marginBottom: "40px" }}>
-          <Link
-            href="/"
-            style={{
-              color: "rgba(255, 255, 255, 0.85)",
-              textDecoration: "none",
-              fontSize: "24px",
-              fontFamily: "monospace",
-              textTransform: "uppercase",
-              letterSpacing: "2px",
-              marginBottom: "20px",
-              display: "inline-block",
-            }}
-          >
-            ← Blocks
-          </Link>
-          <Header title="NPC Blocks" />
-        </div>
+        <Header title="NPC Blocks" />
 
         <div style={{ textAlign: "center", padding: "60px 20px" }}>
           <p style={{ fontSize: "24px", fontFamily: "monospace", marginBottom: "20px" }}>

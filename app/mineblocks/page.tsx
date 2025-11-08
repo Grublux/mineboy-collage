@@ -13,8 +13,8 @@ import { MintGridButton } from "@/components/collage/MintGridButton";
 import { SnapshotDialog } from "@/components/collage/SnapshotDialog";
 import { useState, useEffect } from "react";
 import { getOwnerTokensSmart } from "@/frontend/lib/nft/ownerTokensSmart";
-import { WalletHeader } from "@/components/grids/WalletHeader";
 import { Header } from "@/components/grids/Header";
+import { WalletHeader } from "@/components/grids/WalletHeader";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 // CollageCard component for displaying minted MineBlocks blocks
@@ -805,24 +805,8 @@ export default function MyCollagesPage() {
         }}
       >
         <div style={{ maxWidth: "1400px", margin: "0 auto" }}>
-          <WalletHeader />
-          <div style={{ marginBottom: "40px" }}>
-            <Link
-              href="/"
-              style={{
-                color: "rgba(255, 255, 255, 0.85)",
-                textDecoration: "none",
-                fontSize: "24px",
-                fontFamily: "monospace",
-                textTransform: "uppercase",
-                letterSpacing: "2px",
-                marginBottom: "20px",
-                display: "inline-block",
-              }}
-            >
-              ← Blocks
-            </Link>
-          </div>
+          <WalletHeader showCollectionNav />
+          <Header title="MineBlocks" />
           <div
             style={{
               display: "flex",
@@ -832,7 +816,6 @@ export default function MyCollagesPage() {
               minHeight: "60vh",
             }}
           >
-            <Header title="MineBlocks" />
             <div style={{ marginTop: "20px", display: "flex", justifyContent: "center" }}>
               <ConnectButton.Custom>
                 {({ account, chain, openAccountModal, openChainModal, openConnectModal, mounted }) => {
@@ -902,35 +885,27 @@ export default function MyCollagesPage() {
       }}
     >
       <div style={{ maxWidth: "1400px", margin: "0 auto" }}>
-        {/* Wallet Header */}
-        <WalletHeader />
+        <WalletHeader showCollectionNav />
         
         {/* Page Header */}
-        <div style={{ marginBottom: "40px" }}>
-          <Link
-            href="/"
-            style={{
-              color: "rgba(255, 255, 255, 0.85)",
-              textDecoration: "none",
-              fontSize: "24px",
-              fontFamily: "monospace",
-              textTransform: "uppercase",
-              letterSpacing: "2px",
-              marginBottom: "20px",
-              display: "inline-block",
-            }}
-          >
-            ← Blocks
-          </Link>
-          <Header title="MineBlocks" />
-        </div>
+        <Header title="MineBlocks" />
 
         {/* Tabs */}
-        <div style={{ display: "flex", gap: "10px", marginBottom: "30px", borderBottom: "2px solid #333333" }}>
+        <div style={{ 
+          display: "flex", 
+          gap: "clamp(5px, 2vw, 10px)", 
+          marginBottom: "clamp(15px, 4vw, 30px)", 
+          borderBottom: "2px solid #333333",
+          justifyContent: "center",
+          flexWrap: "wrap",
+          width: "100%",
+          boxSizing: "border-box",
+          padding: "0 clamp(10px, 3vw, 20px)"
+        }}>
           <button
             onClick={() => setActiveTab("create")}
             style={{
-              padding: "15px 30px",
+              padding: "clamp(10px, 2.5vw, 15px) clamp(15px, 4vw, 30px)",
               backgroundColor: "transparent",
               color: activeTab === "create" ? "rgba(255, 255, 255, 0.85)" : "#666666",
               border: "none",
@@ -938,9 +913,13 @@ export default function MyCollagesPage() {
               cursor: "pointer",
               fontFamily: "monospace",
               textTransform: "uppercase",
-              fontSize: "16px",
+              fontSize: "clamp(11px, 3vw, 16px)",
               fontWeight: "bold",
               marginBottom: "-2px",
+              whiteSpace: "nowrap",
+              boxSizing: "border-box",
+              wordWrap: "break-word",
+              overflowWrap: "break-word",
             }}
           >
             Create Block
@@ -948,7 +927,7 @@ export default function MyCollagesPage() {
           <button
             onClick={() => setActiveTab("my-grids")}
             style={{
-              padding: "15px 30px",
+              padding: "clamp(10px, 2.5vw, 15px) clamp(15px, 4vw, 30px)",
               backgroundColor: "transparent",
               color: activeTab === "my-grids" ? "rgba(255, 255, 255, 0.85)" : "#666666",
               border: "none",
@@ -956,9 +935,13 @@ export default function MyCollagesPage() {
               cursor: "pointer",
               fontFamily: "monospace",
               textTransform: "uppercase",
-              fontSize: "16px",
+              fontSize: "clamp(11px, 3vw, 16px)",
               fontWeight: "bold",
               marginBottom: "-2px",
+              whiteSpace: "nowrap",
+              boxSizing: "border-box",
+              wordWrap: "break-word",
+              overflowWrap: "break-word",
             }}
           >
             My MineBlocks ({collageBalanceNum})
@@ -1323,7 +1306,7 @@ export default function MyCollagesPage() {
                   margin: 0,
                 }}
               >
-                Your Minted MineBlocks Blocks
+                My Blocks
               </h2>
               <button
                 onClick={handleRefresh}

@@ -6,7 +6,11 @@ import Link from "next/link";
 import { ngtTokenAddress, ERC20_ABI } from "@/frontend/lib/contracts/gridStaker";
 import { formatUnits } from "viem";
 
-export function WalletHeader() {
+interface WalletHeaderProps {
+  showCollectionNav?: boolean;
+}
+
+export function WalletHeader({ showCollectionNav = false }: WalletHeaderProps = {}) {
   const { address } = useAccount();
   
   // Read NGT balance
@@ -39,23 +43,41 @@ export function WalletHeader() {
       }}
     >
       <div style={{ flexShrink: 0 }}>
-        <Link
-          href="/my-blocks"
-          style={{
-            color: "rgba(255, 255, 255, 0.85)",
-            textDecoration: "none",
-            fontSize: "clamp(10px, 2.5vw, 16px)",
-            fontFamily: "monospace",
-            textTransform: "uppercase",
-            padding: "clamp(6px, 1.5vw, 10px) clamp(12px, 3vw, 20px)",
-            border: "2px solid rgba(255, 255, 255, 0.85)",
-            backgroundColor: "transparent",
-            display: "inline-block",
-            whiteSpace: "nowrap",
-          }}
-        >
-          My Blocks
-        </Link>
+        {showCollectionNav ? (
+          <Link
+            href="/"
+            style={{
+              color: "rgba(255, 255, 255, 0.85)",
+              textDecoration: "none",
+              fontSize: "clamp(9px, 2.5vw, 12px)",
+              fontFamily: "monospace",
+              textTransform: "uppercase",
+              letterSpacing: "clamp(1px, 0.5vw, 2px)",
+              marginBottom: "20px",
+              display: "inline-block",
+            }}
+          >
+            ← Blocks
+          </Link>
+        ) : (
+          <Link
+            href="/my-blocks"
+            style={{
+              color: "rgba(255, 255, 255, 0.85)",
+              textDecoration: "none",
+              fontSize: "clamp(10px, 2.5vw, 16px)",
+              fontFamily: "monospace",
+              textTransform: "uppercase",
+              padding: "clamp(6px, 1.5vw, 10px) clamp(12px, 3vw, 20px)",
+              border: "2px solid rgba(255, 255, 255, 0.85)",
+              backgroundColor: "transparent",
+              display: "inline-block",
+              whiteSpace: "nowrap",
+            }}
+          >
+            My Blocks
+          </Link>
+        )}
       </div>
       {/* Logo - centered over header */}
       <div

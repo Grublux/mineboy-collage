@@ -3,7 +3,7 @@ import { WalletProvider } from "@/components/WalletProvider";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 export const metadata: Metadata = {
-  title: "MineBoy Collage",
+  title: "MineBlocks",
 };
 
 export default function RootLayout({
