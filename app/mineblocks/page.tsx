@@ -929,7 +929,7 @@ export default function MyCollagesPage() {
               minWidth: "fit-content",
             }}>
               <div style={{ fontSize: "clamp(9px, 2vw, 11px)", color: "rgba(255, 255, 255, 0.6)", fontFamily: "monospace", textTransform: "uppercase" }}>
-                My Blocked
+                My Blocks
               </div>
               <div style={{ fontSize: "clamp(11px, 2.5vw, 14px)", color: "rgba(255, 255, 255, 0.4)", fontFamily: "monospace" }}>
                 -
