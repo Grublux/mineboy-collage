@@ -1927,7 +1927,7 @@ export default function MyCollagesPage() {
                       onClick={() => setExpandedFaq(expandedFaq === 1 ? null : 1)}
                       className={styles.faqButton}
                     >
-                      <span className={styles.faqQuestion}>
+                      <span className={styles.faqQuestion} style={{ wordWrap: "break-word", overflowWrap: "anywhere", wordBreak: "break-word", whiteSpace: "normal", width: "100%", maxWidth: "calc(100% - 40px)", boxSizing: "border-box", overflowX: "hidden", overflow: "hidden" }}>
                         Q1. What is a MineBlock?
                       </span>
                       <span style={{ marginLeft: "10px", fontSize: "18px", flexShrink: 0 }}>
@@ -1947,7 +1947,7 @@ export default function MyCollagesPage() {
                       onClick={() => setExpandedFaq(expandedFaq === 2 ? null : 2)}
                       className={styles.faqButton}
                     >
-                      <span className={styles.faqQuestion}>
+                      <span className={styles.faqQuestion} style={{ wordWrap: "break-word", overflowWrap: "anywhere", wordBreak: "break-word", whiteSpace: "normal", width: "100%", maxWidth: "calc(100% - 40px)", boxSizing: "border-box", overflowX: "hidden", overflow: "hidden" }}>
                         Q2. What is a season?
                       </span>
                       <span style={{ marginLeft: "10px", fontSize: "18px", flexShrink: 0 }}>
@@ -1967,7 +1967,7 @@ export default function MyCollagesPage() {
                       onClick={() => setExpandedFaq(expandedFaq === 3 ? null : 3)}
                       className={styles.faqButton}
                     >
-                      <span className={styles.faqQuestion}>
+                      <span className={styles.faqQuestion} style={{ wordWrap: "break-word", overflowWrap: "anywhere", wordBreak: "break-word", whiteSpace: "normal", width: "100%", maxWidth: "calc(100% - 40px)", boxSizing: "border-box", overflowX: "hidden", overflow: "hidden" }}>
                         Q3. How do I claim?
                       </span>
                       <span style={{ marginLeft: "10px", fontSize: "18px", flexShrink: 0 }}>
@@ -1990,7 +1990,7 @@ export default function MyCollagesPage() {
                       onClick={() => setExpandedFaq(expandedFaq === 4 ? null : 4)}
                       className={styles.faqButton}
                     >
-                      <span className={styles.faqQuestion}>
+                      <span className={styles.faqQuestion} style={{ wordWrap: "break-word", overflowWrap: "anywhere", wordBreak: "break-word", whiteSpace: "normal", width: "100%", maxWidth: "calc(100% - 40px)", boxSizing: "border-box", overflowX: "hidden", overflow: "hidden" }}>
                         Q4. Grid Sizes
                       </span>
                       <span style={{ marginLeft: "10px", fontSize: "18px", flexShrink: 0 }}>
@@ -2011,7 +2011,7 @@ export default function MyCollagesPage() {
                       onClick={() => setExpandedFaq(expandedFaq === 5 ? null : 5)}
                       className={styles.faqButton}
                     >
-                      <span className={styles.faqQuestion}>
+                      <span className={styles.faqQuestion} style={{ wordWrap: "break-word", overflowWrap: "anywhere", wordBreak: "break-word", whiteSpace: "normal", width: "100%", maxWidth: "calc(100% - 40px)", boxSizing: "border-box", overflowX: "hidden", overflow: "hidden" }}>
                         Q5. What are Grid Size Multipliers?
                       </span>
                       <span style={{ marginLeft: "10px", fontSize: "18px", flexShrink: 0 }}>
@@ -2067,8 +2067,8 @@ export default function MyCollagesPage() {
                       onClick={() => setExpandedFaq(expandedFaq === 6 ? null : 6)}
                       className={styles.faqButton}
                     >
-                      <span className={styles.faqQuestion}>
-                        Q6. Can I sell my MineBlock during the season?
+                      <span className={styles.faqQuestion} style={{ wordWrap: "break-word", overflowWrap: "anywhere", wordBreak: "break-word", whiteSpace: "normal", width: "100%", maxWidth: "calc(100% - 40px)", boxSizing: "border-box", overflowX: "hidden", overflow: "hidden" }}>
+                        Q6. Can I sell my MineBlock?
                       </span>
                       <span style={{ marginLeft: "10px", fontSize: "18px", flexShrink: 0 }}>
                         {expandedFaq === 6 ? "−" : "+"}

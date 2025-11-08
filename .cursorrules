@@ -1,0 +1,73 @@
+# File Editing Safety Rules
+
+## CRITICAL: Prevent Empty File Corruption
+
+### Problem
+The `search_replace` tool is NOT atomic and can leave files empty when:
+- Next.js hot reload reads during write
+- Tool fails mid-operation
+- macOS file system caching issues
+
+**SOLUTION: NEVER USE `search_replace` FOR CRITICAL FILES**
+- Use shell commands with atomic writes instead
+- See `docs/FILE_EDITING_GUIDE.md` for proper methods
+
+### Solution: Always Validate After Writes
+
+**For ANY file write operation, ALWAYS:**
+1. Validate the file is not empty after write
+2. Check minimum line count for critical files
+3. Auto-restore from git if validation fails
+
+### Critical Files (Require Extra Care)
+These files MUST be validated after ANY edit:
+- `package.json` (min 50 lines) - CRITICAL: Project won't run if empty
+- `app/mineblocks/page.tsx` (min 1000 lines)
+- `components/grids/WalletHeader.tsx`
+- `components/grids/Header.tsx`
+- Any file imported by Next.js pages
+- Any file with exports
+- Any config file (next.config.js, tsconfig.json, etc.)
+
+### Validation Commands
+After editing critical files, run:
+```bash
+./scripts/validate-file.sh app/mineblocks/page.tsx 1000
+```
+
+### Recovery
+If a file becomes empty:
+1. `git restore <file>` (immediate recovery)
+2. Verify: `wc -l <file>`
+3. Re-apply changes using atomic write if needed
+
+### Best Practices
+1. **Before major edits**: Commit current state
+2. **After edits**: Always validate file
+3. **For critical files**: Use atomic writes (temp file + rename)
+4. **If validation fails**: Auto-restore from git
+
+### Tool Usage - CRITICAL RULES
+- **`search_replace`: NEVER USE for critical files** - Use shell commands instead
+- **`search_replace`: ONLY for non-critical files** - And ALWAYS validate after
+- `write`: Better for new files, ALWAYS validate after
+- **Shell commands: REQUIRED for all critical files** - Use atomic writes (temp file + rename)
+
+### MANDATORY Workflow for Critical Files
+1. **BEFORE editing**: Run `./scripts/pre-edit-checkpoint.sh <file>` to create git checkpoint
+2. **Make edit**: 
+   - **NEVER use `search_replace`** - Use shell commands with atomic writes
+   - For small changes: Use `write` tool with full file content
+   - For large changes: Use shell `cat` with heredoc or `safe-write.sh`
+3. **IMMEDIATELY AFTER**: Run `./scripts/validate-file.sh <file> <min-lines>`
+4. **If validation fails**: File auto-restores from git, then re-apply changes
+
+### NEVER edit these files without validation:
+- package.json
+- postcss.config.js
+- next.config.js
+- tsconfig.json
+- Any page.tsx file
+- Any component file
+- Any config file
+
