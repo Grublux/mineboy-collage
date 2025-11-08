@@ -1184,6 +1184,185 @@ export default function MyCollagesPage() {
             >
               To View and create MineBlocks
             </p>
+            {/* FAQ Section */}
+            <div className={styles.container} style={{ maxWidth: "min(800px, 100%)", margin: "0 auto", padding: "clamp(20px, 4vw, 40px) clamp(10px, 3vw, 20px)" }}>
+            <div className={styles.faqSection}>
+              <h3
+                style={{
+                  fontSize: "clamp(16px, 4vw, 24px)",
+                  fontFamily: "monospace",
+                  textTransform: "uppercase",
+                  color: "rgba(255, 255, 255, 0.85)",
+                  marginBottom: "20px",
+                  textAlign: "center",
+                  wordWrap: "break-word",
+                  overflowWrap: "break-word",
+                }}
+              >
+                FAQ
+              </h3>
+              <div className={styles.faqList}>
+                <div className={styles.faqItem}>
+                  <button
+                    onClick={() => setExpandedFaq(expandedFaq === 1 ? null : 1)}
+                    className={styles.faqButton}
+                  >
+                    <span className={styles.faqQuestion} style={{ wordWrap: "break-word", overflowWrap: "anywhere", wordBreak: "break-word", whiteSpace: "normal", width: "100%", maxWidth: "calc(100% - 40px)", boxSizing: "border-box", overflowX: "hidden", overflow: "hidden" }}>
+                      Q1. What is a MineBlock?
+                    </span>
+                    <span style={{ marginLeft: "10px", fontSize: "18px", flexShrink: 0 }}>
+                      {expandedFaq === 1 ? "−" : "+"}
+                    </span>
+                  </button>
+                  {expandedFaq === 1 && (
+                    <div className={styles.faqAnswer}>
+                      <p>A MineBlock is created from your MineBoy layout. When you form a MineBlock, your MineBoys are transferred from your wallet into the MineBoy Staking Contract for the duration of the active season.</p>
+                      <p>You'll receive a MineBlock NFT - a transferable claim token that represents your position and entitles you to season rewards.</p>
+                    </div>
+                  )}
+                </div>
+                </div>
+                <div className={styles.faqItem}>
+                  <button
+                    onClick={() => setExpandedFaq(expandedFaq === 2 ? null : 2)}
+                    className={styles.faqButton}
+                  >
+                    <span className={styles.faqQuestion} style={{ wordWrap: "break-word", overflowWrap: "anywhere", wordBreak: "break-word", whiteSpace: "normal", width: "100%", maxWidth: "calc(100% - 40px)", boxSizing: "border-box", overflowX: "hidden", overflow: "hidden" }}>
+                      Q2. What is a season?
+                    </span>
+                    <span style={{ marginLeft: "10px", fontSize: "18px", flexShrink: 0 }}>
+                      {expandedFaq === 2 ? "−" : "+"}
+                    </span>
+                  </button>
+                  {expandedFaq === 2 && (
+                    <div className={styles.faqAnswer}>
+                      <p>Season One begins in (countdown) days on (date). Once the season starts, your MineBoys remain locked inside your MineBlock until it ends.</p>
+                      <p>During the season, a portion of every MineBoy mint (x%) and every secondary sale (y%) - from both MineBoys and MineBlocks - accumulates in the Season One Reward Pool.</p>
+                      <p>When the season concludes (after z duration), your share of the pool becomes claimable by whoever holds the MineBlock NFT.</p>
+                    </div>
+                  )}
+                </div>
+                <div className={styles.faqItem}>
+                  <button
+                    onClick={() => setExpandedFaq(expandedFaq === 3 ? null : 3)}
+                    className={styles.faqButton}
+                  >
+                    <span className={styles.faqQuestion} style={{ wordWrap: "break-word", overflowWrap: "anywhere", wordBreak: "break-word", whiteSpace: "normal", width: "100%", maxWidth: "calc(100% - 40px)", boxSizing: "border-box", overflowX: "hidden", overflow: "hidden" }}>
+                      Q3. How do I claim?
+                    </span>
+                    <span style={{ marginLeft: "10px", fontSize: "18px", flexShrink: 0 }}>
+                      {expandedFaq === 3 ? "−" : "+"}
+                    </span>
+                  </button>
+                  {expandedFaq === 3 && (
+                    <div className={styles.faqAnswer}>
+                      <p>After a season ends, each MineBlock NFT acts as a claim instrument for its corresponding share of rewards.</p>
+                      <p>To claim, visit the Claim Portal, burn your MineBlock NFT, and receive both:</p>
+                      <ul style={{ marginLeft: "20px", marginTop: "10px", marginBottom: "10px" }}>
+                        <li>Your reward distribution</li>
+                        <li>Your original MineBoys back in your wallet</li>
+                      </ul>
+                    </div>
+                  )}
+                </div>
+                <div className={styles.faqItem}>
+                  <button
+                    onClick={() => setExpandedFaq(expandedFaq === 4 ? null : 4)}
+                    className={styles.faqButton}
+                  >
+                    <span className={styles.faqQuestion} style={{ wordWrap: "break-word", overflowWrap: "anywhere", wordBreak: "break-word", whiteSpace: "normal", width: "100%", maxWidth: "calc(100% - 40px)", boxSizing: "border-box", overflowX: "hidden", overflow: "hidden" }}>
+                      Q4. What are Grid Sizes?
+                    </span>
+                    <span style={{ marginLeft: "10px", fontSize: "18px", flexShrink: 0 }}>
+                      {expandedFaq === 4 ? "−" : "+"}
+                    </span>
+                  </button>
+                  {expandedFaq === 4 && (
+                    <div className={styles.faqAnswer}>
+                      <p>Each MineBlock has a defined grid size - 2×2, 3×3, 4×4, 5×5, or 6×6.</p>
+                      <p>You'll need the appropriate number of MineBoy NFTs in your wallet to create a grid of that size.</p>
+                      <p style={{ marginTop: "10px" }}><strong>Example:</strong></p>
+                      <p>A 3×3 grid requires 9 MineBoy NFTs.</p>
+                    </div>
+                  )}
+                </div>
+                <div className={styles.faqItem}>
+                  <button
+                    onClick={() => setExpandedFaq(expandedFaq === 5 ? null : 5)}
+                    className={styles.faqButton}
+                  >
+                    <span className={styles.faqQuestion} style={{ wordWrap: "break-word", overflowWrap: "anywhere", wordBreak: "break-word", whiteSpace: "normal", width: "100%", maxWidth: "calc(100% - 40px)", boxSizing: "border-box", overflowX: "hidden", overflow: "hidden" }}>
+                      Q5. What are Grid Size Multipliers?
+                    </span>
+                    <span style={{ marginLeft: "10px", fontSize: "18px", flexShrink: 0 }}>
+                      {expandedFaq === 5 ? "−" : "+"}
+                    </span>
+                  </button>
+                  {expandedFaq === 5 && (
+                    <div className={styles.faqAnswer}>
+                      <p>Your total reward shares scale with grid size. Larger grids earn progressively higher multipliers, rewarding deeper commitment and strategy.</p>
+                      <div style={{ marginTop: "15px", overflowX: "auto" }}>
+                        <table style={{ width: "100%", borderCollapse: "collapse", fontFamily: "monospace", fontSize: "clamp(11px, 2.5vw, 14px)" }}>
+                          <thead>
+                            <tr style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.2)" }}>
+                              <th style={{ padding: "8px", textAlign: "left" }}>Grid Size</th>
+                              <th style={{ padding: "8px", textAlign: "left" }}># of MineBoys</th>
+                              <th style={{ padding: "8px", textAlign: "left" }}># of Shares</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.1)" }}>
+                              <td style={{ padding: "8px" }}>2×2</td>
+                              <td style={{ padding: "8px" }}>4</td>
+                              <td style={{ padding: "8px" }}>4</td>
+                            </tr>
+                            <tr style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.1)" }}>
+                              <td style={{ padding: "8px" }}>3×3</td>
+                              <td style={{ padding: "8px" }}>9</td>
+                              <td style={{ padding: "8px" }}>10</td>
+                            </tr>
+                            <tr style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.1)" }}>
+                              <td style={{ padding: "8px" }}>4×4</td>
+                              <td style={{ padding: "8px" }}>16</td>
+                              <td style={{ padding: "8px" }}>20</td>
+                            </tr>
+                            <tr style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.1)" }}>
+                              <td style={{ padding: "8px" }}>5×5</td>
+                              <td style={{ padding: "8px" }}>25</td>
+                              <td style={{ padding: "8px" }}>35</td>
+                            </tr>
+                            <tr>
+                              <td style={{ padding: "8px" }}>6×6</td>
+                              <td style={{ padding: "8px" }}>36</td>
+                              <td style={{ padding: "8px" }}>50</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                <div className={styles.faqItem}>
+                  <button
+                    onClick={() => setExpandedFaq(expandedFaq === 6 ? null : 6)}
+                    className={styles.faqButton}
+                  >
+                    <span className={styles.faqQuestion} style={{ wordWrap: "break-word", overflowWrap: "anywhere", wordBreak: "break-word", whiteSpace: "normal", width: "100%", maxWidth: "calc(100% - 40px)", boxSizing: "border-box", overflowX: "hidden", overflow: "hidden" }}>
+                      Q6. Can I sell my MineBlock?
+                    </span>
+                    <span style={{ marginLeft: "10px", fontSize: "18px", flexShrink: 0 }}>
+                      {expandedFaq === 6 ? "−" : "+"}
+                    </span>
+                  </button>
+                  {expandedFaq === 6 && (
+                    <div className={styles.faqAnswer} style={{ wordWrap: "break-word", overflowWrap: "anywhere", wordBreak: "break-word", whiteSpace: "normal", width: "100%", maxWidth: "100%", boxSizing: "border-box", overflowX: "hidden", overflow: "hidden" }}>
+                      <p style={{ wordWrap: "break-word", overflowWrap: "anywhere", wordBreak: "break-word", whiteSpace: "normal", width: "100%", maxWidth: "100%", boxSizing: "border-box", overflowX: "hidden", overflow: "hidden" }}>Yes. MineBlocks are fully transferable NFTs, even while your MineBoys remain staked inside.</p>
+                      <p style={{ wordWrap: "break-word", overflowWrap: "anywhere", wordBreak: "break-word", whiteSpace: "normal", width: "100%", maxWidth: "100%", boxSizing: "border-box", overflowX: "hidden", overflow: "hidden" }}>If you sell your MineBlock mid-season, all associated rights - including your future reward claim - transfer automatically to the new owner. Whoever holds the MineBlock when the season ends will be eligible to claim its rewards and recieve the associated MineBoys.</p>
+                    </div>
+                  )}
+              </div>
+            </div>
+            </div>
           </div>
         </div>
       </div>
@@ -1991,7 +2170,7 @@ export default function MyCollagesPage() {
                       className={styles.faqButton}
                     >
                       <span className={styles.faqQuestion} style={{ wordWrap: "break-word", overflowWrap: "anywhere", wordBreak: "break-word", whiteSpace: "normal", width: "100%", maxWidth: "calc(100% - 40px)", boxSizing: "border-box", overflowX: "hidden", overflow: "hidden" }}>
-                        Q4. Grid Sizes
+                        Q4. What are Grid Sizes?
                       </span>
                       <span style={{ marginLeft: "10px", fontSize: "18px", flexShrink: 0 }}>
                         {expandedFaq === 4 ? "−" : "+"}
