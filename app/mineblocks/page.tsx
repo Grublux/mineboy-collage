@@ -939,6 +939,109 @@ export default function MyCollagesPage() {
         {/* Page Header */}
         <Header title="MineBlocks" />
 
+        {/* Staking Banner */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            gap: "clamp(8px, 2vw, 20px)",
+            flexWrap: "wrap",
+            marginBottom: "clamp(15px, 4vw, 30px)",
+            padding: "clamp(10px, 2vw, 15px) clamp(10px, 3vw, 20px)",
+            backgroundColor: "rgba(255, 255, 255, 0.05)",
+            border: "1px solid rgba(255, 255, 255, 0.2)",
+            borderRadius: "4px",
+            width: "100%",
+            boxSizing: "border-box",
+          }}
+        >
+          <div style={{ 
+            display: "flex", 
+            flexDirection: "column", 
+            alignItems: "center",
+            gap: "4px",
+            minWidth: "fit-content",
+          }}>
+            <div style={{ fontSize: "clamp(9px, 2vw, 11px)", color: "rgba(255, 255, 255, 0.6)", fontFamily: "monospace", textTransform: "uppercase" }}>
+              Pooled Rewards
+            </div>
+            <div style={{ fontSize: "clamp(11px, 2.5vw, 14px)", color: "rgba(255, 255, 255, 0.85)", fontFamily: "monospace" }}>
+              {isConnected ? "0 APE" : "-"}
+            </div>
+          </div>
+          <div style={{ 
+            display: "flex", 
+            flexDirection: "column", 
+            alignItems: "center",
+            gap: "4px",
+            minWidth: "fit-content",
+          }}>
+            <div style={{ fontSize: "clamp(9px, 2vw, 11px)", color: "rgba(255, 255, 255, 0.6)", fontFamily: "monospace", textTransform: "uppercase" }}>
+              Total Blocked
+            </div>
+            <div style={{ fontSize: "clamp(11px, 2.5vw, 14px)", color: "rgba(255, 255, 255, 0.85)", fontFamily: "monospace" }}>
+              {isConnected ? "0 / 0" : "-"}
+            </div>
+          </div>
+          <div style={{ 
+            display: "flex", 
+            flexDirection: "column", 
+            alignItems: "center",
+            gap: "4px",
+            minWidth: "fit-content",
+          }}>
+            <div style={{ fontSize: "clamp(9px, 2vw, 11px)", color: "rgba(255, 255, 255, 0.6)", fontFamily: "monospace", textTransform: "uppercase" }}>
+              My Blocked
+            </div>
+            <div style={{ fontSize: "clamp(11px, 2.5vw, 14px)", color: "rgba(255, 255, 255, 0.85)", fontFamily: "monospace" }}>
+              {isConnected ? "0" : "-"}
+            </div>
+          </div>
+          <div style={{ 
+            display: "flex", 
+            flexDirection: "column", 
+            alignItems: "center",
+            gap: "4px",
+            minWidth: "fit-content",
+          }}>
+            <div style={{ fontSize: "clamp(9px, 2vw, 11px)", color: "rgba(255, 255, 255, 0.6)", fontFamily: "monospace", textTransform: "uppercase" }}>
+              My Shares
+            </div>
+            <div style={{ fontSize: "clamp(11px, 2.5vw, 14px)", color: "rgba(255, 255, 255, 0.85)", fontFamily: "monospace" }}>
+              {isConnected ? "0" : "-"}
+            </div>
+          </div>
+          <div style={{ 
+            display: "flex", 
+            flexDirection: "column", 
+            alignItems: "center",
+            gap: "4px",
+            minWidth: "fit-content",
+          }}>
+            <div style={{ fontSize: "clamp(9px, 2vw, 11px)", color: "rgba(255, 255, 255, 0.6)", fontFamily: "monospace", textTransform: "uppercase" }}>
+              Total Shares
+            </div>
+            <div style={{ fontSize: "clamp(11px, 2.5vw, 14px)", color: "rgba(255, 255, 255, 0.85)", fontFamily: "monospace" }}>
+              {isConnected ? "0" : "-"}
+            </div>
+          </div>
+          <div style={{ 
+            display: "flex", 
+            flexDirection: "column", 
+            alignItems: "center",
+            gap: "4px",
+            minWidth: "fit-content",
+          }}>
+            <div style={{ fontSize: "clamp(9px, 2vw, 11px)", color: "rgba(255, 255, 255, 0.6)", fontFamily: "monospace", textTransform: "uppercase" }}>
+              Pending Share
+            </div>
+            <div style={{ fontSize: "clamp(11px, 2.5vw, 14px)", color: "rgba(255, 255, 255, 0.85)", fontFamily: "monospace" }}>
+              {isConnected ? "0 APE" : "-"}
+            </div>
+          </div>
+        </div>
+
         {/* Tabs */}
         <div style={{ 
           display: "flex", 
