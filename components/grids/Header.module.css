@@ -1,0 +1,26 @@
+.header {
+  font-size: clamp(20px, 6vw, 33px);
+  font-family: monospace;
+  text-transform: uppercase;
+  margin-top: clamp(15px, 4vw, 33px);
+  margin-bottom: clamp(15px, 4vw, 30px);
+  letter-spacing: clamp(1px, 0.5vw, 2px);
+  text-align: center;
+  color: rgba(255, 255, 255, 0.85);
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeSpeed;
+  filter: contrast(1.2);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  padding: 0 clamp(10px, 2vw, 20px);
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .header {
+    font-size: 20px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+  }
+}

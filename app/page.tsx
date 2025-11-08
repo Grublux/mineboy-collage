@@ -622,9 +622,10 @@ export default function HomePage() {
         <div style={{ 
           maxWidth: "1400px", 
           margin: "0 auto", 
-          padding: "20px",
+          padding: "clamp(10px, 3vw, 20px)",
           width: "100%",
-          boxSizing: "border-box"
+          boxSizing: "border-box",
+          overflowX: "hidden"
         }}>
           {/* Wallet Header */}
           <WalletHeader />
@@ -668,7 +669,7 @@ export default function HomePage() {
                 download MineBoy images below
               </div>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px', width: '100%', maxWidth: '500px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px', width: '100%', maxWidth: 'min(500px, 90vw)', boxSizing: 'border-box' }}>
               <input
                 type="text"
                 value={manualInput}
@@ -681,14 +682,15 @@ export default function HomePage() {
                 }}
                 placeholder="Enter MineBoy numbers (e.g., 1, 42, 100)"
                 style={{
-                  padding: '10px',
+                  padding: 'clamp(8px, 2vw, 10px)',
                   width: '100%',
-                  maxWidth: '300px',
+                  maxWidth: 'min(300px, 85vw)',
                   backgroundColor: '#000000',
                   color: 'rgba(255, 255, 255, 0.85)',
                   border: '2px solid rgba(255, 255, 255, 0.85)',
                   fontFamily: 'monospace',
-                  fontSize: '14px'
+                  fontSize: 'clamp(12px, 3vw, 14px)',
+                  boxSizing: 'border-box'
                 }}
               />
               <button
@@ -699,17 +701,18 @@ export default function HomePage() {
                 }}
                 disabled={loadingManual}
                 style={{
-                  padding: '10px 20px',
+                  padding: 'clamp(8px, 2vw, 10px) clamp(16px, 4vw, 20px)',
                   backgroundColor: '#ffffff',
                   color: '#000000',
                   border: '2px solid rgba(255, 255, 255, 0.85)',
                   cursor: loadingManual ? 'not-allowed' : 'pointer',
                   fontFamily: 'monospace',
                   textTransform: 'uppercase',
-                  fontSize: '14px',
+                  fontSize: 'clamp(12px, 3vw, 14px)',
                   opacity: loadingManual ? 0.5 : 1,
                   width: '100%',
-                  maxWidth: '300px'
+                  maxWidth: 'min(300px, 85vw)',
+                  boxSizing: 'border-box'
                 }}
               >
                 {loadingManual ? 'Loading...' : 'Fetch'}
@@ -720,11 +723,12 @@ export default function HomePage() {
 
         {/* {(isConnected || manualMode) && ( */}
         <div style={{
-          padding: '20px',
-          maxWidth: '1200px',
+          padding: 'clamp(10px, 3vw, 20px)',
+          maxWidth: 'min(1200px, 100vw)',
           margin: '0 auto',
           width: '100%',
-          boxSizing: 'border-box'
+          boxSizing: 'border-box',
+          overflowX: 'hidden'
         }}>
           {displayedNFTs.length === 0 ? (
             loadingManual && (
@@ -757,8 +761,11 @@ export default function HomePage() {
                 <div style={{
                   display: 'flex',
                   flexWrap: 'wrap',
-                  gap: '20px',
-                  justifyContent: 'center'
+                  gap: 'clamp(10px, 3vw, 20px)',
+                  justifyContent: 'center',
+                  width: '100%',
+                  boxSizing: 'border-box',
+                  padding: '0 clamp(10px, 2vw, 20px)'
                 }}>
                       {displayedNFTs.map((nft) => {
                         const isSelected = selectedNFTs.includes(nft.id);
@@ -767,59 +774,65 @@ export default function HomePage() {
                             key={nft.id}
                             style={{
                               border: isSelected ? '4px solid #00ff00' : '2px solid #ffffff',
-                              padding: '10px',
+                              padding: 'clamp(8px, 2vw, 10px)',
                               position: 'relative',
-                              width: '120px',
+                              width: 'clamp(100px, 25vw, 120px)',
+                              maxWidth: '100%',
                               display: 'flex',
                               flexDirection: 'column',
                               alignItems: 'center',
-                              backgroundColor: isSelected ? '#003300' : 'transparent'
+                              backgroundColor: isSelected ? '#003300' : 'transparent',
+                              boxSizing: 'border-box'
                             }}
                           >
                             <div style={{
-                              width: '100px',
-                              height: '100px',
+                              width: 'clamp(80px, 20vw, 100px)',
+                              height: 'clamp(80px, 20vw, 100px)',
                               display: 'flex',
                               alignItems: 'center',
-                              justifyContent: 'center'
+                              justifyContent: 'center',
+                              boxSizing: 'border-box'
                             }}>
                               {nft.image && (
                                 <img
                                   src={nft.image}
                                   alt={nft.name}
-                                  width="100"
-                                  height="100"
                                   onClick={() => toggleNFTSelection(nft.id)}
                                   style={{
-                                    width: '100px',
-                                    height: '100px',
+                                    width: '100%',
+                                    height: '100%',
                                     objectFit: 'contain',
                                     imageRendering: 'pixelated',
                                     cursor: 'pointer',
-                                    display: 'block'
+                                    display: 'block',
+                                    maxWidth: '100%',
+                                    maxHeight: '100%'
                                   } as React.CSSProperties}
                                 />
                               )}
                             </div>
-                      <div style={{ marginTop: '8px', fontSize: '12px' }}>
+                      <div style={{ marginTop: 'clamp(6px, 1.5vw, 8px)', fontSize: 'clamp(10px, 2.5vw, 12px)', wordWrap: 'break-word', overflowWrap: 'break-word', textAlign: 'center', width: '100%' }}>
                         {nft.name}
                       </div>
-                      <div style={{ fontSize: '10px', opacity: 0.7 }}>
+                      <div style={{ fontSize: 'clamp(8px, 2vw, 10px)', opacity: 0.7, wordWrap: 'break-word', overflowWrap: 'break-word', textAlign: 'center', width: '100%' }}>
                         #{nft.tokenId}
                       </div>
                       <button
                         onClick={() => downloadScaledImage(nft.image, nft.name)}
                         style={{
-                          marginTop: '8px',
-                          padding: '6px 8px',
+                          marginTop: 'clamp(6px, 1.5vw, 8px)',
+                          padding: 'clamp(4px, 1vw, 6px) clamp(6px, 1.5vw, 8px)',
                           backgroundColor: '#ffffff',
                           color: '#000000',
                           border: '2px solid rgba(255, 255, 255, 0.85)',
                           cursor: 'pointer',
                           fontFamily: 'monospace',
                           textTransform: 'uppercase',
-                          fontSize: '9px',
-                          width: '100%'
+                          fontSize: 'clamp(8px, 2vw, 9px)',
+                          width: '100%',
+                          boxSizing: 'border-box',
+                          wordWrap: 'break-word',
+                          overflowWrap: 'break-word'
                         }}
                         onMouseOver={(e) => {
                           e.currentTarget.style.backgroundColor = '#000000';
@@ -916,9 +929,10 @@ export default function HomePage() {
                         gap: '0',
                         backgroundColor: '#536AB3',
                         width: '100%',
-                        maxWidth: `${cellSize * gridSize}px`,
+                        maxWidth: `min(${cellSize * gridSize}px, calc(100vw - clamp(20px, 6vw, 40px)))`,
                         margin: '0 auto',
-                        aspectRatio: '1 / 1'
+                        aspectRatio: '1 / 1',
+                        boxSizing: 'border-box'
                       }}>
                         {Array.from({ length: totalSlots }).map((_, index) => {
                           const nftId = selectedNFTs[index];

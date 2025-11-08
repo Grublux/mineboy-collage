@@ -17,9 +17,12 @@ export function CollectionLinks({ collections }: CollectionLinksProps) {
       style={{
         display: "flex",
         justifyContent: "center",
-        gap: "20px",
+        gap: "clamp(10px, 3vw, 20px)",
         flexWrap: "wrap",
-        marginBottom: "40px",
+        marginBottom: "clamp(20px, 5vw, 40px)",
+        width: "100%",
+        boxSizing: "border-box",
+        padding: "0 clamp(10px, 3vw, 20px)",
       }}
     >
       {collections.map((collection) => (
@@ -29,16 +32,20 @@ export function CollectionLinks({ collections }: CollectionLinksProps) {
           style={{
             color: "rgba(255, 255, 255, 0.85)",
             textDecoration: "none",
-            fontSize: "18px",
+            fontSize: "clamp(14px, 4vw, 18px)",
             fontFamily: "monospace",
             textTransform: "uppercase",
-            padding: "20px 40px",
+            padding: "clamp(12px, 3vw, 20px) clamp(20px, 5vw, 40px)",
             border: "2px solid rgba(255, 255, 255, 0.85)",
             backgroundColor: "transparent",
             display: "inline-block",
-            minWidth: "200px",
+            minWidth: "clamp(150px, 40vw, 200px)",
+            maxWidth: "90vw",
             textAlign: "center",
             transition: "all 0.2s",
+            boxSizing: "border-box",
+            wordWrap: "break-word",
+            overflowWrap: "break-word",
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.backgroundColor = "#ffffff";

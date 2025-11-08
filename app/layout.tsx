@@ -14,6 +14,7 @@ export default function RootLayout({
   return (
     <html lang="en" style={{ backgroundColor: '#000000' }}>
       <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
         <link rel="stylesheet" href="https://unpkg.com/@rainbow-me/rainbowkit@2/dist/index.css" />
         <style dangerouslySetInnerHTML={{ __html: `
           /* Force RainbowKit modal to fit content and center it */

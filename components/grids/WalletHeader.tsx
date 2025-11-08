@@ -33,7 +33,7 @@ export function WalletHeader() {
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
-        padding: "20px",
+        padding: "clamp(10px, 3vw, 20px)",
         flexWrap: "nowrap",
         position: "relative",
       }}
@@ -44,13 +44,14 @@ export function WalletHeader() {
           style={{
             color: "rgba(255, 255, 255, 0.85)",
             textDecoration: "none",
-            fontSize: "16px",
+            fontSize: "clamp(10px, 2.5vw, 16px)",
             fontFamily: "monospace",
             textTransform: "uppercase",
-            padding: "10px 20px",
+            padding: "clamp(6px, 1.5vw, 10px) clamp(12px, 3vw, 20px)",
             border: "2px solid rgba(255, 255, 255, 0.85)",
             backgroundColor: "transparent",
             display: "inline-block",
+            whiteSpace: "nowrap",
           }}
         >
           My Blocks
@@ -64,14 +65,14 @@ export function WalletHeader() {
           transform: "translateX(-50%)",
           zIndex: 10,
           pointerEvents: "none",
-          paddingTop: "33px",
+          paddingTop: "clamp(15px, 4vw, 33px)",
         }}
       >
         <img
           src="/logo.png"
           alt="Blocked Logo"
           style={{
-            height: "120px",
+            height: "clamp(60px, 15vw, 120px)",
             width: "auto",
             display: "block",
           }}
@@ -88,23 +89,24 @@ export function WalletHeader() {
                 onClick={connected ? openAccountModal : openConnectModal}
                 style={{
                   color: 'rgba(255, 255, 255, 0.85)',
-                  fontSize: '14px',
+                  fontSize: 'clamp(10px, 2.5vw, 14px)',
                   fontFamily: 'monospace',
                   textTransform: 'uppercase',
-                  padding: '8px 16px',
+                  padding: 'clamp(6px, 1.5vw, 8px) clamp(10px, 2.5vw, 16px)',
                   border: '2px solid rgba(255, 255, 255, 0.85)',
                   backgroundColor: 'transparent',
                   cursor: 'pointer',
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'center',
-                  gap: '2px'
+                  gap: '2px',
+                  whiteSpace: 'nowrap',
                 }}
                 type="button"
               >
                 <span>{connected ? `${account.displayName}` : 'Connect Wallet'}</span>
                 {connected && (
-                  <span style={{ fontSize: '11px', opacity: 0.8 }}>
+                  <span style={{ fontSize: 'clamp(8px, 2vw, 11px)', opacity: 0.8 }}>
                     {ngtBalanceFormatted} NGT
                   </span>
                 )}
