@@ -3,6 +3,8 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAccount, useReadContract } from "wagmi";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useState, useEffect } from "react";
 import { ngtTokenAddress, ERC20_ABI } from "@/frontend/lib/contracts/gridStaker";
 import { formatUnits } from "viem";
 
@@ -10,8 +12,24 @@ interface WalletHeaderProps {
   showCollectionNav?: boolean;
 }
 
+const STORAGE_KEY = "site_unlocked";
+
 export function WalletHeader({ showCollectionNav = false }: WalletHeaderProps = {}) {
   const { address } = useAccount();
+  const pathname = usePathname();
+  const [showLogout, setShowLogout] = useState(false);
+  
+  // Check if we're on a locked page (not homepage)
+  const isHomepage = pathname === "/";
+  
+  useEffect(() => {
+    if (!isHomepage && typeof window !== "undefined") {
+      const unlocked = sessionStorage.getItem(STORAGE_KEY);
+      setShowLogout(unlocked === "true");
+    } else {
+      setShowLogout(false);
+    }
+  }, [isHomepage, pathname]);
   
   // Read NGT balance
   const { data: ngtBalance } = useReadContract({
@@ -30,6 +48,13 @@ export function WalletHeader({ showCollectionNav = false }: WalletHeaderProps = 
         maximumFractionDigits: 2,
       })
     : "0";
+
+  const handleLogout = () => {
+    if (typeof window !== "undefined") {
+      sessionStorage.removeItem(STORAGE_KEY);
+      window.location.reload();
+    }
+  };
 
   return (
     <div
@@ -100,7 +125,7 @@ export function WalletHeader({ showCollectionNav = false }: WalletHeaderProps = 
           }}
         />
       </div>
-      <div style={{ flexShrink: 0 }}>
+      <div style={{ flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "8px" }}>
         <ConnectButton.Custom>
           {({ account, chain, openAccountModal, openChainModal, openConnectModal, mounted }) => {
             const ready = mounted;
@@ -136,6 +161,35 @@ export function WalletHeader({ showCollectionNav = false }: WalletHeaderProps = 
             );
           }}
         </ConnectButton.Custom>
+        {/* Logout button - only show on locked pages when unlocked */}
+        {showLogout && (
+          <button
+            onClick={handleLogout}
+            style={{
+              padding: "6px 12px",
+              backgroundColor: "transparent",
+              border: "1px solid rgba(255, 255, 255, 0.3)",
+              borderRadius: "4px",
+              color: "rgba(255, 255, 255, 0.7)",
+              fontFamily: "monospace",
+              fontSize: "clamp(6px, 1.4vw, 11px)",
+              textTransform: "uppercase",
+              cursor: "pointer",
+              transition: "all 0.2s",
+              whiteSpace: "nowrap",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.5)";
+              e.currentTarget.style.color = "rgba(255, 255, 255, 0.85)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.3)";
+              e.currentTarget.style.color = "rgba(255, 255, 255, 0.7)";
+            }}
+          >
+            Logout
+          </button>
+        )}
       </div>
     </div>
   );

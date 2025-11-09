@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { WalletProvider } from "@/components/WalletProvider";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { PasswordLock } from "@/components/PasswordLock";
 
 export const metadata: Metadata = {
   title: "MineBlocks",
@@ -84,7 +85,9 @@ export default function RootLayout({
       </head>
       <body style={{ backgroundColor: '#000000', margin: 0, padding: 0 }}>
         <ErrorBoundary>
-          <WalletProvider>{children}</WalletProvider>
+          <PasswordLock>
+            <WalletProvider>{children}</WalletProvider>
+          </PasswordLock>
         </ErrorBoundary>
       </body>
     </html>
