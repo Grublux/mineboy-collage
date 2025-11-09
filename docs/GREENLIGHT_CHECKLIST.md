@@ -138,3 +138,4 @@ If you want marketplace thumbnails later, add minimal `tokenURI`:
 ```
 Avoid extra attributes to keep it simple.
 
+

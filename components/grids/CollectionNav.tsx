@@ -60,3 +60,4 @@ export function CollectionNav({ collections }: CollectionNavProps) {
   );
 }
 
+

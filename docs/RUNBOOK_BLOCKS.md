@@ -130,3 +130,4 @@ Later: Consider moving to multisig or RewardsSplitter contract.
 - **COLLECTION_MANAGER_ROLE**: Root creation, tickets
 - **DURATION_ROLE**: Schedule management
 
+

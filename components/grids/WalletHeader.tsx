@@ -12,8 +12,6 @@ interface WalletHeaderProps {
   showCollectionNav?: boolean;
 }
 
-const STORAGE_KEY = "site_unlocked";
-
 export function WalletHeader({ showCollectionNav = false }: WalletHeaderProps = {}) {
   const { address } = useAccount();
   const pathname = usePathname();
@@ -23,9 +21,18 @@ export function WalletHeader({ showCollectionNav = false }: WalletHeaderProps = 
   const isHomepage = pathname === "/";
   
   useEffect(() => {
-    if (!isHomepage && typeof window !== "undefined") {
-      const unlocked = sessionStorage.getItem(STORAGE_KEY);
-      setShowLogout(unlocked === "true");
+    if (!isHomepage) {
+      // Check authentication status via API
+      const checkAuth = async () => {
+        try {
+          const response = await fetch('/api/auth/status');
+          const data = await response.json();
+          setShowLogout(data.authenticated);
+        } catch (error) {
+          setShowLogout(false);
+        }
+      };
+      checkAuth();
     } else {
       setShowLogout(false);
     }
@@ -49,9 +56,12 @@ export function WalletHeader({ showCollectionNav = false }: WalletHeaderProps = 
       })
     : "0";
 
-  const handleLogout = () => {
-    if (typeof window !== "undefined") {
-      sessionStorage.removeItem(STORAGE_KEY);
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' });
+      window.location.reload();
+    } catch (error) {
+      console.error('Logout error:', error);
       window.location.reload();
     }
   };

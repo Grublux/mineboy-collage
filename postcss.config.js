@@ -1,9 +1,9 @@
 module.exports = {
   plugins: [
-    'postcss-import',
-    'postcss-flexbugs-fixes',
+    require('postcss-import'),
+    require('postcss-flexbugs-fixes'),
     [
-      'postcss-preset-env',
+      require('postcss-preset-env'),
       {
         autoprefixer: {
           flexbox: 'no-2009',
@@ -13,4 +13,3 @@ module.exports = {
     ],
   ],
 };
-

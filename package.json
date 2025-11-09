@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "abi:staker": "forge inspect CollageStaker abi > frontend/abi/CollageStaker.json",
-    "abi:export": "pnpm run abi:staker && forge inspect CollageStaker bytecode > frontend/abi/CollageStaker.bytecode.txt"
+    "abi:export": "pnpm run abi:staker && forge inspect CollageStaker bytecode > frontend/abi/CollageStaker.bytecode.txt",
+    "generate-qr": "tsx scripts/generate-qr.ts"
   },
   "dependencies": {
     "@radix-ui/react-alert-dialog": "^1.0.5",
@@ -32,12 +33,16 @@
     "autoprefixer": "^10.4.19",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
+    "dotenv": "^17.2.3",
     "image-q": "^4.0.0",
+    "jose": "^6.1.1",
     "lucide-react": "^0.378.0",
-    "next": "14.2.5",
+    "next": "^14.2.18",
     "postcss": "^8.4.38",
+    "qrcode": "^1.5.4",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "speakeasy": "^2.0.0",
     "tailwind-merge": "^2.4.0",
     "tailwindcss": "^3.4.4",
     "tailwindcss-animate": "^1.0.7",
@@ -51,10 +56,12 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.42.1",
+    "@types/qrcode": "^1.5.6",
     "eslint": "^8.57.0",
     "eslint-config-next": "14.2.5",
     "postcss-flexbugs-fixes": "^5.0.2",
     "postcss-import": "^16.1.1",
-    "postcss-preset-env": "^10.4.0"
+    "postcss-preset-env": "^10.4.0",
+    "tsx": "^4.20.6"
   }
 }
